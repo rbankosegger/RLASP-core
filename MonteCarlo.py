@@ -2,6 +2,7 @@ from BlocksWorld import *
 from entities import State
 from random import randint, random
 from collections import deque
+from tqdm import tqdm
 
 
 class MonteCarlo:
@@ -70,28 +71,27 @@ class MonteCarlo:
 
         return episode
 
-    def learn_policy(self, gamma: float, number_episodes: int) -> dict:
-        """Uses a first-visit Exploring Starts Monte Carlo evaluation method to evaluate policy P.
+    def learn_policy(self, discount_rate: float, number_episodes: int) -> dict:
+        """Uses a first-visit Exploring Starts Monte Carlo evaluation method to evaluate policy.
 
-        :param gamma: the discounting factor (use only when no planning is used; set to 1 if planning is used)
+        :param discount_rate: the discounting factor (use only when no planning is used; set to 1 if planning is used)
         :param number_episodes: the number of episodes to run
         :return: the learned policy as a state-action mapping
         """
 
         Visits = dict()  # {state : {action : number of experiences}}
-        P = dict()  # {state : action}
+        policy = dict()  # {state : action}
 
         print('Learning...')
-        for _ in range(0, number_episodes):
+        for _ in tqdm(list(range(0, number_episodes))):
             start_state = self.blocks_world.get_random_start_state()
-            episode = self.generate_episode(start_state, P)  # clingo IO
+            episode = self.generate_episode(start_state, policy)  # clingo IO
 
-            g_return = 0
-            for t in range(len(episode) - 1, 0 - 1, -1):
-                g_return = gamma * g_return + episode[t][1]
-
-                state_t = episode[t][0]
-                action_t = episode[t][2]
+            return_t = 0
+            for t, (state_t, reward_t, action_t) in reversed(list(enumerate(episode))):
+               
+                # Compute discounted return according to definition: G[t] = R[t+1] + gamma * G[t+1]
+                return_t = reward_t + discount_rate * return_t
 
                 is_first_visit = True
                 for before_t in range(0, t):
@@ -110,13 +110,13 @@ class MonteCarlo:
 
                     # predict/evaluate: calculate average value for state-action pair
                     Visits[state_t][action_t] += 1
-                    self.Q[state_t][action_t] += (g_return - self.Q[state_t][action_t]) / Visits[state_t][action_t]
+                    self.Q[state_t][action_t] += (return_t - self.Q[state_t][action_t]) / Visits[state_t][action_t]
 
                     # control/improve: use greedy exploration: choose action with highest return
-                    P[state_t] = self.greedy_action(self.Q[state_t].items(), action_t)
+                    policy[state_t] = self.greedy_action(self.Q[state_t].items(), action_t)
 
         print('Done!')
-        return P
+        return policy
 
     def greedy_action(self, actions: dict, action_t: Action) -> Action:
         """Chooses the action with the highest value.
