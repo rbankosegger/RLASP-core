@@ -175,3 +175,10 @@ class BlocksWorld:
         for partState in atoms:
             part_states.append(self.parse_part_state(partState))
         return State(set(part_states))
+
+    def optimal_return_for_state(self, state):
+
+        max_planning_horizon = 2*(len(state.locations)-1)
+        (_, _, _, _, max_reward) = self.next_step(state, action=None, t = max_planning_horizon) # clingo IO
+
+        return max_reward

@@ -82,7 +82,6 @@ class MonteCarlo:
         Visits = dict()  # {state : {action : number of experiences}}
         policy = dict()  # {state : action}
 
-        print('Learning...')
         for _ in tqdm(list(range(0, number_episodes))):
             start_state = self.blocks_world.get_random_start_state()
             episode = self.generate_episode(start_state, policy)  # clingo IO
@@ -115,8 +114,16 @@ class MonteCarlo:
                     # control/improve: use greedy exploration: choose action with highest return
                     policy[state_t] = self.greedy_action(self.Q[state_t].items(), action_t)
 
-        print('Done!')
+            self.evaluate_return_ratio_for_episode(start_state, return_t)
+
         return policy
+
+    def evaluate_return_ratio_for_episode(self, start_state, actual_return):
+        worst_case_return = -self.max_episode_length - 1
+        best_case_return = self.blocks_world.optimal_return_for_state(start_state)
+
+        return_ratio = (actual_return - worst_case_return) / float(best_case_return - worst_case_return)
+        self.return_ratios.append(return_ratio)
 
     def greedy_action(self, actions: dict, action_t: Action) -> Action:
         """Chooses the action with the highest value.
