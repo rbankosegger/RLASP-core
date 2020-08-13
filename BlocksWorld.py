@@ -4,31 +4,34 @@ from entities import *
 import numpy as np
 import pickle
 
-state_enumeration_limit = 9  # blocks worlds bigger than this don't try to enumerate all possible states
-
-
 class BlocksWorld:
-    def __init__(self, path=None):
+    def __init__(self, number_of_blocks:int = 4, state_enumeration_limit:int = 9):
         """Initialize a blocks world, load pickle with blocks world states from path optionally.
 
-        :param path: optional path to pickle with blocks world states
+        :param number_of_blocks: The blocks world size
+        :param state_enumeration_limit: Blocks worlds bigger than this don't try to enumerate all possible states
+
         """
-        self.clingo = ClingoBridge()
-        self.blocks = self.get_blocks()
-        if path and len(self.blocks) <= state_enumeration_limit:
-            with open(path, 'rb') as f:
-                self.allStates = pickle.load(f)
-        elif len(self.blocks) <= state_enumeration_limit:
-            self.allStates = self.generate_all_states()
+
+        self.number_of_blocks = number_of_blocks
+        self.state_enumeration_limit = state_enumeration_limit
+
+        self.block_terms: list = [f'b{i}' for i in range(number_of_blocks)]
+        self.blocks_dl: str = ''.join(f'block({t}).' for t in self.block_terms)
+        self.subgoals_dl: str = ''.join(f'subgoal({x}, {y}).' for (x, y) in zip(self.block_terms, 
+                                                                                 ['table'] + self.block_terms))
+
+        goal_part_states = set(PartState(f'on({x},{y})') for (x, y) in zip(self.block_terms, 
+                                                                           ['table'] + self.block_terms))
+        self.goal_state = State(goal_part_states)
 
     def get_random_start_state(self) -> State:
         """Returns a random start state given all possible states.
 
         :return: a random state
         """
-        if len(self.blocks) <= state_enumeration_limit:
-            rnd = random.randint(0, len(self.allStates) - 1)
-            return self.allStates[rnd]
+        if self.number_of_blocks <= self.state_enumeration_limit:
+            return random.choice(self.generate_all_states())
         else:
             return self.generate_random_start_state()
 
@@ -38,10 +41,8 @@ class BlocksWorld:
         :return: an ndarray of all states of the environment
         """
         self.clingo = ClingoBridge()  # reset clingo
-
-        base = ('base', '')
         self.clingo.add_file('initial-states.lp')
-        self.clingo.run([base])
+        self.clingo.run([('base', self.blocks_dl)])
         output = self.clingo.output
 
         num_states = int(len(output) / 2)
@@ -62,11 +63,12 @@ class BlocksWorld:
         :return: a random state
         """
         part_states = []
-        random.shuffle(self.blocks)
+        blocks = self.get_blocks()
+        random.shuffle(blocks)
         placed = []
         t = 0
 
-        for block in self.blocks:
+        for block in blocks:
             if 1 / (t + 1) >= random.random():
                 part_states.append(PartState(f'on({block.arguments[0]},table)'))
             else:
@@ -86,6 +88,7 @@ class BlocksWorld:
         self.clingo = ClingoBridge()  # reset clingo
 
         base = ('base', '')
+        self.clingo.ctl.add('base', [], self.blocks_dl)
         self.clingo.add_file('initial-states.lp')
         self.clingo.run([base], n=1)
         output = self.clingo.output[0]
@@ -114,8 +117,11 @@ class BlocksWorld:
         facts.append(('base', f'#const t = {t}.'))
         if action:
             facts.append(('base', action.clingo_string()))
+        facts.append(('base', self.subgoals_dl))
+
 
         # add static main program file
+        #self.clingo.ctl.add('base', [], self.subgoals_dl)
         self.clingo.add_file('blocksworld-mdp.lp')
         self.clingo.run(facts)
         output = self.clingo.output
@@ -144,11 +150,13 @@ class BlocksWorld:
         return State(set(part_states)), available_actions, best_action, next_reward, max_reward
 
     def parse_part_state(self, atom: clingo.Symbol) -> PartState:
+
         """Parse a part-state.
 
         :param atom: a clingo atom
         :return: a part-state object representing one on/2 atom
         """
+
         on_predicate = atom.arguments[0]
         top_block = on_predicate.arguments[0]
         bottom_block = on_predicate.arguments[1]
@@ -160,6 +168,7 @@ class BlocksWorld:
         :param atom: a clingo atom
         :return: an action object representing one move/2 atom
         """
+
         move_predicate = atom.arguments[0]
         top_block = move_predicate.arguments[0]
         bottom_block = move_predicate.arguments[1]

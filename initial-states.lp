@@ -1,7 +1,7 @@
 % enumerate all valid states for the blocks world given some blocks
 
 % input predicates ********************************************************************************
-block(a; b; c; d).%; e; f; g; h; i; j; k; l).
+% block(X) ... Marking X as a block in the blocks world
 % *************************************************************************************************
 
 % state/1 with state(X) if X is a term representation of a state predicate
