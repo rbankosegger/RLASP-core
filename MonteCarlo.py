@@ -69,7 +69,7 @@ class MonteCarlo:
             actions = nextActions
             count += 1
 
-        return episode
+        return episode, state
 
     def learn_policy(self, discount_rate: float, number_episodes: int, show_progress_bar: bool = False) -> dict:
         """Uses a first-visit Exploring Starts Monte Carlo evaluation method to evaluate policy.
@@ -89,13 +89,14 @@ class MonteCarlo:
 
         for _ in episodes:
             start_state = self.blocks_world.get_random_start_state()
-            episode = self.generate_episode(start_state, policy)  # clingo IO
+            episode, _ = self.generate_episode(start_state, policy)  # clingo IO
 
             return_t = 0
             for t, (state_t, reward_t, action_t) in reversed(list(enumerate(episode))):
                
                 # Compute discounted return according to definition: G[t] = R[t+1] + gamma * G[t+1]
                 return_t = reward_t + discount_rate * return_t
+
 
                 is_first_visit = True
                 for before_t in range(0, t):
