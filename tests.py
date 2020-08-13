@@ -1,7 +1,7 @@
 from MonteCarlo import *
 
 
-def test_policy(policy, blocks_world, max_episode_length, verbose=False):
+def test_policy(control, blocks_world, max_episode_length, verbose=False):
     """Test whether the goal state can be reached from each starting state for a given policy.
     For each state, a check will be printed if the goal state was reachable from that state, a cross otherwise.
     Note that this test is tailored for a blocks world of size 4, if other blocks worlds should be tested,
@@ -16,10 +16,10 @@ def test_policy(policy, blocks_world, max_episode_length, verbose=False):
 
     final_action = Action('move(d,c)')
     num_steps = []
-    mc = MonteCarlo(blocks_world, max_episode_length, 0, False, 0, False, True)
+    mc = MonteCarlo(blocks_world, max_episode_length, 0, False, 0, False, True, control=control)
 
     for start_state in blocks_world.generate_all_states():
-        steps, final_state = mc.generate_episode(start_state, policy)
+        steps, final_state = mc.generate_episode(start_state)
 
         if final_state == expected_final_state:
             print(f'{str(start_state):<80} {"✅":>1}')
