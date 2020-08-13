@@ -1,3 +1,4 @@
+import os
 import clingo
 
 
@@ -15,12 +16,15 @@ class ClingoBridge:
         """
         self.output.append(m.symbols(False, False, True, False, False))
 
-    def add_file(self, path: str):
+    def add_file(self, file_name: str):
         """Add a file in path to the control.
 
-        :param path: the file path
+        :param file_name: The .dl file, path relative to ClingoBridge.py 
         """
-        self.ctl.load(path)
+
+        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
+
+        self.ctl.load(file_path)
 
     def run(self, programs: list, n: int = 0):
         """Run a list of ASP programs.
