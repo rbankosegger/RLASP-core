@@ -71,18 +71,23 @@ class MonteCarlo:
 
         return episode
 
-    def learn_policy(self, discount_rate: float, number_episodes: int) -> dict:
+    def learn_policy(self, discount_rate: float, number_episodes: int, show_progress_bar: bool = False) -> dict:
         """Uses a first-visit Exploring Starts Monte Carlo evaluation method to evaluate policy.
 
         :param discount_rate: the discounting factor (use only when no planning is used; set to 1 if planning is used)
         :param number_episodes: the number of episodes to run
+        :param show_progress_bar: If set to true, a progress bar will be printed in the terminal to indicate how many episodes are done. This is done via the `tqdm` package.
         :return: the learned policy as a state-action mapping
         """
 
         Visits = dict()  # {state : {action : number of experiences}}
         policy = dict()  # {state : action}
 
-        for _ in tqdm(list(range(0, number_episodes))):
+        episodes = range(0, number_episodes)
+        if show_progress_bar:
+            episodes = tqdm(episodes, total=number_episodes, desc='Training')
+
+        for _ in episodes:
             start_state = self.blocks_world.get_random_start_state()
             episode = self.generate_episode(start_state, policy)  # clingo IO
 
