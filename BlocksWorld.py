@@ -149,6 +149,10 @@ class BlocksWorld:
 
         return State(set(part_states)), available_actions, best_action, next_reward, max_reward
 
+    def available_actions_for_state(self, state):
+        (_, availableActions, _, _, _) = self.next_step(state, None, t=0)
+        return availableActions
+
     def parse_part_state(self, atom: clingo.Symbol) -> PartState:
 
         """Parse a part-state.
