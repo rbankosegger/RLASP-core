@@ -25,13 +25,17 @@ class BlocksWorld:
                                                                            ['table'] + self.block_terms))
         self.goal_state = State(goal_part_states)
 
+        self.all_states = None
+
     def get_random_start_state(self) -> State:
         """Returns a random start state given all possible states.
 
         :return: a random state
         """
         if self.number_of_blocks <= self.state_enumeration_limit:
-            return random.choice(self.generate_all_states())
+            if self.all_states is None:
+                self.all_states = self.generate_all_states()
+            return random.choice(self.all_states)
         else:
             return self.generate_random_start_state()
 
