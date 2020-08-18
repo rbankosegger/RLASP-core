@@ -81,12 +81,13 @@ class MonteCarlo:
 
         return episode, state
 
-    def learn_policy(self, discount_rate: float, number_episodes: int, show_progress_bar: bool = False) -> dict:
+    def learn_policy(self, discount_rate: float, number_episodes: int, show_progress_bar: bool = False, evaluate_return_ratio = False) -> dict:
         """Uses a first-visit Exploring Starts Monte Carlo evaluation method to evaluate policy.
 
         :param discount_rate: the discounting factor (use only when no planning is used; set to 1 if planning is used)
         :param number_episodes: the number of episodes to run
         :param show_progress_bar: If set to true, a progress bar will be printed in the terminal to indicate how many episodes are done. This is done via the `tqdm` package.
+        :param evaluate_return_ratio: If set to true, the current return is always compared to the optimal return achieved by the planner. This is an expensive computation and should be used for benchmarking only.
         :return: the learned policy as a state-action mapping
         """
 
@@ -105,7 +106,10 @@ class MonteCarlo:
                 states, _, actions = zip(*episode)
                 self.control.iterate_policy_with_episode(states, actions, returns)
     
-                self.evaluate_metrics_for_episode(start_state, returns[0])
+                if evaluate_return_ratio:
+                    self.evaluate_metrics_for_episode(start_state, returns[0])
+                else:
+                    self.returns.append(returns[0])
 
 
     def discounted_returns_for_episode(self, episode, discount_rate):
