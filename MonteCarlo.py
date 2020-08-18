@@ -32,6 +32,8 @@ class MonteCarlo:
             self.control = SimpleMonteCarloControl(blocks_world)
 
         self.return_ratios = []
+        self.returns = []
+        self.optimal_returns = []
 
     def generate_episode(self, start_state: State) -> deque:
         """Generates a single episode from a start state onwards.
@@ -103,7 +105,7 @@ class MonteCarlo:
                 states, _, actions = zip(*episode)
                 self.control.iterate_policy_with_episode(states, actions, returns)
     
-                self.evaluate_return_ratio_for_episode(start_state, returns[0])
+                self.evaluate_metrics_for_episode(start_state, returns[0])
 
 
     def discounted_returns_for_episode(self, episode, discount_rate):
@@ -121,13 +123,16 @@ class MonteCarlo:
 
         return(returns)
 
-    def evaluate_return_ratio_for_episode(self, start_state, actual_return):
+    def evaluate_metrics_for_episode(self, start_state, actual_return):
 
         worst_case_return = -self.max_episode_length - 1
         best_case_return = self.blocks_world.optimal_return_for_state(start_state)
 
         return_ratio = (actual_return - worst_case_return) / float(best_case_return - worst_case_return)
         self.return_ratios.append(return_ratio)
+
+        self.returns.append(actual_return)
+        self.optimal_returns.append(best_case_return)
 
 
     def get_initial_actions(self, state: State) -> list:
