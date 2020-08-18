@@ -13,5 +13,5 @@ learned_policy = mc.learn_policy(discount_rate=1, number_episodes=150, show_prog
 
 #test_policy(ctrl, blocks_world, max_episode_length=10, verbose=False)
 
-plt.plot(mc.return_ratios)
+plt.plot(mc.returns)
 plt.show()
