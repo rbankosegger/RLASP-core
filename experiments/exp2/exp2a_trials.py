@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 
 """ EXPERIMENT PARAMETERS """
 
-number_of_trials = 4
+number_of_trials = 20
 number_of_episodes = 3000
 blocks_world_size = 5
 
@@ -58,10 +58,8 @@ for trial_number, (algorithm_label, step_size_parameter, monte_carlo_algorithm) 
     monte_carlo_algorithm.learn_policy(discount_rate=1, number_episodes=number_of_episodes, show_progress_bar=True)
 
     data = pd.DataFrame({
-        'episode': range(len(monte_carlo_algorithm.return_ratios)),
-        'return_ratio': monte_carlo_algorithm.return_ratios,
+        'episode': range(len(monte_carlo_algorithm.returns)),
         'observed_returns' : monte_carlo_algorithm.returns,
-        'optimal_returns': monte_carlo_algorithm.optimal_returns
     })
 
     data['trial_number'] = trial_number
