@@ -23,7 +23,14 @@ Results are in line with those of the bachelor's thesis.
 # Experiment 1b
 ## Remarks
 
-Compared to the bachelor's thesis, there seems to be very little progress. This is because here, only the first 500 (vs. 2000 in the thesis) are rendered. The results are probably similar to the thesis when the full 2000 episodes are rendered.
+* The results seem to be shifted! 
+
+	* $pH = 3$ in the thesis seems roughly equal to $pH = 4$ in my work.
+	* $pH = 4$ in the thesis seems roughly equal to $pH = 5$ in my work.
+	* $pH = 5$ in the thesis seems roughly equal to $pH = 6$ in my work.
+	* My results were generated automatically. Further, The results here were consistent with those in Experiment 2b. Thus, it is unlikely that I made a mistake.
+	* In my experiment, the planning horizon shows clear effect. Thus, I also don't think that there is a mistake in the learning agents code.
+
 
 # Experiment 1c
 ![](exp1c_fig.pdf)
@@ -46,3 +53,4 @@ Only the first 1000 episodes were rendered (vs. 2000 in the bachelor's thesis). 
 * Generating results took ca. 4-13 hours. The blocks world size has a big impact on performance.
 	* *Possible culprit:* Computing the return rate is expensive. It requires computing optimal plans for every step.
 	* *Possible culprit:* Computing plans is expensive. For every state, the optimal return up to the planning horizon is computed, even if no answer set leads to a correct solution.
+	* **Update** Removed some redundant ASP-solver calls, now the simulation is much faster. However, the points above are still valid.

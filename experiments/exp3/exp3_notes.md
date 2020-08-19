@@ -2,83 +2,85 @@
 
 The previous experiments took very long to complete. This experiment is for profiling the framework and identifying possible bottlenecks.
 
+* **Update:** This experiment helped me to find redundant ASP-calls (my own fault) and increase performance 5-fold. The results below are provided with the current (improved) version of the code.
+
 # Experiment 3a
 
 Tabula-rasa agent in a 7-blocks world, 150 episodes
 
 \tiny
-	Tue Aug 18 17:46:26 2020    exp3a_profile_raw.txt
+	Wed Aug 19 10:43:36 2020    exp3a_profile_raw.txt
 	
-	         222241983 function calls (222234281 primitive calls) in 193.932 seconds
+	         3637651 function calls (3629949 primitive calls) in 17.924 seconds
 	
 	   Ordered by: internal time
-	   List reduced from 2716 to 20 due to restriction <20>
+	   List reduced from 2714 to 20 due to restriction <20>
 	
 	   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-	 19786382   58.851    0.000   69.116    0.000 BlocksWorld.py:156(parse_part_state)
-	  5649569   24.843    0.000   24.843    0.000 {method 'symbols' of 'clingo.Model' objects}
-	  2822400   24.463    0.000  109.685    0.000 BlocksWorld.py:181(parse_state)
-	     4376   20.598    0.005   48.068    0.011 {method 'solve' of 'clingo.Control' objects}
-	     4376   12.732    0.003   12.732    0.003 {method 'ground' of 'clingo.Control' objects}
-	      150   12.339    0.082  166.515    1.110 BlocksWorld.py:38(generate_all_states)
-	 59359167    8.477    0.000    8.477    0.000 entities.py:8(__eq__)
-	 19786389    7.521    0.000   10.265    0.000 entities.py:2(__init__)
-	 19786389    3.869    0.000    5.591    0.000 entities.py:14(__hash__)
-	 45313965    3.357    0.000    3.357    0.000 {method 'append' of 'list' objects}
-	 19827078    2.753    0.000    2.753    0.000 {method 'replace' of 'str' objects}
-	      150    2.555    0.017  169.071    1.127 BlocksWorld.py:28(get_random_start_state)
-	  5649569    2.217    0.000   27.470    0.000 ClingoBridge.py:12(on_model)
-	     4376    2.208    0.001    2.208    0.001 {method 'load' of 'clingo.Control' objects}
-	     4226    2.029    0.000   23.904    0.006 BlocksWorld.py:103(next_step)
-	 19887237    1.735    0.000    1.735    0.000 {built-in method builtins.hash}
-	    15078    0.931    0.000    0.931    0.000 {method 'add' of 'clingo.Control' objects}
-	  2826627    0.710    0.000    0.710    0.000 entities.py:38(__init__)
-	     4376    0.472    0.000    0.472    0.000 ClingoBridge.py:6(__init__)
-	    54258    0.111    0.000    0.148    0.000 entities.py:53(<listcomp>)
+	     4057    9.820    0.002    9.820    0.002 {method 'ground' of 'clingo.Control' objects}
+	     4057    2.046    0.001    2.046    0.001 {method 'load' of 'clingo.Control' objects}
+	     4057    1.212    0.000    1.458    0.000 {method 'solve' of 'clingo.Control' objects}
+	     4056    1.197    0.000   15.918    0.004 BlocksWorld.py:107(next_step)
+	    14419    0.882    0.000    0.882    0.000 {method 'add' of 'clingo.Control' objects}
+	   160104    0.450    0.000    0.530    0.000 BlocksWorld.py:160(parse_part_state)
+	     4057    0.415    0.000    0.415    0.000 ClingoBridge.py:6(__init__)
+	    41689    0.220    0.000    0.220    0.000 {method 'symbols' of 'clingo.Model' objects}
+	    18816    0.177    0.000    0.758    0.000 BlocksWorld.py:185(parse_state)
+	    53872    0.108    0.000    0.144    0.000 entities.py:53(<listcomp>)
+	    37233    0.097    0.000    0.122    0.000 BlocksWorld.py:173(parse_action)
+	   686190    0.097    0.000    0.097    0.000 entities.py:8(__eq__)
+	        1    0.081    0.081    1.152    1.152 BlocksWorld.py:42(generate_all_states)
+	   160111    0.059    0.000    0.081    0.000 entities.py:2(__init__)
+	    53872    0.052    0.000    0.204    0.000 entities.py:52(__hash__)
+	      254    0.044    0.000    0.044    0.000 {built-in method marshal.loads}
+	    51/50    0.040    0.001    0.042    0.001 {built-in method _imp.create_dynamic}
+	   422366    0.040    0.000    0.040    0.000 entities.py:5(__repr__)
+	     4057    0.038    0.000   12.201    0.003 ClingoBridge.py:29(run)
+	   448953    0.036    0.000    0.036    0.000 {method 'append' of 'list' objects}
+
+
 
 # Experiment 3b
 
 Planning agent (on empty policy, ph=5) in a 7-blocks world, 150 episodes
 
 \tiny
-	Tue Aug 18 17:49:48 2020    exp3b_profile_raw.txt
+	Wed Aug 19 10:44:10 2020    exp3b_profile_raw.txt
 	
-	         222659262 function calls (222651560 primitive calls) in 201.846 seconds
+	         3844589 function calls (3836887 primitive calls) in 34.476 seconds
 	
 	   Ordered by: internal time
-	   List reduced from 2717 to 20 due to restriction <20>
+	   List reduced from 2715 to 20 due to restriction <20>
 	
 	   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-	 19793277   53.829    0.000   63.229    0.000 BlocksWorld.py:156(parse_part_state)
-	     5361   26.016    0.005   52.922    0.010 {method 'solve' of 'clingo.Control' objects}
-	  5650604   24.328    0.000   24.328    0.000 {method 'symbols' of 'clingo.Model' objects}
-	  2822400   24.148    0.000  102.977    0.000 BlocksWorld.py:181(parse_state)
-	     5361   21.068    0.004   21.068    0.004 {method 'ground' of 'clingo.Control' objects}
-	      150   11.961    0.080  158.370    1.056 BlocksWorld.py:38(generate_all_states)
-	 59379852    8.277    0.000    8.277    0.000 entities.py:8(__eq__)
-	 19793284    6.756    0.000    9.400    0.000 entities.py:2(__init__)
-	 19793284    3.731    0.000    5.405    0.000 entities.py:14(__hash__)
-	 45385275    3.277    0.000    3.277    0.000 {method 'append' of 'list' objects}
-	     5211    3.119    0.001   40.129    0.008 BlocksWorld.py:103(next_step)
-	     5361    2.682    0.001    2.682    0.001 {method 'load' of 'clingo.Control' objects}
-	 19886164    2.661    0.000    2.661    0.000 {method 'replace' of 'str' objects}
-	      150    2.442    0.016  160.813    1.072 BlocksWorld.py:28(get_random_start_state)
-	  5650604    2.185    0.000   26.906    0.000 ClingoBridge.py:12(on_model)
-	 19903258    1.687    0.000    1.687    0.000 {built-in method builtins.hash}
-	    17960    1.129    0.000    1.129    0.000 {method 'add' of 'clingo.Control' objects}
-	  2827612    0.645    0.000    0.645    0.000 entities.py:38(__init__)
-	     5361    0.542    0.000    0.542    0.000 ClingoBridge.py:6(__init__)
-	    91638    0.207    0.000    0.258    0.000 BlocksWorld.py:169(parse_action)
+	     4936   18.177    0.004   18.177    0.004 {method 'ground' of 'clingo.Control' objects}
+	     4936    7.226    0.001    7.489    0.002 {method 'solve' of 'clingo.Control' objects}
+	     4936    2.515    0.001    2.515    0.001 {method 'load' of 'clingo.Control' objects}
+	     4935    2.409    0.000   32.482    0.007 BlocksWorld.py:107(next_step)
+	    16974    1.051    0.000    1.051    0.000 {method 'add' of 'clingo.Control' objects}
+	     4936    0.517    0.000    0.517    0.000 ClingoBridge.py:6(__init__)
+	   166257    0.461    0.000    0.546    0.000 BlocksWorld.py:160(parse_part_state)
+	    42619    0.235    0.000    0.235    0.000 {method 'symbols' of 'clingo.Model' objects}
+	    88278    0.207    0.000    0.257    0.000 BlocksWorld.py:173(parse_action)
+	    18816    0.161    0.000    0.723    0.000 BlocksWorld.py:185(parse_state)
+	    56354    0.114    0.000    0.151    0.000 entities.py:53(<listcomp>)
+	        1    0.083    0.083    1.102    1.102 BlocksWorld.py:42(generate_all_states)
+	   522544    0.077    0.000    0.077    0.000 entities.py:8(__eq__)
+	   166264    0.062    0.000    0.085    0.000 entities.py:2(__init__)
+	    56354    0.054    0.000    0.212    0.000 entities.py:52(__hash__)
+	     4936    0.049    0.000   26.769    0.005 ClingoBridge.py:29(run)
+	   476028    0.047    0.000    0.047    0.000 entities.py:5(__repr__)
+	      254    0.045    0.000    0.045    0.000 {built-in method marshal.loads}
+	   516934    0.043    0.000    0.043    0.000 {method 'append' of 'list' objects}
+	    51/50    0.041    0.001    0.043    0.001 {built-in method _imp.create_dynamic}
+
 
 # Experiment 3
 
 ## Observations
 
-* Both the tabula-rasa and planning-agent take almost equally long!
-	* Difference in planning is only ~7 seconds
-	* 48 seconds are spent in `solve` function from clingo (vs. 52s for the planner)
-	* *Possible culprit*: We compute the optimal path to the goal every step of every period for benchmarking purposes. This is the only (expensive) ASP-procedure that is executed in both the tabula-rasa and planning agent.
+* For the tabula rasa agent, 16 out of the 18 seconds are spent in the `next_step` method of the `BlockWorld`.
+	* This method starts the ASP-solver, so it is unsurprising that it takes time
+	* Most time (10s) is spent grounding
 
-* `generate_all_states` is executed exaclty 150 times, and 160s (of 193 in total) is spent in this function. However, states should be generated only once at the very beginning ?!
-
-* If we can trust the time differences, we could reduce the total time by ~48s + ~150s, reducing the total time to ~10s!
+* For the planning agent, double the time was spent in `next_step`, while the number of calls increased only by $25%$.
