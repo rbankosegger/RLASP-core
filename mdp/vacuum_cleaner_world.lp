@@ -12,9 +12,12 @@ executable(F) :- executable(F,0), t = 0.
 state(F) :- tic(F,1).
 
 % nextReward(N) ... N is the reward the agents gets after performing a given action
-nextReward(N) :- totalReward(N,1). 
+nextReward(S) :- S = #sum { R : reward(R, 1) }.
 
-% consider t planning steps, provided by BlocksWorld.py
+% bestAction(X) ... X is a term representation of the next action that yields maximal reward within t steps
+bestAction(F) :- act(F, 0).
+
+% consider t planning steps, provided by markov_decision_procedure.py
 time(0..t).
 
 % background knowledge ****************************************************************************
@@ -22,14 +25,16 @@ time(0..t).
 executable(move(left), T) :- tic(robot(right), T).
 executable(move(right), T) :- tic(robot(left), T).
 executable(vacuum, T) :- tic(robot(Location), T), tic(dirty(Location), T).
+{ act(F, T) : executable(F, T)} = 1 :- time(T), T < t, not goal(T).
 
-tic(robot(Location), 1) :- tic(robot(Location), 0), not act(move(_), 0).
-tic(dirty(Location), 1) :- tic(dirty(Location), 0), not act(vacuum, 0).
-tic(dirty(Location), 1) :- tic(dirty(Location), 0), not tic(robot(Location), 0).
-tic(robot(Location), 1) :- act(move(Location), 0).
+tic(robot(Location), T+1) :- tic(robot(Location), T), not act(move(_), T), time(T).
+tic(dirty(Location), T+1) :- tic(dirty(Location), T), not act(vacuum, T), time(T).
+tic(dirty(Location), T+1) :- tic(dirty(Location), T), not tic(robot(Location), T), time(T).
+tic(robot(Location), T+1) :- act(move(Location), T), time(T).
 
-reward(100, T) :- not tic(dirty(left), T), not tic(dirty(right), T), time(T).
-reward(-1, T) :- tic(dirty(left), T).
-reward(-1, T) :- tic(dirty(right), T).
+goal(T) :- not tic(dirty(left), T), not tic(dirty(right), T), time(T).
+reward(100, T) :- goal(T), not goal(T-1).
+reward(-1, T) :- act(F, T-1).
 
-totalReward(S,T) :- time(T), S = #sum { R : reward(R,T) }.
+maxReward(S) :- S = #sum { R,T : reward(R,T) }.
+#maximize { S: maxReward(S) }.
