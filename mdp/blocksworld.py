@@ -12,7 +12,7 @@ class BlocksWorld(MarkovDecisionProcedure):
         # No discounting in any blocks world
         discount_rate = 1.0
 
-        super().__init__(initial_state, goal_state, discount_rate)
+        super().__init__(initial_state, goal_state, discount_rate, 'blocksworld.lp')
 
 class BlocksWorldBuilder():
 

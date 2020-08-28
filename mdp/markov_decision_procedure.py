@@ -10,14 +10,15 @@ class MarkovDecisionProcedure:
     def file_path(file_name):
         return os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
 
-    def __init__(self, initial_state: Set[str], goal_state: Set[str], discount_rate: float):
+    def __init__(self, initial_state: Set[str], goal_state: Set[str], discount_rate: float,
+                 asp_file_name: str):
 
         self.state: Set[str] = frozenset(initial_state)
         self.goal_state: Set[str] = frozenset(goal_state)
         self.discount_rate: float = discount_rate
 
         # TODO: Needs to be separated from abstract MDP. -> Do it when introducing a second MDP
-        self.file_name: str = 'blocksworld.lp'
+        self.file_name: str = asp_file_name
 
         # MDP trajectory: S0, A0, R1, S1, A1, R2, S2, A2, ... 
         self.state_history: List[Set[str]] = [frozenset(initial_state)] # S0
