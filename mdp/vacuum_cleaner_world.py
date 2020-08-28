@@ -10,3 +10,4 @@ class VacuumCleanerWorld(MarkovDecisionProcedure):
         discount_rate = 1
 
         super().__init__(initial_state, goal_state, discount_rate, 'vacuum_cleaner_world.lp')
+

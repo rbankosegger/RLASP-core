@@ -41,10 +41,10 @@ class TestVacuumCleanerWorld(unittest.TestCase):
         mdp.transition('move(left)')
         mdp.transition('vacuum')
 
-        self.assertEqual(mdp.return_history[0], -1 + -1 + -1 + 100)
-        self.assertEqual(mdp.return_history[1], -1 + -1 + 100)
-        self.assertEqual(mdp.return_history[2], -1 + 100)
-        self.assertEqual(mdp.return_history[3], 100)
+        self.assertEqual(mdp.return_history[0], -1 + -1 + -1 + 99)
+        self.assertEqual(mdp.return_history[1], -1 + -1 + 99)
+        self.assertEqual(mdp.return_history[2], -1 + 99)
+        self.assertEqual(mdp.return_history[3], 99)
 
     def test_trajectory(self):
 
@@ -61,5 +61,10 @@ class TestVacuumCleanerWorld(unittest.TestCase):
         self.assertEqual('move(right)', mdp.action_history[1]) # A1
         self.assertEqual(-1, mdp.reward_history[2]) # R2
         self.assertEqual({'robot(right)', 'dirty(right)'}, mdp.state_history[2]) #S2
-        self.assertEqual(100, mdp.reward_history[3]) # R3
+        self.assertEqual(99, mdp.reward_history[3]) # R3
         self.assertEqual({'robot(right)'}, mdp.state_history[3]) #S3
+
+    def test_optimal_return(self):
+
+        mdp = VacuumCleanerWorld()
+        self.assertEqual(-1 + -1 + 99, mdp.compute_optimal_return())
