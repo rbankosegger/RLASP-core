@@ -3,6 +3,7 @@ tic(F, 0) :- current(F).
 
 % action(T) ... T is an uninterpreted function representing (part of) the current action.
 act(F, 0) :- action(F).
+#defined action/1. % silence warning that action does not appear in rule head
 
 % executable(X) ... X is term representation of an action that is executable in the follow-up state
 executable(F) :- executable(F,1), t > 0.
@@ -34,7 +35,7 @@ tic(robot(Location), T+1) :- act(move(Location), T), time(T).
 
 goal(T) :- not tic(dirty(left), T), not tic(dirty(right), T), time(T).
 reward(100, T) :- goal(T), not goal(T-1).
-reward(-1, T) :- act(F, T-1).
+reward(-1, T) :- act(_, T-1).
 
 maxReward(S) :- S = #sum { R,T : reward(R,T) }.
 #maximize { S: maxReward(S) }.
