@@ -11,3 +11,7 @@ class VacuumCleanerWorld(MarkovDecisionProcedure):
 
         super().__init__(initial_state, goal_state, discount_rate, 'vacuum_cleaner_world.lp')
 
+class VacuumCleanerWorldBuilder:
+
+    def build_mdp(self):
+        return VacuumCleanerWorld()
