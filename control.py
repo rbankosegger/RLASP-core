@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Set
+from typing import Dict, Tuple, Set, List
 import random
 
 from mdp import MarkovDecisionProcedure
@@ -29,11 +29,11 @@ class SimpleMonteCarloControl:
     def suggest_action_for_state(self, state: State) -> Action:
         return self.current_best_actions.get(state, None) 
 
-    def iterate_policy_with_episode(self, mdp):
+    def iterate_policy_with_episode(self, states: List[State], actions: List[Action], returns: List[float]):
 
         visited_state_action_pairs = set()
 
-        for state, action, return_ in zip(mdp.state_history, mdp.action_history, mdp.return_history):
+        for state, action, return_ in zip(states, actions, returns):
 
             is_first_visit = (state, action) not in visited_state_action_pairs
 
@@ -85,7 +85,7 @@ class SgdMonteCarloControl:
 
         return self.current_best_actions.get(state, None) 
 
-    def iterate_policy_with_episode(self, states, actions, returns):
+    def iterate_policy_with_episode(self, states: List[State], actions: List[Action], returns: List[float]):
 
         for state, action, return_ in zip(states, actions, returns):
 
