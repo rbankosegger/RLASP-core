@@ -19,7 +19,7 @@
 
 % Static knowledge
 
-block(B) :- current(on(B,_)).
+block(B) :- tic(on(B,_), 0).
 location(table).
 location(L) :- block(L).
 

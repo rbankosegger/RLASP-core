@@ -34,11 +34,10 @@ class MarkovDecisionProcedure:
 
         ctl.load(self.file_path(self.interface_file_name))
         ctl.load(self.file_path(self.file_name))
-        ctl.add('base', [], ' '.join(f'current({s}).' for s in self.state))
+        ctl.add('base', [], ' '.join(f'currentState({s}).' for s in self.state))
         ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in self.goal_state))
-        ctl.add('base', [], '#const t=1.')
-        ctl.add('base', [], f'action({action}).')
-        ctl.add('base', [], '#show state/1. #show nextReward/1. #show executable/1.')
+        ctl.add('base', [], f'currentAction({action}).')
+        ctl.add('base', [], '#show nextState/1. #show nextReward/1. #show nextExecutable/1.')
 
         ctl.ground(parts=[('base', [])])
         models = ctl.solve(yield_=True)
@@ -52,7 +51,7 @@ class MarkovDecisionProcedure:
 
         for symbol in model.symbols(shown=True):
 
-            if symbol.name == 'state':
+            if symbol.name == 'nextState':
 
                 #˙Atom is of the form `state(f(...))` 
                 # where`f(...)` is an uninterpreted function belonging to the state representation.
@@ -64,9 +63,9 @@ class MarkovDecisionProcedure:
                 # Atom is of the form `nextReward(r)`, and `r` is the reward.
                 next_reward = symbol.arguments[0].number
 
-            if symbol.name == 'executable':
+            if symbol.name == 'nextExecutable':
 
-                # Atom is of the form `executable(f(...))` 
+                # Atom is of the form `nextExecutable(f(...))` 
                 # where`f(...)` is an uninterpreted function representing an executable action.
                 available_actions.add(str(symbol.arguments[0]))
 
@@ -95,10 +94,9 @@ class MarkovDecisionProcedure:
 
         ctl.load(self.file_path(self.interface_file_name))
         ctl.load(self.file_path(self.file_name))
-        ctl.add('base', [], ' '.join(f'current({s}).' for s in self.state))
+        ctl.add('base', [], ' '.join(f'currentState({s}).' for s in self.state))
         ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in self.goal_state))
-        ctl.add('base', [], '#const t=0.')
-        ctl.add('base', [], '#show executable/1.')
+        ctl.add('base', [], '#show currentExecutable/1.')
 
         ctl.ground(parts=[('base', [])])
         models = ctl.solve(yield_=True)
@@ -109,7 +107,7 @@ class MarkovDecisionProcedure:
         available_actions = set()
         for symbol in model.symbols(shown=True):
 
-            # We expect atoms of the form `executable(move(X, Y)` 
+            # We expect atoms of the form `currentExecutable(move(X, Y)` 
             # but we are only interested in the first argument `move(X, Y)`
             available_actions.add(str(symbol.arguments[0]))
 
