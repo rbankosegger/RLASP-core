@@ -19,11 +19,11 @@ class Planner:
         ctl.load(mdp.file_path(mdp.interface_file_name))
         ctl.load(mdp.file_path(mdp.file_name))
         ctl.load(self.planner_file_path)
-        ctl.add('base', [], ' '.join(f'current({s}).' for s in mdp.state))
+        ctl.add('base', [], ' '.join(f'currentState({s}).' for s in mdp.state))
         ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in mdp.goal_state))
         ctl.add('base', [], f'#const t={self.planning_horizon}.')
         #ctl.add('base', [], f'action({action}).')
-        ctl.add('base', [], '#show maxReturn/1. #show bestAction/1.')
+        ctl.add('base', [], '#show maxReturn/1. #show bestCurrentAction/1.')
 
         ctl.configuration.solve.models = 0  # create all stable models and find the optimal one
         ctl.ground(parts=[('base', [])])
@@ -41,9 +41,9 @@ class Planner:
 
                 expected_return = symbol.arguments[0].number 
 
-            if symbol.name == 'bestAction':
+            if symbol.name == 'bestCurrentAction':
 
-                # Atom is of the form `bestAction(f(...))` and `f(...)` is an uninterpreted function,
+                # Atom is of the form `bestCurrentAction(f(...))` and `f(...)` is an uninterpreted function,
                 # corresponding to the suggested action
 
                 suggested_action = str(symbol.arguments[0])

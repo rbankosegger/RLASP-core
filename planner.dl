@@ -1,14 +1,14 @@
 % PLANNER KNOWLEDGE ************************************************************
 
-% At each time point, make one move unless a terminal state has been reached
+% Generate an answer set for each possible action at each possible time step.
 { act(F, T) : executable(F, T)} = 1 :- time(T), T < t, not terminal(T).
 
-% consider t planning steps, provided by BlocksWorld.py
+% Consider t time steps.
 time(0..t).
 
-% maximize the return
+% Maximize the return.
 maxReturn(S)     :- S = #sum { R,T : partialReward(R,T) }.
 #maximize { S : maxReturn(S) }.
 
-% bestAction(X) ... X is a term representation of the next action that yields maximal reward within t steps
-bestAction(F) :- act(F, 0).
+% Return the current action with maximal return.
+bestCurrentAction(F) :- act(F, 0).

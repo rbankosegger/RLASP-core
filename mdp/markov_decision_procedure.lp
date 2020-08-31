@@ -8,11 +8,11 @@
 %					`T=0` is always the current time ("now").
 
 %	INPUT PREDICATES (added to the domain programmatically):
-%	current(S(...)) ... describes a part of the current state, where `S(...)` is an 
-%						uninterpreted function with zero or more arguments.
-%	action(A(...)) 	... describes an action taken in the current state, 
-%						where `A(...)` is an uninterpreted function with zero or
-%						more arguments.
+%	currentState(S(...)) ... describes a part of the current state, where `S(...)` is an 
+%							 uninterpreted function with zero or more arguments.
+%	currentAction(A(...)) 	... describes an action taken in the current state, 
+%								where `A(...)` is an uninterpreted function with zero or
+%								more arguments.
 %	subgoal(S(...)) ...	describes a part of the goal state of the MDP, 
 %						where `S(...)` is an uninterpreted function with zero or 
 %						more arguments.
@@ -32,7 +32,7 @@
 
 
 %	OUTPUT PREDICATES (used by the python program to read out information)
-%	state(S(...))		... describes the state of the world after executing 
+%	nextState(S(...))	... describes the state of the world after executing 
 %							the current action described by `action(A(...))`.
 %							Note that `state(S(...))` iff `tic(S(...), 1)`.
 % 	executable(A(...))	... describes actions `A(...)` executable from 
@@ -44,20 +44,23 @@
 
 % GENERAL KNOWLEDGE ************************************************************
 
-% Describe the current state and action (if any)
-tic(F, 0) :- current(F).
-act(F, 0) :- action(F).
-#defined action/1.
-
-% Describe the next state
-state(F) :- tic(F,1).
-
-% Describe which actions are executable in the current or next state.
-executable(F) :- executable(F,1), t > 0.
-executable(F) :- executable(F,0), t = 0.
-
-% Describe the reward for the next time step
-nextReward(S) :- S = #sum { R : partialReward(R, 1) }.
-
+% For simple (Stateless) MDP behavior, only the current (T=0) and next (T=1)
+% time steps are necessary.
 time(0).
-time(1) :- action(_).
+time(1) :- currentAction(_).
+
+% Current state and action (if any) are happening at timestep zero.
+tic(F, 0) :- currentState(F).
+act(F, 0) :- currentAction(F).
+#defined currentAction/1.
+
+% The next state is reached at time step one (but only if action is given)
+nextState(F) :- tic(F,1), currentAction(_).
+
+% Describe which actions are executable in the current and next state.
+nextExecutable(A) :- executable(A,1), currentAction(_).
+currentExecutable(A) :- executable(A,0).
+
+% Describe the reward for the next time step (but only if action is given)
+nextReward(S) :- S = #sum { R : partialReward(R, 1) }, currentAction(_).
+
