@@ -11,8 +11,10 @@ from planner import Planner
 
 class MonteCarlo:
     def __init__(self, mdp_builder, planner: Planner, max_episode_length: int, 
-                 planning_factor: float, plan_on_empty_policy: bool, 
-                 control = None, exploring_starts = True):
+                 planning_factor: float, exploring_factor: float,
+                 plan_on_empty_policy: bool, 
+                 control = None, exploring_starts = True,
+                 ):
         """Sets all required properties for the learning process.
 
         :param blocks_world: the blocks world
@@ -26,6 +28,10 @@ class MonteCarlo:
         self.planning_factor = planning_factor
         self.plan_on_empty_policy = plan_on_empty_policy
         self.exploring_starts = exploring_starts
+        self.exploring_factor = exploring_factor
+        
+        # The chance of planning and exploring must not be higher than 1.
+        assert(self.exploring_factor + self.planning_factor <= 1)
 
         if control:
             self.control = control
@@ -60,28 +66,37 @@ class MonteCarlo:
                 # Terminal state reached
                 break
 
-            policy_action = self.control.suggest_action_for_state(mdp.state)
-            if not policy_action:
+            greedy_action = self.control.suggest_action_for_state(mdp.state)
+            if not greedy_action:
                 self.control.initialize_unexplored_state(mdp.state, mdp.available_actions)
 
-            if self.planning_factor <= random.random():
-                if policy_action:
-                    action = policy_action
+            greedy_factor = 1 - self.planning_factor - self.exploring_factor
+            sub_policy = random.choices(['greedy', 'plan', 'explore'], 
+                                 [greedy_factor, self.planning_factor, self.exploring_factor])[0]
+
+            if sub_policy == 'greedy':
+                if greedy_action:
+                    action = greedy_action
                 else:
-                    self.control.initialize_unexplored_state(mdp.state, mdp.available_actions)
                     if self.plan_on_empty_policy:
                         action, _ = self.planner.suggest_next_action(mdp)
                     else:
                         action = random.choice(list(mdp.available_actions))
 
-            else:
+            elif sub_policy == 'plan':
                 action, _ = self.planner.suggest_next_action(mdp)
-                if policy_action:
-                    q_value_policy_action = self.control.action_value_estimates[mdp.state][policy_action]
+                if greedy_action:
+                    q_value_greedy_action = self.control.action_value_estimates[mdp.state][greedy_action]
                     q_value_planning_action = self.control.action_value_estimates[mdp.state][action]
 
-                    if q_value_planning_action < q_value_policy_action:
-                        action = policy_action
+                    if q_value_planning_action < q_value_greedy_action:
+                        action = greedy_action
+
+            elif sub_policy == 'explore':
+                action = random.choice(list(mdp.available_actions))
+
+            else:
+                raise ValueError(f'Sub policy must be `greedy`, `plan` or `explore`. Instead it was `{sub_policy}`.')
 
             mdp.transition(action)
 
