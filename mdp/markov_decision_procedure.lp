@@ -59,18 +59,5 @@ executable(F) :- executable(F,0), t = 0.
 % Describe the reward for the next time step
 nextReward(S) :- S = #sum { R : partialReward(R, 1) }.
 
-
-% PLANNER KNOWLEDGE ************************************************************
-
-% At each time point, make one move unless a terminal state has been reached
-{ act(F, T) : executable(F, T)} = 1 :- time(T), T < t, not terminal(T).
-
-% consider t planning steps, provided by BlocksWorld.py
-time(0..t).
-
-% maximize the return
-maxReturn(S)     :- S = #sum { R,T : partialReward(R,T) }.
-#maximize { S : maxReturn(S) }.
-
-% bestAction(X) ... X is a term representation of the next action that yields maximal reward within t steps
-bestAction(F) :- act(F, 0).
+time(0).
+time(1) :- action(_).
