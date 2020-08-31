@@ -12,7 +12,7 @@ from planner import Planner
 class MonteCarlo:
     def __init__(self, mdp_builder, planner: Planner, max_episode_length: int, 
                  planning_factor: float, plan_on_empty_policy: bool, 
-                 control = None):
+                 control = None, exploring_starts = True):
         """Sets all required properties for the learning process.
 
         :param blocks_world: the blocks world
@@ -25,6 +25,7 @@ class MonteCarlo:
         self.max_episode_length = max_episode_length
         self.planning_factor = planning_factor
         self.plan_on_empty_policy = plan_on_empty_policy
+        self.exploring_starts = exploring_starts
 
         if control:
             self.control = control
@@ -46,13 +47,18 @@ class MonteCarlo:
         mdp = self.mdp_builder.build_mdp()
 
         # Exploring start
-        action = random.choice(list(mdp.available_actions))
-        if not mdp.state in self.control.action_value_estimates:
-            self.control.initialize_unexplored_state(mdp.state, mdp.available_actions)
-        mdp.transition(action)
+        if self.exploring_starts:
+            action = random.choice(list(mdp.available_actions))
+            if not mdp.state in self.control.action_value_estimates:
+                self.control.initialize_unexplored_state(mdp.state, mdp.available_actions)
+            mdp.transition(action)
     
         
         for _ in range(self.max_episode_length - len(mdp.action_history)):
+
+            if len(mdp.available_actions) == 0:
+                # Terminal state reached
+                break
 
             policy_action = self.control.suggest_action_for_state(mdp.state)
             if not policy_action:
@@ -76,11 +82,6 @@ class MonteCarlo:
 
                     if q_value_planning_action < q_value_policy_action:
                         action = policy_action
-
-
-            if action is None:
-                # goal reached
-                break
 
             mdp.transition(action)
 
