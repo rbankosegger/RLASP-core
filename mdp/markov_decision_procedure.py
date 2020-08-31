@@ -78,32 +78,6 @@ class MarkovDecisionProcedure:
         self.state_history.append(frozenset(next_state)) # S[t+1]
         self.reward_history.append(next_reward) # R[t+1]
 
-
-    def compute_optimal_return(self, max_planning_horizon: int = None) -> float:
-
-        if max_planning_horizon is None:
-            max_planning_horizon = 2*len(self.state)
-
-        ctl = clingo.Control()
-
-        ctl.load(self.file_path(self.interface_file_name))
-        ctl.load(self.file_path(self.file_name))
-        ctl.add('base', [], ' '.join(f'current({s}).' for s in self.state))
-        ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in self.goal_state))
-        ctl.add('base', [], f'#const t={max_planning_horizon}.')
-        ctl.add('base', [], '#show maxReturn/1.')
-
-        ctl.configuration.solve.models = 0  # create all stable models and find the optimal one
-        ctl.ground(parts=[('base', [])])
-        models = ctl.solve(yield_=True)
-
-        model = list(models)[0] # [maxReturn(r)]
-        symbol = model.symbols(shown=True)[0] # maxReturn(r)
-        optimal_return = float(symbol.arguments[0].number) # r
-
-        return optimal_return 
-
-
     @property
     def return_history(self) -> List[float]:
 

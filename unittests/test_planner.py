@@ -41,6 +41,21 @@ class TestPlanner(unittest.TestCase):
         self.assertEqual('move(b1,b0)', suggested_action_1)
         self.assertEqual(mdp.return_history[1], expected_return_1)
 
+    def test_blocksworld_optimal_return(self):
+        # Todo: Compute optimal return for some tricky block's world.
+        # Start: {on(b2,b1), on(b0,b3), on(b4,table), on(b1,table), on(b3,table)}
+        # Optimal return: 94
+
+
+        mdp = BlocksWorld(initial_state={'on(b2,b1)', 'on(b0,b3)', 'on(b4,table)', 'on(b1,table)', 
+                                         'on(b3,table)'},
+                          goal_state={'on(b0,table)', 'on(b1,b0)', 'on(b2,b1)', 'on(b3,b2)', 'on(b4,b3)'})
+
+        planner = Planner(planning_horizon=2*5+1)
+
+        self.assertEqual(94, planner.compute_optimal_return(mdp))
+
+
     def test_vacuum_cleaner_world(self):
         mdp = VacuumCleanerWorld()
         planner = Planner(planning_horizon=4)
@@ -62,3 +77,9 @@ class TestPlanner(unittest.TestCase):
 
         self.assertEqual('vacuum', suggested_action_2)
         self.assertEqual(mdp.return_history[2], expected_return_2)
+
+    def test_optimal_return(self):
+
+        mdp = VacuumCleanerWorld()
+        planner = Planner(planning_horizon=4)
+        self.assertEqual(-1 + -1 + 99, planner.compute_optimal_return(mdp))

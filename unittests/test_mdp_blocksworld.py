@@ -98,17 +98,3 @@ class TestBlocksWorld(unittest.TestCase):
         self.assertEqual(mdp.return_history[1], -1 + 99)
         self.assertEqual(mdp.return_history[2], 99)
         self.assertEqual(mdp.return_history[3], 0) # Return is zero in terminal state
-
-
-    def test_optimal_return(self):
-        # Todo: Compute optimal return for some tricky block's world.
-        # Start: {on(b2,b1), on(b0,b3), on(b4,table), on(b1,table), on(b3,table)}
-        # Optimal return: 94
-
-
-        mdp = BlocksWorld(initial_state={'on(b2,b1)', 'on(b0,b3)', 'on(b4,table)', 'on(b1,table)', 
-                                         'on(b3,table)'},
-                          goal_state={'on(b0,table)', 'on(b1,b0)', 'on(b2,b1)', 'on(b3,b2)', 'on(b4,b3)'})
-
-        self.assertEqual(mdp.compute_optimal_return(), 94)
-

@@ -1,3 +1,4 @@
+import os
 import clingo
 from typing import Tuple
 
@@ -8,12 +9,16 @@ class Planner:
     def __init__(self, planning_horizon: int):
         self.planning_horizon: int = planning_horizon
 
+        self.planner_file_name: str = 'planner.dl'
+        self.planner_file_path: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.planner_file_name)
+
     def suggest_next_action(self, mdp: MarkovDecisionProcedure) -> Tuple[str, int]:
 
         ctl = clingo.Control()
 
         ctl.load(mdp.file_path(mdp.interface_file_name))
         ctl.load(mdp.file_path(mdp.file_name))
+        ctl.load(self.planner_file_path)
         ctl.add('base', [], ' '.join(f'current({s}).' for s in mdp.state))
         ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in mdp.goal_state))
         ctl.add('base', [], f'#const t={self.planning_horizon}.')
@@ -44,3 +49,7 @@ class Planner:
                 suggested_action = str(symbol.arguments[0])
 
         return (suggested_action, expected_return)
+
+    def compute_optimal_return(self, mdp):
+        _, optimal_return = self.suggest_next_action(mdp)
+        return optimal_return
