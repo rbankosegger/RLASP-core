@@ -15,7 +15,7 @@ mc = MonteCarlo(mdp_builder, planner, control=ctrl,
                 max_episode_length=14, planning_factor=0.0, plan_on_empty_policy=False,
                 exploring_starts=False, exploring_factor = 0.2)
 
-learned_policy = mc.learn_policy(discount_rate=1, number_episodes=300, show_progress_bar=True)
+learned_policy = mc.learn_policy(number_episodes=300, show_progress_bar=True)
 
 #test_policy(ctrl, blocks_world, mgenerate_random_state verbose=False)
 
