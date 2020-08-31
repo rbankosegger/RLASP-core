@@ -1,41 +1,56 @@
-% current(F) ... F is an uninterpreted function representing (part of) the current state.
-tic(F, 0) :- current(F).
+% VACUUM CLEANER WORLD
+% A very simple MDP for testing and understanding purposes.
 
-% action(T) ... T is an uninterpreted function representing (part of) the current action.
-act(F, 0) :- action(F).
-#defined action/1. % silence warning that action does not appear in rule head
 
-% executable(X) ... X is term representation of an action that is executable in the follow-up state
-executable(F) :- executable(F,1), t > 0.
-executable(F) :- executable(F,0), t = 0.
+% PROBLEM-SPECIFIC DOMAIN (UNINTERPRETED FUNCTIONS) ****************************
 
-% state(X) ... X is a term representation of a state predicate that holds in the follow-up state
-state(F) :- tic(F,1).
+%	VARIABLES:
+%	L			... describes a location `L`, either `left` or `right`
 
-% nextReward(N) ... N is the reward the agents gets after performing a given action
-nextReward(S) :- S = #sum { R : reward(R, 1) }.
+% 	STATE FUNCTIONS S(...):
+%	robot(L)	... describes the location `L` of the cleaning robot 
+%	dirty(L)	... describes whether the location `L` is dirty.
 
-% bestAction(X) ... X is a term representation of the next action that yields maximal reward within t steps
-bestAction(F) :- act(F, 0).
+%	ACTION FUNCTIONS A(...):
+%	move(L)		...	the robot moves to location `L`
+%	vacuum 		... the robot vacuums at its current location, after which that 
+%					location is no longer dirty.
 
-% consider t planning steps, provided by markov_decision_procedure.py
-time(0..t).
 
-% background knowledge ****************************************************************************
+% KNOWLEDGE ********************************************************************
 
-executable(move(left), T) :- tic(robot(right), T).
-executable(move(right), T) :- tic(robot(left), T).
-executable(vacuum, T) :- tic(robot(Location), T), tic(dirty(Location), T).
-{ act(F, T) : executable(F, T)} = 1 :- time(T), T < t, not goal(T).
+% Describe which actions are executable in a given state
+% 	INPUT:		tic(S(...), T)
+% 	INPUT:		terminal(T)
+% 	OUTPUT: 	executable(A(...), T)
+			
+executable(move(left), T) :- tic(robot(right), T), not terminal(T).
+executable(move(right), T) :- tic(robot(left), T), not terminal(T).
+executable(vacuum, T) :- tic(robot(Location), T), tic(dirty(Location), T), 
+						 not terminal(T).
+
+% Describe the effects of state transitions
+%	INPUT:		tic(S(...), T)
+%	INPUT: 		act(A(...), T)
+%	INPUT: 		time(T)
+%	OUTPUT:		tic(S(...), T+1)
 
 tic(robot(Location), T+1) :- tic(robot(Location), T), not act(move(_), T), time(T).
 tic(dirty(Location), T+1) :- tic(dirty(Location), T), not act(vacuum, T), time(T).
-tic(dirty(Location), T+1) :- tic(dirty(Location), T), not tic(robot(Location), T), time(T).
+tic(dirty(Location), T+1) :- tic(dirty(Location), T), not tic(robot(Location), T), 
+							 time(T).
 tic(robot(Location), T+1) :- act(move(Location), T), time(T).
 
-goal(T) :- not tic(dirty(left), T), not tic(dirty(right), T), time(T).
-reward(100, T) :- goal(T), not goal(T-1).
-reward(-1, T) :- act(_, T-1).
+% Describe the rewards for each state
+%	INPUT: 		tic(S(...), T)
+%	OUTPUT: 	partialReward(R, T)
 
-maxReward(S) :- S = #sum { R,T : reward(R,T) }.
-#maximize { S: maxReward(S) }.
+all_clean(T) :- not tic(dirty(left), T), not tic(dirty(right), T), time(T).
+partialReward(100, T) :- all_clean(T), not all_clean(T-1).
+partialReward(-1, T) :- act(_, T-1).
+
+% Describe terminal states
+%	INPUT: 		tic(S(...), T)
+%	OUTPUT: 	terminal(T)
+
+terminal(T) :- all_clean(T).

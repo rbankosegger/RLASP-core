@@ -12,12 +12,13 @@ class Planner:
 
         ctl = clingo.Control()
 
+        ctl.load(mdp.file_path(mdp.interface_file_name))
         ctl.load(mdp.file_path(mdp.file_name))
         ctl.add('base', [], ' '.join(f'current({s}).' for s in mdp.state))
         ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in mdp.goal_state))
         ctl.add('base', [], f'#const t={self.planning_horizon}.')
         #ctl.add('base', [], f'action({action}).')
-        ctl.add('base', [], '#show maxReward/1. #show bestAction/1.')
+        ctl.add('base', [], '#show maxReturn/1. #show bestAction/1.')
 
         ctl.configuration.solve.models = 0  # create all stable models and find the optimal one
         ctl.ground(parts=[('base', [])])
@@ -29,7 +30,7 @@ class Planner:
         suggested_action = None
         
         for symbol in model.symbols(shown=True):
-            if symbol.name == 'maxReward':
+            if symbol.name == 'maxReturn':
 
                 # Atom is of the form `maxReward(r)` and `r` is the expected return of the current state.
 

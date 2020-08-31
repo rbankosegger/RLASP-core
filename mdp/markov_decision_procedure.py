@@ -18,6 +18,7 @@ class MarkovDecisionProcedure:
         self.discount_rate: float = discount_rate
 
         # TODO: Needs to be separated from abstract MDP. -> Do it when introducing a second MDP
+        self.interface_file_name :str = 'markov_decision_procedure.lp'
         self.file_name: str = asp_file_name
 
         # MDP trajectory: S0, A0, R1, S1, A1, R2, S2, A2, ... 
@@ -31,6 +32,7 @@ class MarkovDecisionProcedure:
         
         ctl = clingo.Control()
 
+        ctl.load(self.file_path(self.interface_file_name))
         ctl.load(self.file_path(self.file_name))
         ctl.add('base', [], ' '.join(f'current({s}).' for s in self.state))
         ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in self.goal_state))
@@ -84,18 +86,19 @@ class MarkovDecisionProcedure:
 
         ctl = clingo.Control()
 
+        ctl.load(self.file_path(self.interface_file_name))
         ctl.load(self.file_path(self.file_name))
         ctl.add('base', [], ' '.join(f'current({s}).' for s in self.state))
         ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in self.goal_state))
         ctl.add('base', [], f'#const t={max_planning_horizon}.')
-        ctl.add('base', [], '#show maxReward/1.')
+        ctl.add('base', [], '#show maxReturn/1.')
 
         ctl.configuration.solve.models = 0  # create all stable models and find the optimal one
         ctl.ground(parts=[('base', [])])
         models = ctl.solve(yield_=True)
 
-        model = list(models)[0] # [maxReward(r)]
-        symbol = model.symbols(shown=True)[0] # maxReward(r)
+        model = list(models)[0] # [maxReturn(r)]
+        symbol = model.symbols(shown=True)[0] # maxReturn(r)
         optimal_return = float(symbol.arguments[0].number) # r
 
         return optimal_return 
@@ -116,6 +119,7 @@ class MarkovDecisionProcedure:
 
         ctl = clingo.Control()
 
+        ctl.load(self.file_path(self.interface_file_name))
         ctl.load(self.file_path(self.file_name))
         ctl.add('base', [], ' '.join(f'current({s}).' for s in self.state))
         ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in self.goal_state))
