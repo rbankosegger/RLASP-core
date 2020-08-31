@@ -1,63 +1,59 @@
-% MDP specification for the blocks world
+% BLOCKS WORLD
+% A cannonical planning problem
 
-% input predicates ********************************************************************************
-% current(X) ...	X is a term representation of a state predicate, provided by BlocksWorld.py, optional
-% action(X) ...  	X is term representation of an action that has been chosen, provided by BlocksWorld.py, optional
-% subgoal(X,Y) ... 	X is on top of Y in goal state
-% constant t representing the planning horizon
-% *************************************************************************************************
+% PROBLEM-SPECIFIC DOMAIN (UNINTERPRETED FUNCTIONS) ****************************
 
-#defined action/1. % silence warning that action does not appear in rule head
+%	VARIABLES:
+%	B			... describes a block (`b1`, `b2`, ...) in the blocks world.
+%	L			... describes a location to put blocks on top of
+%					(`table`, `b1`, `b2`, ...).
 
-% executable(X) ... X is term representation of an action that is executable in the follow-up state
-executable(F) :- executable(F,1), t > 0.
-executable(F) :- executable(F,0), t = 0.
+% 	STATE FUNCTIONS S(...):
+%	on(B,L)		... describes block `B` being stacked on top of location `L`.
 
-tic(F, 0) :- current(F).
-act(F, 0) :- action(F).
+%	ACTION FUNCTIONS A(...):
+%	move(B,L)	... describes the action of moving block `B` to location `L`.
 
-% state(X) ... X is a term representation of a state predicate that holds in the follow-up state
-state(on(X,Y)) :- tic(on(X,Y), 1).
 
-% nextReward(N) ... N is the reward the agents gets after performing a given action
-nextReward(S) :- S = #sum {R : reward(R, 1) }.
+% KNOWLEDGE ********************************************************************
 
-% bestAction(X) ... X is a term representation of the next action that yields maximal reward within t steps
-bestAction(F) :- act(F, 0).
+% Static knowledge
 
-% consider t planning steps, provided by BlocksWorld.py
-time(0..t).
-
-goal(T) :- time(T), { not tic(F, T) : subgoal(F) } = 0.    
- 
-% rewards depending on the current state, the chosen action, and the follow-up state
-reward(100,T) :- goal(T), not goal(T-1).        % big reward for reaching the goal the first time
-reward(-1,T)  :- act(_,T-1).                 % small penalty for each move
-
-% background knowledge ****************************************************************************
-
-% the table and every block is a location
-block(X) :- current(on(X,_)).
-
+block(B) :- current(on(B,_)).
 location(table).
-location(X) :- block(X).
+location(L) :- block(L).
 
-tic(occupied(X), T) :- block(X), tic(on(_,X), T).
-tic(free(X), T) :- location(X), time(T), not tic(occupied(X), T).
+% Describe which actions are executable in a given state
+% 	INPUT:		tic(S(...), T)
+% 	INPUT:		terminal(T)
+% 	OUTPUT: 	executable(A(...), T)
 
-% at each time point, make one move unless the goal has been reached
+occupied(B, T) :- block(B), tic(on(_,B), T).
+free(L, T) :- location(L), time(T), not occupied(L, T).
+executable(move(B,L), T) :- block(B), free(B, T), free(L, T), 
+							not tic(on(B,L), T), B != L, not terminal(T).
 
-executable(move(X,Y), T) :- block(X), tic(free(X), T), tic(free(Y), T), not tic(on(X,Y), T), X != Y, not goal(T).
+% Describe the effect of state transitions
+%	INPUT:		tic(S(...), T)
+%	INPUT: 		act(A(...), T)
+%	INPUT: 		time(T)
+%	OUTPUT:		tic(S(...), T+1)
 
-{ act(F, T) : executable(F, T)} = 1 :- time(T), T < t, not goal(T).
+tic(on(B,L), T+1) :- tic(on(B,L), T), not act(move(B,_), T), time(T).
+tic(on(B,L), T+1) :- act(move(B,L),T), time(T).
 
-% by default, blocks do not change location (frame axiom)
-tic(on(X,Y), T+1) :- tic(on(X,Y), T), not -tic(on(X,Y),T+1), time(T).
 
-% effects of action move
--tic(on(X,Y), T+1) :- act(move(X,_), T), tic(on(X,Y), T), time(T).
-tic(on(X,Y), T+1) :- act(move(X,Y),T), time(T).
+% Describe the rewards for each state
+%	INPUT: 		tic(S(...), T)
+%	OUTPUT: 	partialReward(R, T)
 
-% maximize the reward function
-maxReward(S)     :- S = #sum { R,T : reward(R,T) }.
-#maximize { S : maxReward(S) }.
+goalState(T) :- time(T), { not tic(on(B,L), T) : subgoal(on(B,L)) } = 0.    
+partialReward(100,T) :- goalState(T), not goalState(T-1).
+partialReward(-1,T)  :- act(_,T-1).
+
+
+% Describe terminal states
+%	INPUT: 		tic(S(...), T)
+%	OUTPUT: 	terminal(T)
+
+terminal(T) :- goalState(T).
