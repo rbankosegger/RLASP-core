@@ -98,8 +98,6 @@ class MarkovDecisionProcedure:
         symbol = model.symbols(shown=True)[0] # maxReward(r)
         optimal_return = float(symbol.arguments[0].number) # r
 
-        print(model, optimal_return)
-        print(self.state)
         return optimal_return 
 
 

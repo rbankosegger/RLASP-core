@@ -42,7 +42,7 @@ class TestBlocksWorld(unittest.TestCase):
         self.assertEqual({'move(b1,table)', 'move(b1,b3)', 'move(b3,b1)'}, 
                          mdp.available_actions)
 
-    def test_available_actions_1(self):
+    def test_available_actions_5(self):
 
         mdp = BlocksWorld(initial_state={'on(b1,table)', 'on(b2,b1)'},
                           goal_state={'on(b2,b1)'})
