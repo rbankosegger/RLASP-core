@@ -20,7 +20,7 @@ class Planner:
         ctl.load(mdp.file_path(mdp.file_name))
         ctl.load(self.planner_file_path)
         ctl.add('base', [], ' '.join(f'currentState({s}).' for s in mdp.state))
-        ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in mdp.goal_state))
+        ctl.add('base', [], ' '.join(f'{s}.' for s in mdp.state_static))
         ctl.add('base', [], f'#const t={self.planning_horizon}.')
         #ctl.add('base', [], f'action({action}).')
         ctl.add('base', [], '#show maxReturn/1. #show bestCurrentAction/1.')

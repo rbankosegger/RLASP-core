@@ -13,10 +13,6 @@
 %	currentAction(A(...)) 	... describes an action taken in the current state, 
 %								where `A(...)` is an uninterpreted function with zero or
 %								more arguments.
-%	subgoal(S(...)) ...	describes a part of the goal state of the MDP, 
-%						where `S(...)` is an uninterpreted function with zero or 
-%						more arguments.
-
 
 %	INTERNAL PREDICATES (used to add problem-specific details, used e.g. by the planner)
 %	time(T)			...	defines `T >= 0` to be a point in time.
