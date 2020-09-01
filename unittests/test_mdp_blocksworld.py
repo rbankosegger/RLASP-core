@@ -13,29 +13,29 @@ class TestBlocksWorld(unittest.TestCase):
 
     def test_available_actions_1(self):
 
-        mdp = BlocksWorld(initial_state={'on(b2,table)', 'on(b1,b2)'},
-                          goal_state={'on(b2,b1)'})
+        mdp = BlocksWorld(state_initial={'on(b2,table)', 'on(b1,b2)'},
+                          state_static={'subgoal(b2,b1)'})
         self.assertSetEqual({'move(b1,table)'}, 
                          mdp.available_actions)
 
     def test_available_actions_2(self):
 
-        mdp = BlocksWorld(initial_state={'on(b1,table)', 'on(b2,table)'},
-                          goal_state={'on(b2,b1)'})
+        mdp = BlocksWorld(state_initial={'on(b1,table)', 'on(b2,table)'},
+                          state_static={'subgoal(b2,b1)'})
         self.assertSetEqual({'move(b1,b2)', 'move(b2,b1)'}, 
                          mdp.available_actions)
 
     def test_available_actions_3(self):
 
-        mdp = BlocksWorld(initial_state={'on(b2,table)', 'on(b1,b2)', 'on(b3,table)'},
-                          goal_state={'on(b2,b1)'})
+        mdp = BlocksWorld(state_initial={'on(b2,table)', 'on(b1,b2)', 'on(b3,table)'},
+                          state_static={'subgoal(b2,b1)'})
         self.assertEqual({'move(b1,table)', 'move(b1,b3)', 'move(b3,b1)'}, 
                          mdp.available_actions)
 
     def test_available_actions_4(self):
 
-        mdp = BlocksWorld(initial_state={'on(b2,table)', 'on(b1,table)', 'on(b3,table)'},
-                          goal_state={'on(b2,b1)'})
+        mdp = BlocksWorld(state_initial={'on(b2,table)', 'on(b1,table)', 'on(b3,table)'},
+                          state_static={'subgoal(b2,b1)'})
 
         # Available actions should be updated after state transitions.
         mdp.transition('move(b1,b2)')
@@ -44,8 +44,8 @@ class TestBlocksWorld(unittest.TestCase):
 
     def test_available_actions_5(self):
 
-        mdp = BlocksWorld(initial_state={'on(b1,table)', 'on(b2,b1)'},
-                          goal_state={'on(b2,b1)'})
+        mdp = BlocksWorld(state_initial={'on(b1,table)', 'on(b2,b1)'},
+                          state_static={'subgoal(b2,b1)'})
 
         # No actions available in the goal state
         self.assertEqual(set(), 
@@ -54,8 +54,8 @@ class TestBlocksWorld(unittest.TestCase):
     def test_state_transition(self):
 
         # Transition to arbitrary state
-        mdp = BlocksWorld(initial_state={'on(b1,table)', 'on(b2,b1)'},
-                          goal_state={'on(b1,b2)'})
+        mdp = BlocksWorld(state_initial={'on(b1,table)', 'on(b2,b1)'},
+                          state_static={'subgoal(b1,b2)'})
 
         mdp.transition('move(b2,table)')
         self.assertEqual({'on(b1,table)', 'on(b2,table)'}, mdp.state)
@@ -75,8 +75,8 @@ class TestBlocksWorld(unittest.TestCase):
     def test_returns_1(self):
 
         # Optimal way to goal
-        mdp = BlocksWorld(initial_state={'on(b1,table)', 'on(b2,table)'},
-                          goal_state = {'on(b2,b1)'})
+        mdp = BlocksWorld(state_initial={'on(b1,table)', 'on(b2,table)'},
+                          state_static = {'subgoal(b2,b1)'})
         mdp.transition('move(b2,b1)')
 
         # G[t] = R[t+1] + ...
@@ -87,8 +87,8 @@ class TestBlocksWorld(unittest.TestCase):
 
         # Undiscounted return
 
-        mdp = BlocksWorld(initial_state={'on(b1,table)', 'on(b2,table)'},
-                          goal_state = {'on(b2,b1)'})
+        mdp = BlocksWorld(state_initial={'on(b1,table)', 'on(b2,table)'},
+                          state_static = {'subgoal(b2,b1)'})
         mdp.transition('move(b1,b2)')
         mdp.transition('move(b1,table)')
         mdp.transition('move(b2,b1)')

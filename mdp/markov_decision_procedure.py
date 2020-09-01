@@ -10,11 +10,11 @@ class MarkovDecisionProcedure:
     def file_path(file_name):
         return os.path.join(os.path.dirname(os.path.abspath(__file__)), file_name)
 
-    def __init__(self, initial_state: Set[str], goal_state: Set[str], discount_rate: float,
+    def __init__(self, state_initial: Set[str], state_static: Set[str], discount_rate: float,
                  asp_file_name: str):
 
-        self.state: Set[str] = frozenset(initial_state)
-        self.goal_state: Set[str] = frozenset(goal_state)
+        self.state: Set[str] = frozenset(state_initial)
+        self.state_static: Set[str] = frozenset(state_static)
         self.discount_rate: float = discount_rate
 
         # TODO: Needs to be separated from abstract MDP. -> Do it when introducing a second MDP
@@ -22,7 +22,7 @@ class MarkovDecisionProcedure:
         self.file_name: str = asp_file_name
 
         # MDP trajectory: S0, A0, R1, S1, A1, R2, S2, A2, ... 
-        self.state_history: List[Set[str]] = [frozenset(initial_state)] # S0
+        self.state_history: List[Set[str]] = [frozenset(state_initial)] # S0
         self.action_history: List[str] = [] #A0 will be given later once the first action is executed
         self.reward_history: List[float] = [None] # R0, which is undefined
 
@@ -35,7 +35,7 @@ class MarkovDecisionProcedure:
         ctl.load(self.file_path(self.interface_file_name))
         ctl.load(self.file_path(self.file_name))
         ctl.add('base', [], ' '.join(f'currentState({s}).' for s in self.state))
-        ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in self.goal_state))
+        ctl.add('base', [], ' '.join(f'{s}.' for s in self.state_static))
         ctl.add('base', [], f'currentAction({action}).')
         ctl.add('base', [], '#show nextState/1. #show nextReward/1. #show nextExecutable/1.')
 
@@ -95,7 +95,7 @@ class MarkovDecisionProcedure:
         ctl.load(self.file_path(self.interface_file_name))
         ctl.load(self.file_path(self.file_name))
         ctl.add('base', [], ' '.join(f'currentState({s}).' for s in self.state))
-        ctl.add('base', [], ' '.join(f'subgoal({s}).' for s in self.goal_state))
+        ctl.add('base', [], ' '.join(f'{s}.' for s in self.state_static))
         ctl.add('base', [], '#show currentExecutable/1.')
 
         ctl.ground(parts=[('base', [])])

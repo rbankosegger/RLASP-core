@@ -7,12 +7,12 @@ from .markov_decision_procedure import MarkovDecisionProcedure
 
 class BlocksWorld(MarkovDecisionProcedure):
 
-    def __init__(self, initial_state: Set[str], goal_state: Set[str]):
+    def __init__(self, state_initial: Set[str], state_static: Set[str]):
 
         # No discounting in any blocks world
         discount_rate = 1.0
-
-        super().__init__(initial_state, goal_state, discount_rate, 'blocksworld.lp')
+        
+        super().__init__(state_initial, state_static, discount_rate, 'blocksworld.lp')
 
 class BlocksWorldBuilder():
 
@@ -34,17 +34,19 @@ class BlocksWorldBuilder():
     def build_mdp(self):
 
         # Use goal state in which all blocks are stacked in order
-        goal_state = set(f'on({x},{y})' for (x,y) in zip(self.block_terms, ['table']+self.block_terms))
+        state_static = set(f'({x},{y})' for (x,y) in zip(self.block_terms, ['table']+self.block_terms))
 
         # Continue generating random start states until we find one that is not equal to 
         # the goal state.
+
+        assert(False, 'TODO')
         while True:
             start_state = self._generate_random_state()
 
-            if start_state != goal_state:
+            if start_state != state_static:
                 break
 
-        return BlocksWorld(start_state, goal_state)
+        return BlocksWorld(start_state, state_static)
 
     def _generate_random_state(self):
 

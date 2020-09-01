@@ -13,8 +13,8 @@ class TestPlanner(unittest.TestCase):
 
     def test_blocksworld_1(self): 
 
-        mdp = BlocksWorld(initial_state={'on(b0,table)', 'on(b1,table)'},
-                          goal_state={'on(b1,b0)'})
+        mdp = BlocksWorld(state_initial={'on(b0,table)', 'on(b1,table)'},
+                          state_static={'subgoal(b1,b0)'})
 
         planner = Planner(planning_horizon=1)
         suggested_action, expected_return = planner.suggest_next_action(mdp)
@@ -25,8 +25,8 @@ class TestPlanner(unittest.TestCase):
 
     def test_blocksworld_2(self):
         
-        mdp = BlocksWorld(initial_state={'on(b0,b1)', 'on(b1,table)'},
-                          goal_state={'on(b1,b0)'})
+        mdp = BlocksWorld(state_initial={'on(b0,b1)', 'on(b1,table)'},
+                          state_static={'subgoal(b1,b0)'})
         planner = Planner(planning_horizon=2)
 
         suggested_action_0, expected_return_0 = planner.suggest_next_action(mdp)
@@ -42,14 +42,11 @@ class TestPlanner(unittest.TestCase):
         self.assertEqual(mdp.return_history[1], expected_return_1)
 
     def test_blocksworld_optimal_return(self):
-        # Todo: Compute optimal return for some tricky block's world.
-        # Start: {on(b2,b1), on(b0,b3), on(b4,table), on(b1,table), on(b3,table)}
-        # Optimal return: 94
 
-
-        mdp = BlocksWorld(initial_state={'on(b2,b1)', 'on(b0,b3)', 'on(b4,table)', 'on(b1,table)', 
+        mdp = BlocksWorld(state_initial={'on(b2,b1)', 'on(b0,b3)', 'on(b4,table)', 'on(b1,table)', 
                                          'on(b3,table)'},
-                          goal_state={'on(b0,table)', 'on(b1,b0)', 'on(b2,b1)', 'on(b3,b2)', 'on(b4,b3)'})
+                          state_static={'subgoal(b0,table)', 'subgoal(b1,b0)', 'subgoal(b2,b1)', 
+                                        'subgoal(b3,b2)', 'subgoal(b4,b3)'})
 
         planner = Planner(planning_horizon=2*5+1)
 

@@ -16,6 +16,8 @@
 %	vacuum 		... the robot vacuums at its current location, after which that 
 %					location is no longer dirty.
 
+%	STATIC STATE (ATOMS):
+%	(none for this mdp)
 
 % KNOWLEDGE ********************************************************************
 

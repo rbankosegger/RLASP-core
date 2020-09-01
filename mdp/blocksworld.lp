@@ -14,6 +14,10 @@
 %	ACTION FUNCTIONS A(...):
 %	move(B,L)	... describes the action of moving block `B` to location `L`.
 
+%	STATIC STATE (ATOMS):
+%	subgoal(B,L)	... describes that `B` being stacked on top of `L` is 
+%						(part of) the goal state.
+
 
 % KNOWLEDGE ********************************************************************
 
@@ -47,7 +51,7 @@ tic(on(B,L), T+1) :- act(move(B,L),T), time(T).
 %	INPUT: 		tic(S(...), T)
 %	OUTPUT: 	partialReward(R, T)
 
-goalState(T) :- time(T), { not tic(on(B,L), T) : subgoal(on(B,L)) } = 0.    
+goalState(T) :- time(T), { not tic(on(B,L), T) : subgoal(B,L) } = 0.    
 partialReward(100,T) :- goalState(T), not goalState(T-1).
 partialReward(-1,T)  :- act(_,T-1).
 
