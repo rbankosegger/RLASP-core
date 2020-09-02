@@ -34,8 +34,6 @@
 % 	executable(A(...))	... describes actions `A(...)` executable from 
 %							the current state or next state (depending on `t`).
 %	nextReward(S)		...	describes the total reward `S` to be received at the next time step.
-%	bestAction(A(...))	...	describes the optimal action to take in the current state.
-%	maxReturn(R)		...	describes the expected return when taking the optimal path to the goal.
 
 
 % GENERAL KNOWLEDGE ************************************************************
