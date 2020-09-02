@@ -12,6 +12,8 @@ class Planner:
         self.planner_file_name: str = 'planner.dl'
         self.planner_file_path: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.planner_file_name)
 
+        self.asp_output = None
+
     def suggest_next_action(self, mdp: MarkovDecisionProcedure) -> Tuple[str, int]:
 
         ctl = clingo.Control()
@@ -22,7 +24,6 @@ class Planner:
         ctl.add('base', [], ' '.join(f'currentState({s}).' for s in mdp.state))
         ctl.add('base', [], ' '.join(f'{s}.' for s in mdp.state_static))
         ctl.add('base', [], f'#const t={self.planning_horizon}.')
-        #ctl.add('base', [], f'action({action}).')
         ctl.add('base', [], '#show maxReturn/1. #show bestCurrentAction/1.')
 
         ctl.configuration.solve.models = 0  # create all stable models and find the optimal one
@@ -30,6 +31,7 @@ class Planner:
         models = ctl.solve(yield_=True)
 
         model = list(models)[0]
+        self.asp_output = str(model)
 
         expected_return = None
         suggested_action = None

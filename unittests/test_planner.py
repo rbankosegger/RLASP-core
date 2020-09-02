@@ -6,7 +6,7 @@ import unittest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Framework imports
-from mdp import BlocksWorld, VacuumCleanerWorld
+from mdp import BlocksWorld, VacuumCleanerWorld, Sokoban, SokobanBuilder
 from planner import Planner 
 
 class TestPlanner(unittest.TestCase): 
@@ -75,8 +75,75 @@ class TestPlanner(unittest.TestCase):
         self.assertEqual('vacuum', suggested_action_2)
         self.assertEqual(mdp.return_history[2], expected_return_2)
 
-    def test_optimal_return(self):
+    def test_vacuum_cleaner_world_optimal_return(self):
 
         mdp = VacuumCleanerWorld()
         planner = Planner(planning_horizon=4)
         self.assertEqual(-1 + -1 + 99, planner.compute_optimal_return(mdp))
+
+    def test_sokoban_1(self):
+
+        builder = SokobanBuilder('suitcase-05-01')
+        mdp = builder.build_mdp()
+        planner = Planner(planning_horizon=7)
+
+        s0 = mdp.state
+
+        a0, g0 = planner.suggest_next_action(mdp)
+        self.assertEqual(g0, 94)
+
+        mdp.transition('push(6,3,left)')
+        s1 = s0 - { 'sokoban(4,3)', 'box(6,3)' } | { 'sokoban(6,3)', 'box(5,3)' }
+        self.assertSetEqual(s1, mdp.state)
+        
+        a1, g1 = planner.suggest_next_action(mdp)
+        self.assertEqual(g1, 95)
+
+    def test_sokoban_2(self):
+        builder = SokobanBuilder('suitcase-05-01')
+        mdp = builder.build_mdp()
+        planner = Planner(planning_horizon=6)
+
+        suggested_actions = []
+        suggested_returns = []
+
+        for i in range(20): # 20 is intentionally set to be higher than the number of needed moves.
+
+            if len(mdp.available_actions) > 0:
+
+                a, g = planner.suggest_next_action(mdp)
+
+                self.assertTrue(a in mdp.available_actions)
+
+                mdp.transition(a)
+                suggested_actions += [a]
+                suggested_returns += [g]
+
+        self.assertEqual(suggested_actions, mdp.action_history)
+        self.assertEqual(suggested_returns + [0], mdp.return_history)
+
+    def test_sokoban_3(self):
+
+        builder = SokobanBuilder(level_name='suitcase-05-02')
+        mdp = builder.build_mdp()
+        planner = Planner(planning_horizon=6)
+
+        suggested_actions = []
+        suggested_returns = []
+
+        for i in range(20): # 20 is intentionally set to be higher than the number of needed moves.
+
+            if len(mdp.available_actions) > 0:
+
+                a, g = planner.suggest_next_action(mdp)
+
+                self.assertNotEqual(None, a)
+                self.assertNotEqual(set(), mdp.available_actions)
+                self.assertTrue(a in mdp.available_actions)
+
+                mdp.transition(a)
+                suggested_actions += [a]
+                suggested_returns += [g]
+
+        self.assertEqual(suggested_actions, mdp.action_history)
+        self.assertEqual(suggested_returns + [0], mdp.return_history)

@@ -60,3 +60,5 @@ currentExecutable(A) :- executable(A,0).
 % Describe the reward for the next time step (but only if action is given)
 nextReward(S) :- S = #sum { R : partialReward(R, 1) }, currentAction(_).
 
+% One cannot execute unexecutable actions.
+:- act(A, T), not executable(A,T).
