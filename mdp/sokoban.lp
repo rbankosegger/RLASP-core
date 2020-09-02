@@ -14,12 +14,12 @@
 
 %	ACTION FUNCTIONS A(...):
 %	push(X,Y,D)		... describes the action of pushing the block at position 
-						X,Y in direction D.
+%						X,Y in direction D.
 
 % 	STATIC ATOMS:
 %	dest(X,Y)		... describes that X,Y is a destination for some box
 %	block(X,Y)		... describes that X,Y is blocked, i.e. neither players 
-						nor boxes can enter this position.
+%						nor boxes can enter this position.
 %	row(Y)			... identifies Y as a row
 %	col(X)			... identifies X as a column
 
