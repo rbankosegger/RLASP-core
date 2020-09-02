@@ -4,13 +4,24 @@
 % PROBLEM-SPECIFIC DOMAIN (UNINTERPRETED FUNCTIONS) ****************************
 
 %	VARIABLES:
+%	X		... describes an x-position (column) in the world
+%	Y		... describes a y-position (row) in the world
+%	D		... describes a direction (left, right, up, down)
 
 % 	STATE FUNCTIONS S(...):
+%	box(X,Y)		... describes a box being at position X,Y.
+%	sokoban(X,Y)	... describes a box being at position X,Y.
 
 %	ACTION FUNCTIONS A(...):
+%	push(X,Y,D)		... describes the action of pushing the block at position 
+						X,Y in direction D.
 
 % 	STATIC ATOMS:
-
+%	dest(X,Y)		... describes that X,Y is a destination for some box
+%	block(X,Y)		... describes that X,Y is blocked, i.e. neither players 
+						nor boxes can enter this position.
+%	row(Y)			... identifies Y as a row
+%	col(X)			... identifies X as a column
 
 
 % KNOWLEDGE ********************************************************************
