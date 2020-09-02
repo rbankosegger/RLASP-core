@@ -44,19 +44,19 @@ time(0).
 time(1) :- currentAction(_).
 
 % Current state and action (if any) are happening at timestep zero.
-tic(F, 0) :- currentState(F).
-act(F, 0) :- currentAction(F).
+tic(S, 0) :- currentState(S).
+act(A, 0) :- currentAction(A).
 #defined currentAction/1.
 
 % The next state is reached at time step one (but only if action is given)
-nextState(F) :- tic(F,1), currentAction(_).
+nextState(S) :- tic(S,1), currentAction(_).
 
 % Describe which actions are executable in the current and next state.
 nextExecutable(A) :- executable(A,1), currentAction(_).
 currentExecutable(A) :- executable(A,0).
 
 % Describe the reward for the next time step (but only if action is given)
-nextReward(S) :- S = #sum { R : partialReward(R, 1) }, currentAction(_).
+nextReward(N) :- N = #sum { R : partialReward(R, 1) }, currentAction(_).
 
 % One cannot execute unexecutable actions.
 :- act(A, T), not executable(A,T).
