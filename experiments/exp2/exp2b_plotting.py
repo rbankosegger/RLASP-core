@@ -43,6 +43,6 @@ for ax in axs:
     ax.set_ylim(-20, 100)
     ax.set_xlim(0, df['episode'].max())
 
-plt.suptitle('Planning agent (on empty policy, ph=5) in 7-blocks world')
+plt.suptitle('Planning agent (for new states, ph=5) in 7-blocks world')
 plt.savefig('exp2b_fig.pdf', format='pdf')
 plt.show()
