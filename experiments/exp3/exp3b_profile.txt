@@ -1,30 +1,30 @@
-Wed Aug 19 10:44:10 2020    exp3b_profile_raw.txt
+Fri Sep  4 12:15:22 2020    exp3b_profile_raw.txt
 
-         3844589 function calls (3836887 primitive calls) in 34.476 seconds
+         1332591 function calls (1324875 primitive calls) in 22.789 seconds
 
    Ordered by: internal time
-   List reduced from 2715 to 20 due to restriction <20>
+   List reduced from 2712 to 20 due to restriction <20>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-     4936   18.177    0.004   18.177    0.004 {method 'ground' of 'clingo.Control' objects}
-     4936    7.226    0.001    7.489    0.002 {method 'solve' of 'clingo.Control' objects}
-     4936    2.515    0.001    2.515    0.001 {method 'load' of 'clingo.Control' objects}
-     4935    2.409    0.000   32.482    0.007 BlocksWorld.py:107(next_step)
-    16974    1.051    0.000    1.051    0.000 {method 'add' of 'clingo.Control' objects}
-     4936    0.517    0.000    0.517    0.000 ClingoBridge.py:6(__init__)
-   166257    0.461    0.000    0.546    0.000 BlocksWorld.py:160(parse_part_state)
-    42619    0.235    0.000    0.235    0.000 {method 'symbols' of 'clingo.Model' objects}
-    88278    0.207    0.000    0.257    0.000 BlocksWorld.py:173(parse_action)
-    18816    0.161    0.000    0.723    0.000 BlocksWorld.py:185(parse_state)
-    56354    0.114    0.000    0.151    0.000 entities.py:53(<listcomp>)
-        1    0.083    0.083    1.102    1.102 BlocksWorld.py:42(generate_all_states)
-   522544    0.077    0.000    0.077    0.000 entities.py:8(__eq__)
-   166264    0.062    0.000    0.085    0.000 entities.py:2(__init__)
-    56354    0.054    0.000    0.212    0.000 entities.py:52(__hash__)
-     4936    0.049    0.000   26.769    0.005 ClingoBridge.py:29(run)
-   476028    0.047    0.000    0.047    0.000 entities.py:5(__repr__)
-      254    0.045    0.000    0.045    0.000 {built-in method marshal.loads}
-   516934    0.043    0.000    0.043    0.000 {method 'append' of 'list' objects}
-    51/50    0.041    0.001    0.043    0.001 {built-in method _imp.create_dynamic}
+     3532   11.088    0.003   11.088    0.003 {method 'ground' of 'clingo.Control' objects}
+     3532    3.833    0.001    3.833    0.001 {method 'solve' of 'clingo.Control' objects}
+     8422    2.027    0.000    2.027    0.000 {method 'load' of 'clingo.Control' objects}
+     1359    1.871    0.001   15.146    0.011 planner.py:17(suggest_next_action)
+      150    1.308    0.009   21.602    0.144 MonteCarlo.py:49(generate_episode)
+    13976    0.818    0.000    0.818    0.000 {method 'add' of 'clingo.Control' objects}
+     2022    0.335    0.000    4.764    0.002 markov_decision_procedure.py:31(transition)
+   301064    0.292    0.000    0.292    0.000 blocksworld.py:88(<genexpr>)
+        1    0.209    0.209    0.647    0.647 blocksworld.py:88(<listcomp>)
+    41164    0.175    0.000    0.175    0.000 {method 'symbols' of 'clingo.Model' objects}
+      257    0.048    0.000    0.048    0.000 {built-in method marshal.loads}
+     7093    0.041    0.000    0.062    0.000 posixpath.py:338(normpath)
+    51/50    0.040    0.001    0.042    0.001 {built-in method _imp.create_dynamic}
+        1    0.039    0.039    0.039    0.039 {built-in method mkl._py_mkl_service.get_version}
+     2467    0.022    0.000    0.038    0.000 inspect.py:613(cleandoc)
+21443/21439    0.021    0.000    0.037    0.000 {method 'join' of 'str' objects}
+      150    0.021    0.000    0.321    0.002 markov_decision_procedure.py:91(_compute_available_actions)
+      150    0.020    0.000    0.342    0.002 markov_decision_procedure.py:13(__init__)
+     7202    0.019    0.000    0.026    0.000 posixpath.py:75(join)
+     1391    0.019    0.000    0.019    0.000 {built-in method posix.stat}
 
 
