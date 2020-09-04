@@ -6,13 +6,16 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from tests import test_policy
 from MonteCarlo import MonteCarlo
-from BlocksWorld import BlocksWorld
+from mdp import BlocksWorldBuilder
 from control import SimpleMonteCarloControl, SgdMonteCarloControl
+from planner import Planner
 
 from matplotlib import pyplot as plt
 
-blocks_world = BlocksWorld(number_of_blocks=7)
-ctrl = SimpleMonteCarloControl(blocks_world)
-mc = MonteCarlo(blocks_world, control=ctrl, 
-                max_episode_length=14, planning_factor=0, plan_on_empty_policy=True, planning_horizon=5)
-learned_policy = mc.learn_policy(discount_rate=1, number_episodes=150, show_progress_bar=True)  # {state : action}
+mdp_builder = BlocksWorldBuilder(blocks_world_size=7)
+planner = Planner(planning_horizon=5)
+ctrl = SimpleMonteCarloControl()
+mc = MonteCarlo(mdp_builder, planner, control=ctrl, 
+                max_episode_length=14, planning_factor=0, plan_on_empty_policy=True,
+                exploring_starts=True, exploring_factor = 0.0)
+learned_policy = mc.learn_policy(number_episodes=150, show_progress_bar=True)
