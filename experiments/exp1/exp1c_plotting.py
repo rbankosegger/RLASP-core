@@ -25,19 +25,20 @@ number_of_trials = df.groupby(['planning_factor', 'trial_number']).count().group
 
 _, axs = plt.subplots(1, 2, figsize=(9, 6))
 
-sns.lineplot(x='episode', y='return_ratio', hue='planning_factor', data=df, palette='colorblind', ci=None, ax=axs[0])
-sns.lineplot(x='episode', y='return_ratio', hue='planning_factor', data=df_smoothed, palette='colorblind', ci=None, ax=axs[1], legend='brief')
+sns.lineplot(x='episode', y='observed_returns', hue='planning_factor', data=df, palette='colorblind', ci=None, ax=axs[0])
+sns.lineplot(x='episode', y='observed_returns', hue='planning_factor', data=df_smoothed, palette='colorblind', ci=None, ax=axs[1], legend='brief')
 
 
 
-axs[0].set_ylabel(f'Mean return ratio (n={number_of_trials})')
-axs[1].set_ylabel(f'Running mean return ratio (n={number_of_trials}, w={window_size})')
+axs[0].set_ylabel(f'Mean return (n={number_of_trials})')
+axs[1].set_ylabel(f'Running mean return (n={number_of_trials}, w={window_size})')
 
 for ax in axs:
     ax.set_xlabel('Episode')
-    ax.set_ylim(0, 1)
+    ax.set_ylim(-20, 100)
+    ax.set_yticks(range(-20,101,20))
     ax.set_xlim(0, df['episode'].max())
 
-plt.suptitle('Planning agent (randomly, ph=6) in 7-blocks world')
+plt.suptitle('Planning agent (at random times, ph=12) in 7-blocks world')
 plt.savefig('exp1c_fig.pdf', format='pdf')
-plt.show()
+#plt.show()
