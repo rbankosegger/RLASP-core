@@ -42,6 +42,10 @@ class MonteCarlo:
         self.returns = []
         self.optimal_returns = []
 
+        self.count_sub_policies = { 'greedy':0, 'plan':0, 'explore':0 }
+        self.count_planning_actions = 0
+        self.count_random_actions = 0
+
     def generate_episode(self) -> MarkovDecisionProcedure:
         """Generates a single episode from a start state onwards.
 
@@ -50,7 +54,12 @@ class MonteCarlo:
         :return: a sequence of state, reward, action
         """
 
-        mdp = self.mdp_builder.build_mdp()
+        while (True):
+            #
+            mdp = self.mdp_builder.build_mdp()
+            if len(mdp.available_actions) > 0:
+                break
+
 
         # Exploring start
         if self.exploring_starts:
@@ -73,6 +82,9 @@ class MonteCarlo:
             greedy_factor = 1 - self.planning_factor - self.exploring_factor
             sub_policy = random.choices(['greedy', 'plan', 'explore'], 
                                  [greedy_factor, self.planning_factor, self.exploring_factor])[0]
+
+            # Keep track of sub-policies for testing purposes
+            self.count_sub_policies[sub_policy] += 1
 
             if sub_policy == 'greedy':
                 if greedy_action:
@@ -123,18 +135,5 @@ class MonteCarlo:
                 self.control.iterate_policy_with_episode(mdp.state_history, mdp.action_history, 
                                                          mdp.return_history)
     
-                if evaluate_return_ratio:
-                    self.evaluate_metrics_for_episode(start_state, returns[0])
-                else:
-                    self.returns.append(mdp.return_history[0])
+                self.returns.append(mdp.return_history[0])
 
-    def evaluate_metrics_for_episode(self, start_state, actual_return):
-
-        worst_case_return = -self.max_episode_length - 1
-        best_case_return = self.blocks_world.optimal_return_for_state(start_state)
-
-        return_ratio = (actual_return - worst_case_return) / float(best_case_return - worst_case_return)
-        self.return_ratios.append(return_ratio)
-
-        self.returns.append(actual_return)
-        self.optimal_returns.append(best_case_return)
