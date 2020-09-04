@@ -16,7 +16,7 @@ import seaborn as sns
 
 df = pd.read_csv('exp1a_data.csv', index_col=0)
 
-sns.lineplot(x='episode', y='return_ratio', hue='blocks_world_size', data=df, palette='colorblind', ci=None)
+sns.lineplot(x='episode', y='observed_returns', hue='blocks_world_size', data=df, palette='colorblind', ci=None)
 #sns.despine(trim=True)
 
 number_of_trials = df.groupby(['blocks_world_size', 'trial_number']).count().groupby('blocks_world_size').count().iloc[0,0]
@@ -24,8 +24,9 @@ number_of_trials = df.groupby(['blocks_world_size', 'trial_number']).count().gro
 
 plt.title('Tabula rasa agent in different blocks worlds')
 plt.xlabel('Episode')
-plt.ylabel(f'Mean return ratio (n={number_of_trials})')
-plt.ylim(0, 1)
+plt.ylabel(f'Mean return (n={number_of_trials})')
+plt.ylim(-20, 100)
+plt.yticks(range(-20,101,20))
 plt.xlim(0, df['episode'].max())
 plt.savefig('exp1a_fig.pdf', format='pdf')
-plt.show()
+#plt.show()
