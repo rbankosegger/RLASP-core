@@ -34,19 +34,19 @@ class BlocksWorldBuilder():
     def build_mdp(self):
 
         # Use goal state in which all blocks are stacked in order
-        state_static = set(f'({x},{y})' for (x,y) in zip(self.block_terms, ['table']+self.block_terms))
+        state_static = set(f'subgoal({x},{y})' for (x,y) in zip(self.block_terms, ['table']+self.block_terms))
 
-        # Continue generating random start states until we find one that is not equal to 
-        # the goal state.
-
-        assert(False, 'TODO')
         while True:
-            start_state = self._generate_random_state()
 
-            if start_state != state_static:
+            state_start = self._generate_random_state()
+            mdp = BlocksWorld(state_start, state_static)
+
+            # Continue generating random start states until we find one that is not equal to 
+            # the goal state.
+            if len(mdp.available_actions) > 0:
                 break
 
-        return BlocksWorld(start_state, state_static)
+        return mdp
 
     def _generate_random_state(self):
 
