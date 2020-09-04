@@ -15,7 +15,7 @@ Tabula-rasa agent in a 7-blocks world, 150 episodes
 
 # Experiment 3b
 
-Planning agent (on empty policy, ph=5) in a 7-blocks world, 150 episodes
+Planning agent (for new states, ph=5) in a 7-blocks world, 150 episodes
 
 \tiny
 ~~~ {#exp3b_profile.txt}
