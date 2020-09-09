@@ -1,28 +1,42 @@
 import os
 import clingo
-from typing import Tuple
+from typing import Tuple, Set
 
 from mdp import MarkovDecisionProcedure
 
-class Planner:
+class PlannerPolicy:
 
-    def __init__(self, planning_horizon: int):
+    def __init__(self, planning_horizon: int, mdp_interface_file_path: str, mdp_problem_file_path: str, 
+                 mdp_state_static: Set):
+
         self.planning_horizon: int = planning_horizon
+        self.mdp_interface_file_path: str = mdp_interface_file_path
+        self.mdp_problem_file_path: str = mdp_problem_file_path
+        self.mdp_state_static: str = mdp_state_static
 
-        self.planner_file_name: str = 'planner.dl'
+        self.planner_file_name: str = 'planner_policy.dl'
         self.planner_file_path: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.planner_file_name)
 
         self.asp_output = None
 
-    def suggest_next_action(self, mdp: MarkovDecisionProcedure) -> Tuple[str, int]:
+
+    def suggest_action_for_state(self, state) -> str:
+        next_action, _ = self.suggest_action_and_return_for_state(state)
+        return next_action
+
+    def compute_optimal_return_for_state(self, state):
+        _, optimal_return = self.suggest_action_and_return_for_state(state)
+        return optimal_return
+
+    def suggest_action_and_return_for_state(self, state) -> Tuple[str, int]:
 
         ctl = clingo.Control()
 
-        ctl.load(mdp.file_path(mdp.interface_file_name))
-        ctl.load(mdp.file_path(mdp.file_name))
+        ctl.load(self.mdp_interface_file_path)
+        ctl.load(self.mdp_problem_file_path)
         ctl.load(self.planner_file_path)
-        ctl.add('base', [], ' '.join(f'currentState({s}).' for s in mdp.state))
-        ctl.add('base', [], ' '.join(f'{s}.' for s in mdp.state_static))
+        ctl.add('base', [], ' '.join(f'currentState({s}).' for s in state))
+        ctl.add('base', [], ' '.join(f'{s}.' for s in self.mdp_state_static))
         ctl.add('base', [], f'#const t={self.planning_horizon}.')
         ctl.add('base', [], '#show maxReturn/1. #show bestCurrentAction/1.')
 
@@ -52,6 +66,6 @@ class Planner:
 
         return (suggested_action, expected_return)
 
-    def compute_optimal_return(self, mdp):
-        _, optimal_return = self.suggest_next_action(mdp)
-        return optimal_return
+    def initialize_new_episode(self):
+        # Nothing to prepare in this policy
+        pass
