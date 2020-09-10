@@ -85,6 +85,8 @@ class MarkovDecisionProcedure:
         self.state_history.append(frozenset(next_state)) # S[t+1]
         self.reward_history.append(next_reward) # R[t+1]
 
+        return next_state, next_reward
+
     @property
     def return_history(self) -> List[float]:
 

@@ -57,10 +57,14 @@ class TestBlocksWorld(unittest.TestCase):
         mdp = BlocksWorld(state_initial={'on(b1,table)', 'on(b2,b1)'},
                           state_static={'subgoal(b1,b2)'})
 
-        mdp.transition('move(b2,table)')
+        next_state, next_reward = mdp.transition('move(b2,table)')
+        self.assertEqual({'on(b1,table)', 'on(b2,table)'}, next_state)
+        self.assertEqual(-1, next_reward)
         self.assertEqual({'on(b1,table)', 'on(b2,table)'}, mdp.state)
 
-        mdp.transition('move(b1,b2)')
+        next_state, next_reward = mdp.transition('move(b1,b2)')
+        self.assertEqual({'on(b1,b2)', 'on(b2,table)'}, next_state)
+        self.assertEqual(99, next_reward)
         self.assertEqual({'on(b1,b2)', 'on(b2,table)'}, mdp.state)
 
         # Check if trajectory is correct: S0, A0, R1, S1, A1, R2, S2

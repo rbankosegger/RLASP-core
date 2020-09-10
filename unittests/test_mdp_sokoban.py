@@ -132,9 +132,11 @@ class TestSokoban(unittest.TestCase):
         mdp = builder.build_mdp()
         state_0 = mdp.state
 
-        mdp.transition('push(5,3,down)')
+        next_state, next_reward = mdp.transition('push(5,3,down)')
         state_1 = state_0 - {'box(5,3)', 'sokoban(2,4)'} | {'box(5,4)', 'sokoban(5,3)'}
         self.assertSetEqual(state_1, mdp.state)
+        self.assertSetEqual(state_1, next_state)
+        self.assertEqual(-1, next_reward)
 
         true_available_actions_1 = { 'push(4,4,up)', 'push(4,4,down)',
                                      'push(6,4,up)', 'push(6,4,down)',
@@ -142,9 +144,11 @@ class TestSokoban(unittest.TestCase):
                                    }
         self.assertEqual(true_available_actions_1, mdp.available_actions)
 
-        mdp.transition('push(4,4,up)')
+        next_state, next_reward = mdp.transition('push(4,4,up)')
         state_2 = state_1 - {'box(4,4)', 'sokoban(5,3)'} | {'box(4,3)', 'sokoban(4,4)'}
         self.assertSetEqual(state_2, mdp.state)
+        self.assertSetEqual(state_2, next_state)
+        self.assertEqual(-1, next_reward)
 
         true_available_actions_2 = { 'push(4,3,up)', 'push(4,3,down)', 'push(4,3,left)', 'push(4,3,right)',
                                      'push(6,4,up)', 'push(6,4,down)',
@@ -179,9 +183,11 @@ class TestSokoban(unittest.TestCase):
         mdp.transition('push(6,2,right)')
         mdp.transition('push(6,3,right)')
         mdp.transition('push(3,3,left)')
-        mdp.transition('push(3,4,left)')
+        next_state, next_reward = mdp.transition('push(3,4,left)')
 
         self.assertSetEqual(state_4, mdp.state)
+        self.assertSetEqual(state_4, next_state)
+        self.assertEqual(-101, next_reward)
         self.assertSetEqual(set(), mdp.available_actions)
 
         self.assertEqual([None, -101, -1, -1, -101], mdp.reward_history)
@@ -217,13 +223,15 @@ class TestSokoban(unittest.TestCase):
         mdp.transition('push(3,2,right)')
         mdp.transition('push(6,2,left)')
         mdp.transition('push(6,3,down)')
-        mdp.transition('push(6,4,left)')
+        next_state, next_reward = mdp.transition('push(6,4,left)')
 
 
         true_state_8 = { 'box(4,2)', 'box(5,2)', 'box(4,4)', 'box(5,4)',
                          'sokoban(6,4)' }
 
         self.assertSetEqual(true_state_8, mdp.state)
+        self.assertSetEqual(true_state_8, next_state)
+        self.assertEqual(99, next_reward)
         
         self.assertEqual([None, -1, -1, -1, -1, -1, 99], mdp.reward_history)
         self.assertEqual([94, 95, 96, 97, 98, 99, 0], mdp.return_history)
