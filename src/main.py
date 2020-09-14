@@ -17,8 +17,7 @@ mdp_builder = BlocksWorldBuilder(blocks_world_size)
 #mdp_builder = SokobanBuilder('suitcase-05-01')
 
 sample_mdp = mdp_builder.build_mdp()
-planner_policy = PlannerPolicy(planning_horizon, sample_mdp.interface_file_path,
-                               sample_mdp.problem_file_path, sample_mdp.state_static)
+planner_policy = PlannerPolicy(planning_horizon, mdp_builder)
 
 target_policy= QTablePolicy()
 behavior_policy = PlanningExploringStartsPolicy(planner_policy, RandomPolicy(), QTablePolicy(),

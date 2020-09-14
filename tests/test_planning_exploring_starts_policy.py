@@ -18,9 +18,9 @@ class TestPlanningExploringStartsPolicy(unittest.TestCase):
         qtable_policy = QTablePolicy()
         random_policy = RandomPolicy()
 
-        mdp = VacuumCleanerWorldBuilder().build_mdp()
-        planner_policy = PlannerPolicy(1, mdp.interface_file_path, mdp.problem_file_path,
-                                       mdp.state_static)
+        mdp_builder = VacuumCleanerWorldBuilder()
+        mdp = mdp_builder.build_mdp()
+        planner_policy = PlannerPolicy(planning_horizon=1, mdp_builder=mdp_builder)
         
 
         policy = PlanningExploringStartsPolicy(planner_policy, random_policy, qtable_policy)

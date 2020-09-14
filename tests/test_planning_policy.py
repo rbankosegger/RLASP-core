@@ -6,18 +6,18 @@ import unittest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 # Framework imports
-from mdp import BlocksWorld, VacuumCleanerWorld, Sokoban, SokobanBuilder
+from mdp import BlocksWorld, BlocksWorldBuilder, VacuumCleanerWorld, VacuumCleanerWorldBuilder, Sokoban, SokobanBuilder
 from policy import PlannerPolicy
 
 class TestPlanner(unittest.TestCase): 
 
     def test_blocksworld_1(self): 
 
+        mdp_builder = BlocksWorldBuilder(blocks_world_size=2)
         mdp = BlocksWorld(state_initial={'on(b0,table)', 'on(b1,table)'},
                           state_static={'subgoal(b1,b0)'})
 
-        planner = PlannerPolicy(planning_horizon=1, mdp_interface_file_path=mdp.interface_file_path,
-                                mdp_problem_file_path=mdp.problem_file_path, mdp_state_static = mdp.state_static)
+        planner = PlannerPolicy(planning_horizon=1, mdp_builder=mdp_builder)
 
         suggested_action, expected_return = planner.suggest_action_and_return_for_state(mdp.state)
 
@@ -30,11 +30,11 @@ class TestPlanner(unittest.TestCase):
 
     def test_blocksworld_2(self):
         
+        mdp_builder = BlocksWorldBuilder(blocks_world_size=2)
         mdp = BlocksWorld(state_initial={'on(b0,b1)', 'on(b1,table)'},
                           state_static={'subgoal(b1,b0)'})
 
-        planner = PlannerPolicy(planning_horizon=2, mdp_interface_file_path=mdp.interface_file_path,
-                                mdp_problem_file_path=mdp.problem_file_path, mdp_state_static = mdp.state_static)
+        planner = PlannerPolicy(planning_horizon=2, mdp_builder=mdp_builder)
 
 
         suggested_action_0, expected_return_0 = planner.suggest_action_and_return_for_state(mdp.state)
@@ -51,22 +51,23 @@ class TestPlanner(unittest.TestCase):
 
     def test_blocksworld_optimal_return(self):
 
+        mdp_builder = BlocksWorldBuilder(blocks_world_size=5)
         mdp = BlocksWorld(state_initial={'on(b2,b1)', 'on(b0,b3)', 'on(b4,table)', 'on(b1,table)', 
                                          'on(b3,table)'},
                           state_static={'subgoal(b0,table)', 'subgoal(b1,b0)', 'subgoal(b2,b1)', 
                                         'subgoal(b3,b2)', 'subgoal(b4,b3)'})
 
-        planner = PlannerPolicy(planning_horizon=2*5+1, mdp_interface_file_path=mdp.interface_file_path,
-                                mdp_problem_file_path=mdp.problem_file_path, mdp_state_static = mdp.state_static)
+        planner = PlannerPolicy(planning_horizon=2*5+1, mdp_builder=mdp_builder)
 
         self.assertEqual(94, planner.compute_optimal_return_for_state(mdp.state))
 
 
     def test_vacuum_cleaner_world(self):
+
+        builder = VacuumCleanerWorldBuilder()
         mdp = VacuumCleanerWorld()
 
-        planner = PlannerPolicy(planning_horizon=4, mdp_interface_file_path=mdp.interface_file_path,
-                                mdp_problem_file_path=mdp.problem_file_path, mdp_state_static = mdp.state_static)
+        planner = PlannerPolicy(planning_horizon=4, mdp_builder=builder)
 
         suggested_action_0, expected_return_0 = planner.suggest_action_and_return_for_state(mdp.state)
         self.assertEqual(suggested_action_0, planner.suggest_action_for_state(mdp.state))
@@ -91,9 +92,9 @@ class TestPlanner(unittest.TestCase):
 
     def test_vacuum_cleaner_world_optimal_return(self):
 
+        builder = VacuumCleanerWorldBuilder()
         mdp = VacuumCleanerWorld()
-        planner = PlannerPolicy(planning_horizon=4, mdp_interface_file_path=mdp.interface_file_path,
-                                mdp_problem_file_path=mdp.problem_file_path, mdp_state_static = mdp.state_static)
+        planner = PlannerPolicy(planning_horizon=4, mdp_builder=builder)
 
         self.assertEqual(-1 + -1 + 99, planner.compute_optimal_return_for_state(mdp.state))
 
@@ -102,8 +103,7 @@ class TestPlanner(unittest.TestCase):
         builder = SokobanBuilder('suitcase-05-01')
         mdp = builder.build_mdp()
 
-        planner = PlannerPolicy(planning_horizon=7, mdp_interface_file_path=mdp.interface_file_path,
-                                mdp_problem_file_path=mdp.problem_file_path, mdp_state_static = mdp.state_static)
+        planner = PlannerPolicy(planning_horizon=7, mdp_builder=builder)
 
         s0 = mdp.state
 
@@ -121,8 +121,7 @@ class TestPlanner(unittest.TestCase):
         builder = SokobanBuilder('suitcase-05-01')
         mdp = builder.build_mdp()
 
-        planner = PlannerPolicy(planning_horizon=6, mdp_interface_file_path=mdp.interface_file_path,
-                                mdp_problem_file_path=mdp.problem_file_path, mdp_state_static = mdp.state_static)
+        planner = PlannerPolicy(planning_horizon=6, mdp_builder=builder)
 
         suggested_actions = []
         suggested_returns = []
@@ -147,8 +146,7 @@ class TestPlanner(unittest.TestCase):
         builder = SokobanBuilder(level_name='suitcase-05-02')
         mdp = builder.build_mdp()
 
-        planner = PlannerPolicy(planning_horizon=6, mdp_interface_file_path=mdp.interface_file_path,
-                                mdp_problem_file_path=mdp.problem_file_path, mdp_state_static = mdp.state_static)
+        planner = PlannerPolicy(planning_horizon=6, mdp_builder=builder)
 
 
         suggested_actions = []
