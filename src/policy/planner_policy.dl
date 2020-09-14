@@ -1,0 +1,14 @@
+% PLANNER KNOWLEDGE ************************************************************
+
+% Generate an answer set for each possible action at each possible time step.
+{ act(F, T) : executable(F, T)} = 1 :- time(T), T < t, not terminal(T).
+
+% Consider t time steps.
+time(0..t).
+
+% Maximize the return.
+maxReturn(S)     :- S = #sum { R,T : partialReward(R,T) }.
+#maximize { S : maxReturn(S) }.
+
+% Return the current action with maximal return.
+bestCurrentAction(F) :- act(F, 0).
