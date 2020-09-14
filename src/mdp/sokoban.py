@@ -28,6 +28,11 @@ class SokobanBuilder:
         self._level_from_textfile(path_to_level)
 
 
+        sample_mdp = self.build_mdp()
+        self.mdp_interface_file_path = sample_mdp.interface_file_path
+        self.mdp_problem_file_path = sample_mdp.problem_file_path
+        self.mdp_state_static = sample_mdp.state_static
+
     def _level_from_textfile(self, path_to_level):
 
         legend_dynamic = {

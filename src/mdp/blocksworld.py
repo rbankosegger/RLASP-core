@@ -31,6 +31,11 @@ class BlocksWorldBuilder():
             self.all_states: List[Set[str]] = self._generate_all_states()
 
 
+        sample_mdp = self.build_mdp()
+        self.mdp_interface_file_path = sample_mdp.interface_file_path
+        self.mdp_problem_file_path = sample_mdp.problem_file_path
+        self.mdp_state_static = sample_mdp.state_static
+
     def build_mdp(self):
 
         # Use goal state in which all blocks are stacked in order

@@ -6,13 +6,12 @@ from mdp import MarkovDecisionProcedure
 
 class PlannerPolicy:
 
-    def __init__(self, planning_horizon: int, mdp_interface_file_path: str, mdp_problem_file_path: str, 
-                 mdp_state_static: Set):
+    def __init__(self, planning_horizon: int, mdp_builder):
 
         self.planning_horizon: int = planning_horizon
-        self.mdp_interface_file_path: str = mdp_interface_file_path
-        self.mdp_problem_file_path: str = mdp_problem_file_path
-        self.mdp_state_static: str = mdp_state_static
+        self.mdp_interface_file_path: str = mdp_builder.mdp_interface_file_path
+        self.mdp_problem_file_path: str = mdp_builder.mdp_problem_file_path
+        self.mdp_state_static: str = mdp_builder.mdp_state_static
 
         self.planner_file_name: str = 'planner_policy.dl'
         self.planner_file_path: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.planner_file_name)
