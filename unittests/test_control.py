@@ -50,6 +50,18 @@ class TestControl(unittest.TestCase):
         self.assertEqual(3, len(control.policy_update_after_step.mock_calls))
         self.assertEqual(3, len(mdp.transition.mock_calls))
 
+    def test_generate_episode_with_target_policy(self):
+
+        target_policy = GuidedPolicy(['move(right)', 'move(left)', 'vacuum', 'move(right)', 'vacuum'])
+        behavior_policy = QTablePolicy()
+
+        control = OffPolicyControl(target_policy, behavior_policy)
+
+        mdp = VacuumCleanerWorldBuilder().build_mdp()
+        control.generate_episode_with_target_policy(mdp)
+        self.assertEqual([None, -1, -1, -1, -1, 99], mdp.reward_history)
+        self.assertEqual(95, mdp.return_history[0])
+
 
     def test_qlearning_updates_both_policies(self):
 

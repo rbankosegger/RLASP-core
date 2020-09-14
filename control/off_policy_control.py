@@ -52,3 +52,17 @@ class OffPolicyControl:
                                           mdp)
 
         self.policy_update_after_episode(mdp)
+
+    def generate_episode_with_target_policy(self, mdp, step_limit=None):
+
+        self.try_initialize_state(mdp.state, mdp.available_actions)
+
+        while len(mdp.available_actions) > 0:
+
+            if not step_limit is None:
+                step_limit -= 1
+                if step_limit < 0:
+                    break
+
+            mdp.transition(self.target_policy.suggest_action_for_state(mdp.state))
+            self.try_initialize_state(mdp.state, mdp.available_actions)
