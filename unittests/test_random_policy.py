@@ -46,3 +46,12 @@ class TestRandomPolicy(unittest.TestCase):
 
             # Arguments of the mocked "random" choice should be available actions
             mocked_random_choice.assert_called_with(['a1', 'a2', 'a3'])
+
+    def test_random_choice_for_terminal_state(self):
+
+        policy = RandomPolicy()
+        policy.initialize_state(state='terminal', available_actions=set())
+        suggestion = policy.suggest_action_for_state('terminal')
+
+        self.assertIsNone(suggestion)
+

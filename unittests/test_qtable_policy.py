@@ -110,6 +110,17 @@ class TestQTablePolicy(unittest.TestCase):
             # The random choice should only happen between optimal actions.
             mocked_random_choice.assert_called_with(['a1', 'a3', 'a6'])
 
+    def test_terminal_state(self):
+
+        policy = QTablePolicy()
+        policy.initialize_state('s0', set()) # s0 is terminal because it has no available actions.
+        
+        action = policy.suggest_action_for_state('s0')
+        self.assertIsNone(action)
+
+        value = policy.value_for('s0', None)
+        self.assertEqual(0, value) # Terminal states always have a value of zero.
+
 #    def test_random_recommendation_in_available_actions(self):
 #
 #        s0 = {'on(b0,table)', 'on(b1,table)', 'on(b2,b1)'}

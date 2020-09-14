@@ -16,11 +16,17 @@ class QTablePolicy:
 
     def value_for(self, state, action) -> float:
 
+        if action is None:
+            return 0
+
         return self._q_table[state][action]
 
     def suggest_action_for_state(self, state) -> Any:
 
         available_estimates = self._q_table[state].items()
+
+        if len(available_estimates) == 0:
+            return None
 
         current_maximal_estimate = max(v for _,v in available_estimates) 
 
@@ -34,7 +40,3 @@ class QTablePolicy:
 
     def update(self, state, action, delta:float):
         self._q_table[state][action] += delta
-
-    def initialize_new_episode(self):
-        # Nothing to prepare in this policy
-        pass

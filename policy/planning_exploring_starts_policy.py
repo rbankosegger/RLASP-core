@@ -61,3 +61,6 @@ class PlanningExploringStartsPolicy:
 
     def update(self, state, action, delta: float):
         self.qtable_policy.update(state, action, delta)
+
+    def value_for(self, state, action):
+        return self.qtable_policy.value_for(state, action)

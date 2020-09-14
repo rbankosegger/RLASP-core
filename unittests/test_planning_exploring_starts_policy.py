@@ -11,7 +11,7 @@ from mdp import VacuumCleanerWorldBuilder
 from policy import PlanningExploringStartsPolicy, PlannerPolicy, RandomPolicy, RandomPolicy, QTablePolicy
 import random
 
-class TestPlanningEpsilonGreedyPolicy(unittest.TestCase):
+class TestPlanningExploringStartsPolicy(unittest.TestCase):
 
     def test_is_new_state(self):
 
@@ -146,3 +146,14 @@ class TestPlanningEpsilonGreedyPolicy(unittest.TestCase):
         policy.initialize_state('s1', {'a1', 'a2'})
         policy.update('s1', 'a2', -1.23)
         qtable_policy.update.assert_called_with('s1', 'a2', -1.23)
+
+    def test_value_for(self):
+        planner_policy = MagicMock()
+        qtable_policy = QTablePolicy()
+        random_policy = RandomPolicy()
+        policy = PlanningExploringStartsPolicy(planner_policy, random_policy, qtable_policy)
+
+        # Evaluation of a state-action pair should be the same as for the qtable policy.
+        policy.initialize_state('s1', {'a1', 'a2'})
+        policy.update('s1', 'a2', -1.23)
+        self.assertEqual(-1.23, policy.value_for('s1', 'a2'))

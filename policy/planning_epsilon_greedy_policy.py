@@ -38,3 +38,6 @@ class PlanningEpsilonGreedyPolicy:
     def initialize_new_episode(self):
         # Nothing to prepare in this policy
         pass
+
+    def value_for(self, state, action):
+        return self.qtable_policy.value_for(state, action)

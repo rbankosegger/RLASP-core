@@ -19,10 +19,12 @@ class TestVacuumCleanerWorld(unittest.TestCase):
 
         mdp = VacuumCleanerWorld()
 
-        mdp.transition('move(right)')
+        next_state, next_reward = mdp.transition('move(right)')
 
         self.assertSetEqual({'robot(right)','dirty(left)', 'dirty(right)'}, mdp.state)
         self.assertSetEqual({'move(left)', 'vacuum'}, mdp.available_actions)
+        self.assertSetEqual({'robot(right)','dirty(left)', 'dirty(right)'}, next_state)
+        self.assertEqual(-1, next_reward)
 
     def test_state_transition_2(self):
 
