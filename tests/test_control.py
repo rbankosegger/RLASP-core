@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from collections import defaultdict, deque
 
 # Make sure the path of the framework is included in the import path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
 # Framework imports
 from mdp import BlocksWorld, VacuumCleanerWorldBuilder
