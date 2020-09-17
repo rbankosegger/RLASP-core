@@ -162,12 +162,12 @@ class TestSokoban(unittest.TestCase):
     def test_transition_2(self):
 
         """
-        Moving all blocks into corners should have bad consequences.
+        Moving a block into a corner should end the MDP. 
 
         State 0         State 4
             ########        ########
-            #  ..$ #        #  .. $#
-            # $@ $ #        #$    $#
+            #  ..$ #        #  ..$ #
+            # $@ $ #        # $  $ #
             # $..  #        #$@..  #
             ########        ########
         """
@@ -175,23 +175,18 @@ class TestSokoban(unittest.TestCase):
         builder = SokobanBuilder(level_name='suitcase-05-01')
         mdp = builder.build_mdp()
         state_0 = mdp.state
-        state_4 = state_0 - { 'box(6,2)', 'box(6,3)', 'box(3,3)', 'box(3,4)',
-                              'sokoban(4,3)' } \
-                          | { 'box(7,2)', 'box(7,3)', 'box(2,3)', 'box(2,4)',
-                              'sokoban(3,4)' }
+        state_1 = state_0 - { 'box(3,4)', 'sokoban(4,3)' } \
+                          | { 'box(2,4)', 'sokoban(3,4)' }
 
-        mdp.transition('push(6,2,right)')
-        mdp.transition('push(6,3,right)')
-        mdp.transition('push(3,3,left)')
         next_state, next_reward = mdp.transition('push(3,4,left)')
 
-        self.assertSetEqual(state_4, mdp.state)
-        self.assertSetEqual(state_4, next_state)
+        self.assertSetEqual(state_1, mdp.state)
+        self.assertSetEqual(state_1, next_state)
         self.assertEqual(-101, next_reward)
         self.assertSetEqual(set(), mdp.available_actions)
 
-        self.assertEqual([None, -101, -1, -1, -101], mdp.reward_history)
-        self.assertEqual([-204, -103, -102, -101, 0], mdp.return_history)
+        self.assertEqual([None, -101], mdp.reward_history)
+        self.assertEqual([-101, 0], mdp.return_history)
 
     def test_transition_3(self):
 
