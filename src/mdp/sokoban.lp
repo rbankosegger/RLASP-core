@@ -71,18 +71,18 @@ tic(sokoban(X,Y),T+1) :- time(T), tic(sokoban(X,Y),T), not -tic(sokoban(X,Y),T+1
 incomplete(T) :- time(T), tic(box(X,Y),T), not dest(X,Y).
 
 % box is stuck in a corner
-fail(T, box(R,C)) :- tic(box(R,C),T), not dest(R,C), block(R+1,C), block(R,C+1).
-fail(T, box(R,C)) :- tic(box(R,C),T), not dest(R,C), block(R+1,C), block(R,C-1).
-fail(T, box(R,C)) :- tic(box(R,C),T), not dest(R,C), block(R-1,C), block(R,C+1).
-fail(T, box(R,C)) :- tic(box(R,C),T), not dest(R,C), block(R-1,C), block(R,C-1).
-fail :- fail(_, _).
+fail(T) :- tic(box(R,C),T), not dest(R,C), block(R+1,C), block(R,C+1).
+fail(T) :- tic(box(R,C),T), not dest(R,C), block(R+1,C), block(R,C-1).
+fail(T) :- tic(box(R,C),T), not dest(R,C), block(R-1,C), block(R,C+1).
+fail(T) :- tic(box(R,C),T), not dest(R,C), block(R-1,C), block(R,C-1).
 
 partialReward(100,T) :- time(T), not incomplete(T), incomplete(T-1).
-partialReward(-100,T) :- fail(T,F), not fail(T-1,F).
+partialReward(-100,T) :- fail(T), not fail(T-1).
 partialReward(-1,T)  :- act(push(_,_,_),T-1).
 
 % Describe terminal states
 %	INPUT: 		tic(S(...), T)
 %	OUTPUT: 	terminal(T)
 terminal(T) :- time(T), not incomplete(T).
+terminal(T) :- fail(T).
 

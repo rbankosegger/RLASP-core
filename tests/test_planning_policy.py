@@ -168,3 +168,24 @@ class TestPlanner(unittest.TestCase):
 
         self.assertEqual(suggested_actions, mdp.action_history)
         self.assertEqual(suggested_returns + [0], mdp.return_history)
+
+    def test_sokoban_4(self):
+
+        # Sometimes, it is possible to end up in nonterminal states where 
+        # reaching the goal is no longer possible.
+        # In these cases, the planner should still yield the least harmful
+        # next action!
+
+        builder = SokobanBuilder(level_name='suitcase-05-01d')
+        mdp = builder.build_mdp()
+
+        self.assertSetEqual({'push(3,2,left)'}, mdp.available_actions)
+
+        planner = PlannerPolicy(planning_horizon=3, mdp_builder=builder)
+        a, g = planner.suggest_action_and_return_for_state(mdp.state)
+
+        self.assertEqual('push(3,2,left)', a)
+        self.assertEqual(-101, g)
+
+        
+
