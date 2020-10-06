@@ -40,3 +40,6 @@ class QTablePolicy:
 
     def update(self, state, action, delta:float):
         self._q_table[state][action] += delta
+
+    def optimal_value_for(self, state):
+        return self.value_for(state, self.suggest_action_for_state(state))

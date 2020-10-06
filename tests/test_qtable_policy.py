@@ -121,6 +121,17 @@ class TestQTablePolicy(unittest.TestCase):
         value = policy.value_for('s0', None)
         self.assertEqual(0, value) # Terminal states always have a value of zero.
 
+
+    def test_optimal_value_for(self):
+
+        policy = QTablePolicy()
+        policy.initialize_state('s', {'a', 'b', 'c'})
+        policy.update('s', 'a', -1)
+        policy.update('s', 'b', 0)
+        policy.update('s', 'c', 10)
+
+        self.assertEqual(10, policy.optimal_value_for('s'))
+
 #    def test_random_recommendation_in_available_actions(self):
 #
 #        s0 = {'on(b0,table)', 'on(b1,table)', 'on(b2,b1)'}
