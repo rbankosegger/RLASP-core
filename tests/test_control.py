@@ -78,7 +78,7 @@ class TestControl(unittest.TestCase):
     def test_qlearning_control_1(self):
 
         target_policy = QTablePolicy()
-        behavior_policy = GuidedPolicy(['vacuum', 'move(right)', 'vacuum'])
+        behavior_policy = GuidedPolicy(['vacuum', 'move(right)', 'vacuum']*2)
         control = QLearningControl(target_policy, behavior_policy, alpha=0.3)
 
         mdp = VacuumCleanerWorldBuilder().build_mdp()
@@ -95,6 +95,23 @@ class TestControl(unittest.TestCase):
         self.assertEqual(99 * 0.3, target_policy.value_for(s2, 'vacuum'))
         self.assertEqual(0, target_policy.value_for(s2, 'move(left)'))
 
+        # Repeat with a second mdp and exactly the same actions. 
+        # The value estimates should propagate.
+
+        mdp = VacuumCleanerWorldBuilder().build_mdp()
+        control.learn_episode(mdp)
+
+        s0 = frozenset({'robot(left)', 'dirty(left)', 'dirty(right)'})
+        self.assertEqual(-0.3 - 0.3, target_policy.value_for(s0, 'vacuum'))
+        self.assertEqual(0, target_policy.value_for(s0, 'move(right)'))
+
+        s1 = frozenset({'robot(left)', 'dirty(right)'})
+        self.assertEqual(-0.3 + 0.3*(-1 + 99*0.3 -(-0.3)), target_policy.value_for(s1, 'move(right)'))
+
+        s2 = frozenset({'robot(right)', 'dirty(right)'})
+        self.assertEqual(99 * 0.3 + 0.3 * (99 + 0 - 99*0.3), target_policy.value_for(s2, 'vacuum'))
+        self.assertEqual(0, target_policy.value_for(s2, 'move(left)'))
+
     def test_qlearning_reversed_updates_both_policies(self):
 
         target_policy = QTablePolicy()
@@ -109,22 +126,27 @@ class TestControl(unittest.TestCase):
     def test_qlearning_reversed_update_control_1(self):
 
         target_policy = QTablePolicy()
-        behavior_policy = GuidedPolicy(['vacuum', 'move(right)', 'vacuum'])
+        behavior_policy = GuidedPolicy(['vacuum', 'move(right)', 'vacuum']*2)
         control = QLearningReversedUpdateControl(target_policy, behavior_policy, alpha=0.2)
 
         mdp_builder = VacuumCleanerWorldBuilder()
         mdp = mdp_builder.build_mdp()
         control.learn_episode(mdp)
 
+        lr = 0.2
+        s2_val = lr * 99
+        s1_val = lr * (-1 + s2_val)
+        s0_val = lr * (-1 + s1_val)
+
         s0 = frozenset({'robot(left)', 'dirty(left)', 'dirty(right)'})
-        self.assertEqual(0.2 * (-1 + 0.2 * (-1 + (0.2 * 99))), target_policy.value_for(s0, 'vacuum'))
+        self.assertEqual(s0_val, target_policy.value_for(s0, 'vacuum'))
         self.assertEqual(0, target_policy.value_for(s0, 'move(right)'))
 
         s1 = frozenset({'robot(left)', 'dirty(right)'})
-        self.assertEqual(0.2 * (-1 + (0.2 * 99)), target_policy.value_for(s1, 'move(right)'))
+        self.assertEqual(s1_val, target_policy.value_for(s1, 'move(right)'))
 
         s2 = frozenset({'robot(right)', 'dirty(right)'})
-        self.assertEqual(0.2 * 99, target_policy.value_for(s2, 'vacuum'))
+        self.assertEqual(s2_val, target_policy.value_for(s2, 'vacuum'))
         self.assertEqual(0, target_policy.value_for(s2, 'move(left)'))
 
         # After being guided to the goal, the target policy should know the way to the goal.
@@ -137,6 +159,30 @@ class TestControl(unittest.TestCase):
         self.assertEqual('vacuum', target_policy.suggest_action_for_state(test_mdp.state))
         test_mdp.transition('vacuum')
         self.assertEqual(None, target_policy.suggest_action_for_state(test_mdp.state))
+
+
+        # Repeat with a second mdp and exactly the same actions. 
+        # The value estimates should propagate.
+
+        mdp = VacuumCleanerWorldBuilder().build_mdp()
+        control.learn_episode(mdp)
+
+        self.assertSetEqual(frozenset({'robot(right)'}), mdp.state)
+
+        s2_val += lr * (99 + 0 - s2_val)
+        s1_val += lr * (-1 + s2_val - s1_val)
+        s0_val += lr * (-1 + s1_val - s0_val)
+
+        s0 = frozenset({'robot(left)', 'dirty(left)', 'dirty(right)'})
+        self.assertEqual(s0_val, target_policy.value_for(s0, 'vacuum'))
+        self.assertEqual(0, target_policy.value_for(s0, 'move(right)'))
+
+        s1 = frozenset({'robot(left)', 'dirty(right)'})
+        self.assertEqual(s1_val, target_policy.value_for(s1, 'move(right)'))
+
+        s2 = frozenset({'robot(right)', 'dirty(right)'})
+        self.assertEqual(s2_val, target_policy.value_for(s2, 'vacuum'))
+        self.assertEqual(0, target_policy.value_for(s2, 'move(left)'))
 
 
     def test_monte_carlo_control_1(self):
