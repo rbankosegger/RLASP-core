@@ -9,8 +9,7 @@ class QLearningControl(OffPolicyControl):
     def policy_update_after_step(self, current_state, current_action, next_state, next_reward,
                                  mdp):
 
-            target = next_reward + mdp.discount_rate * (self.target_policy.value_for(next_state, self.target_policy.suggest_action_for_state(next_state)))
-
+            target = next_reward + mdp.discount_rate * (self.target_policy.optimal_value_for(next_state))
             delta = self.alpha * target
             self.update(current_state, current_action, delta)
 
@@ -35,6 +34,6 @@ class QLearningReversedUpdateControl(OffPolicyControl):
 
         for current_state, current_action, next_state, next_reward in reversed(self.replay_memory): 
 
-            target = next_reward + mdp.discount_rate * (self.target_policy.value_for(next_state, self.target_policy.suggest_action_for_state(next_state)))
+            target = next_reward + mdp.discount_rate * (self.target_policy.optimal_value_for(next_state))
             delta = self.alpha * target
             self.update(current_state, current_action, delta)

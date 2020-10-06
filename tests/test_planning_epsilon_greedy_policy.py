@@ -115,3 +115,18 @@ class TestPlanningEpsilonGreedyPolicy(unittest.TestCase):
         policy.initialize_state('s1', {'a1', 'a2'})
         policy.update('s1', 'a2', -1.23)
         self.assertEqual(-1.23, policy.value_for('s1', 'a2'))
+
+    def test_optimal_value_for(self):
+        
+        planner_policy = MagicMock()
+        qtable_policy = QTablePolicy()
+        random_policy = RandomPolicy()
+        policy = PlanningEpsilonGreedyPolicy(planner_policy, random_policy, qtable_policy,
+                                             epsilon=0.3)
+
+        # Evaluation of a state-action pair should be the same as for the qtable policy.
+        policy.initialize_state('s', {'a', 'b', 'c'})
+        policy.update('s', 'a', -1.23)
+        policy.update('s', 'b', 5.43)
+        policy.update('s', 'c', 0.03)
+        self.assertEqual(5.43, policy.optimal_value_for('s'))

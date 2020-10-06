@@ -64,3 +64,6 @@ class PlanningExploringStartsPolicy:
 
     def value_for(self, state, action):
         return self.qtable_policy.value_for(state, action)
+
+    def optimal_value_for(self, state):
+        return self.qtable_policy.optimal_value_for(state)

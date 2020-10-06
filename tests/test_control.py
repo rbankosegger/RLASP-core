@@ -74,6 +74,7 @@ class TestControl(unittest.TestCase):
 
         self.assertEqual(target_policy._q_table, behavior_policy._q_table)
 
+
     def test_qlearning_control_1(self):
 
         target_policy = QTablePolicy()
