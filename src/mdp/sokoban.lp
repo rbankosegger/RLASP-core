@@ -40,6 +40,11 @@ reach(X-1,Y,T) :- reach(X,Y,T), free(X-1,Y,T).
 reach(X,Y+1,T) :- reach(X,Y,T), free(X,Y+1,T).
 reach(X,Y-1,T) :- reach(X,Y,T), free(X,Y-1,T).
 
+pushable(X,Y,T) :- tic(box(X,Y),T), free(X-1,Y,T), reach(X+1,Y,T).
+pushable(X,Y,T) :- tic(box(X,Y),T), free(X+1,Y,T), reach(X-1,Y,T).
+pushable(X,Y,T) :- tic(box(X,Y),T), free(X,Y-1,T), reach(X,Y+1,T).
+pushable(X,Y,T) :- tic(box(X,Y),T), free(X,Y+1,T), reach(X,Y-1,T).
+
 executable(push(X,Y,left),T)  :- tic(box(X,Y),T), free(X-1,Y,T), reach(X+1,Y,T), not terminal(T).
 executable(push(X,Y,right),T) :- tic(box(X,Y),T), free(X+1,Y,T), reach(X-1,Y,T), not terminal(T).
 executable(push(X,Y,up),T)    :- tic(box(X,Y),T), free(X,Y-1,T), reach(X,Y+1,T), not terminal(T).
@@ -75,6 +80,9 @@ fail(T) :- tic(box(R,C),T), not dest(R,C), block(R+1,C), block(R,C+1).
 fail(T) :- tic(box(R,C),T), not dest(R,C), block(R+1,C), block(R,C-1).
 fail(T) :- tic(box(R,C),T), not dest(R,C), block(R-1,C), block(R,C+1).
 fail(T) :- tic(box(R,C),T), not dest(R,C), block(R-1,C), block(R,C-1).
+
+% Level incomplete but no more actions are available.
+fail(T) :- incomplete(T), not pushable(_,_,T).
 
 partialReward(100,T) :- time(T), not incomplete(T), incomplete(T-1).
 partialReward(-100,T) :- fail(T), not fail(T-1).
