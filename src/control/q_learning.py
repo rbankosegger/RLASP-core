@@ -40,6 +40,10 @@ class QLearningReversedUpdateControl(OffPolicyControl):
             delta = self.alpha * target
             self.update(current_state, current_action, delta)
 
+            #print(self.target_policy._q_table[current_state].values())
+            #print(f' -> R[T+1] = {next_reward: 6.2f}, Q(S,A) = {prediction: 6.2f}, maxQ(S\',a) = {self.target_policy.optimal_value_for(next_state)}, R + gamma*maxQ(S\',a) - Q(S,A) = {target: 6.2f}, alpha * (R + ...) = {delta: 6.2f}')
+            #print()
+
         self.replay_memory.clear()
 
 
