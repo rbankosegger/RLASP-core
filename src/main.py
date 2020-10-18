@@ -4,7 +4,7 @@ from control import *
 from policy import *
 #import pandas as pd
 #from matplotlib import pyplot as plt
-from tqdm import tqdm
+#from tqdm import tqdm
 
 import argparse
 import sys
@@ -87,10 +87,13 @@ if __name__ == '__main__':
     df = list()
 
     episode_ids = range(args.episodes)
-    if args.show_progress_bar:
-        episode_ids = tqdm(episode_ids, total=args.episodes)
+#    if args.show_progress_bar:
+#        episode_ids = tqdm(episode_ids, total=args.episodes)
 
     for episode_id in episode_ids:
+        
+        if args.show_progress_bar:
+            print(f'\x1b[2K\rTraining:{episode_id * 100 / (args.episodes-1):3.0f}%', end='')
         
         mdp = mdp_builder.build_mdp()
         control.try_initialize_state(mdp.state, mdp.available_actions)
@@ -121,6 +124,9 @@ if __name__ == '__main__':
         df.append(row)
 
         #print(f'Achieved return = {mdp.return_history[0]}')
+
+
+    print()
 
     if args.db_file:
         #df.to_csv(args.db_file)
