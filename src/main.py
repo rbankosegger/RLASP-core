@@ -2,12 +2,13 @@ import copy
 from mdp import BlocksWorldBuilder, VacuumCleanerWorldBuilder, SokobanBuilder
 from control import *
 from policy import *
-import pandas as pd
+#import pandas as pd
 #from matplotlib import pyplot as plt
 from tqdm import tqdm
 
 import argparse
 import sys
+import csv
 
 if __name__ == '__main__':
 
@@ -82,7 +83,8 @@ if __name__ == '__main__':
     elif args.control_algorithm == 'q_learning_reversed_update':
         control = QLearningReversedUpdateControl(target_policy, behavior_policy, args.learning_rate)
 
-    df = pd.DataFrame()
+    #df = pd.DataFrame()
+    df = list()
 
     episode_ids = range(args.episodes)
     if args.show_progress_bar:
@@ -110,16 +112,26 @@ if __name__ == '__main__':
 
             ** { f'arg_{k}':v for k, v in vars(args).items() },
 
+            'episode_id': episode_id,
             'behavior_policy_return': mdp.return_history[0],
             'target_policy_return': mdp_target.return_history[0],
         }
         
-        df = df.append(pd.Series(row, name=episode_id))
+        #df = df.append(pd.Series(row, name=episode_id))
+        df.append(row)
 
         #print(f'Achieved return = {mdp.return_history[0]}')
 
     if args.db_file:
-        df.to_csv(args.db_file)
+        #df.to_csv(args.db_file)
+        csv_headers = set()
+        for row in df:
+            csv_headers |= row.keys()
+
+        with open(args.db_file, 'w') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=list(csv_headers))
+            writer.writeheader()
+            writer.writerows(df)
 
 #    if args.plt_file:
 #
