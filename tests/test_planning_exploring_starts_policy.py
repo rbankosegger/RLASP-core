@@ -59,7 +59,6 @@ class TestPlanningExploringStartsPolicy(unittest.TestCase):
         random_policy.suggest_action_for_state.assert_called_with('s1')
         self.assertEqual('a3', suggested_action)
         
-
     def test_plan_for_new_states(self):
 
         planner_policy = MagicMock(spec=PlannerPolicy)
@@ -83,6 +82,38 @@ class TestPlanningExploringStartsPolicy(unittest.TestCase):
         planner_policy.suggest_action_for_state.assert_called_with('s2')
         random_policy.suggest_action_for_state.assert_not_called()
         qtable_policy.suggest_action_for_state.assert_not_called()
+        planner_policy.reset_mock()
+
+        # The next time we encounter s2, no planning should happen.
+        suggested_action = policy.suggest_action_for_state('s2')
+        self.assertEqual('a3', suggested_action)
+        qtable_policy.suggest_action_for_state.assert_called_with('s2')
+        random_policy.suggest_action_for_state.assert_not_called()
+        planner_policy.suggest_action_for_state.assert_not_called()
+
+    def test_dont_plan_for_new_states(self):
+
+        planner_policy = MagicMock(spec=PlannerPolicy)
+        planner_policy.suggest_action_for_state = MagicMock(return_value='a2')
+        qtable_policy = MagicMock(spec=QTablePolicy)
+        qtable_policy.suggest_action_for_state = MagicMock(return_value='a3')
+        random_policy = MagicMock(spec=RandomPolicy)
+
+        policy = PlanningExploringStartsPolicy(planner_policy, random_policy, qtable_policy,
+                                               plan_for_new_states = False)
+        
+        # First action is an exploring start
+        policy.initialize_state('s1', {'a1'})
+        policy.suggest_action_for_state('s1')
+        random_policy.reset_mock()
+
+        # Second action is in an unknown state. The planner should be used.
+        policy.initialize_state('s2', {'a2', 'a3'})
+        suggested_action = policy.suggest_action_for_state('s2')
+        self.assertEqual('a3', suggested_action)
+        planner_policy.suggest_action_for_state.assert_not_called()
+        random_policy.suggest_action_for_state.assert_not_called()
+        qtable_policy.suggest_action_for_state.assert_called_with('s2')
         planner_policy.reset_mock()
 
         # The next time we encounter s2, no planning should happen.

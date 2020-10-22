@@ -53,6 +53,31 @@ class TestPlanningEpsilonGreedyPolicy(unittest.TestCase):
                         or random_policy.suggest_action_for_state.called)
         planner_policy.suggest_action_for_state.assert_not_called()
 
+
+    def test_no_planning_in_new_states(self):
+
+        planner_policy = MagicMock()
+        planner_policy.suggest_action_for_state = MagicMock(return_value='plan')
+
+        qtable_policy = MagicMock()
+        qtable_policy.suggest_action_for_state = MagicMock(return_value='qtable')
+
+        random_policy = MagicMock()
+        random_policy.suggest_action_for_state = MagicMock(return_value='random')
+
+        policy = PlanningEpsilonGreedyPolicy(planner_policy, random_policy, qtable_policy, epsilon=0.5, 
+                                              plan_for_new_states=False)
+
+        # If a state is encountered for the first time, other policies should be used.
+        policy.initialize_state(state='s1', available_actions={'plan', 'qtable', 'random'})
+        suggested_action = policy.suggest_action_for_state('s1')
+        self.assertIn(suggested_action, {'plan', 'qtable', 'random'})
+        self.assertTrue(qtable_policy.suggest_action_for_state.called \
+                        or random_policy.suggest_action_for_state.called)
+        planner_policy.suggest_action_for_state.assert_not_called()
+
+
+
     def test_epsilon(self):
 
         planner_policy = MagicMock()
