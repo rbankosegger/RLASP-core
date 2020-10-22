@@ -18,7 +18,7 @@ if __name__ == '__main__':
                         dest='show_progress_bar', action='store_false')
     parser.set_defaults(show_progress_bar=True)
 
-    parser.add_argument('--db_file', help='Location to store the generated data. If `None`, no file will be generated.', metavar='db_file.csv')
+    parser.add_argument('--db_file', help='Location to store the generated data. If `None`, no file will be generated.', metavar='db_file.csv', default='out.csv')
     #parser.add_argument('--plt_file', help='Location to store the generated plot. if `None`, no file will be generated.', metavar='plt_file.pdf')
 
     parser.add_argument('--episodes', help='The number of episodes to train for.', type=int, default=100)
@@ -28,6 +28,9 @@ if __name__ == '__main__':
     parser.add_argument('--epsilon', help='The "epsilon" parameter for the epsilon-greedy behavior policy. Does nothing for other behavior policies.', type=float, default=0.3)
     parser.add_argument('--planning_horizon', help='The number of steps into the future considered by the planner', type=int, default=4)
 
+    parser.add_argument('--no_planning', help='Don\'t show progress in stdout',
+                        dest='plan_for_new_states', action='store_false')
+    parser.set_defaults(plan_for_new_states=True)
 
     # Control algorithms
     parser.add_argument('--control_algorithm', help='The control algorithm to be used for training', default='q_learning',
@@ -63,14 +66,15 @@ if __name__ == '__main__':
                                                         RandomPolicy(),
                                                         QTablePolicy(initial_value_estimate),
                                                         planning_factor=0,
-                                                        plan_for_new_states=True)
+                                                        plan_for_new_states=args.plan_for_new_states)
 
     elif args.behavior_policy == 'planning_epsilon_greedy':
 
         behavior_policy = PlanningEpsilonGreedyPolicy(PlannerPolicy(args.planning_horizon, mdp_builder),
                                                       RandomPolicy(),
                                                       QTablePolicy(initial_value_estimate),
-                                                      args.epsilon)
+                                                      args.epsilon,
+                                                      args.plan_for_new_states)
 
     target_policy = QTablePolicy(initial_value_estimate)
 
@@ -139,11 +143,3 @@ if __name__ == '__main__':
             writer.writeheader()
             writer.writerows(df)
 
-#    if args.plt_file:
-#
-#        plt.plot(df['behavior_policy_return'], label='Behavior policy')
-#        plt.plot(df['target_policy_return'], label='Target policy')
-#        plt.legend()
-#        plt.title(f'MDP={args.mdp} {args.sokoban_level_name}\nControl={args.control_algorithm}\nlr={args.learning_rate}')
-#        plt.tight_layout()
-#        plt.savefig(args.plt_file)
