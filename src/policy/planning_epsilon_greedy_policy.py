@@ -5,12 +5,13 @@ from . import RandomPolicy, PlannerPolicy, QTablePolicy
 class PlanningEpsilonGreedyPolicy:
 
     def __init__(self, planner_policy: PlannerPolicy, random_policy: RandomPolicy, 
-                 qtable_policy: QTablePolicy, epsilon: float):
+                 qtable_policy: QTablePolicy, epsilon: float, plan_for_new_states: bool = True):
 
         self.random_policy = random_policy 
         self.qtable_policy = qtable_policy
         self.planner_policy = planner_policy
         self.epsilon = epsilon
+        self.plan_for_new_states = plan_for_new_states
 
         self.planned_states = set()
 
@@ -22,7 +23,7 @@ class PlanningEpsilonGreedyPolicy:
         self.qtable_policy.initialize_state(state, available_actions)
 
     def suggest_action_for_state(self, state):
-        if not state in self.planned_states:
+        if self.plan_for_new_states and not state in self.planned_states:
             self.planned_states.add(state)
             return self.planner_policy.suggest_action_for_state(state)
             
