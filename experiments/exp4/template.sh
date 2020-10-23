@@ -4,6 +4,6 @@ export PATH
 . env/bin/activate 
 
 cd src
-python main.py $@
+python main.py {args_imported_by_python}
 mv experiment.csv ../
 cd ..
