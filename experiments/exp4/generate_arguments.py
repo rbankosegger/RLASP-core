@@ -1,7 +1,7 @@
 import itertools
 
 
-number_of_repititions = 1
+number_of_repititions = 20
 
 learning_rates = [0.1, 0.3, 0.6]
 tf = [True, False]
