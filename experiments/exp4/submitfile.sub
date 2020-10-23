@@ -1,0 +1,7 @@
+executable = executable.sh
+
+log=log.txt
+error=err.txt
+output=out.txt
+
+queue
