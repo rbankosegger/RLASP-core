@@ -5,5 +5,5 @@ export PATH
 
 cd src
 python main.py {args_imported_by_python}
-mv experiment.csv ../
+mv *.csv ../
 cd ..
