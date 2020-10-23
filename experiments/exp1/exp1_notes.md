@@ -31,6 +31,6 @@ The original output (left) is too messy. Used running average to smooth the resu
 * However, even with near-perfect planning horizons, planning at random times is not as effective as planning for new states.
 	* ...except when `planning_factor=1.0`, i.e. when the planner is used at every timestep - too expensive!
 
-# Conclusion
+# Experiment 1 - Conclusions
 * Overall, the results seem to be in line with that of the bachelor's thesis.
 * Planning clearly improves the training process.

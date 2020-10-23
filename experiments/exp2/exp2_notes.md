@@ -28,6 +28,6 @@ The original output (left) is too messy. Used running average to smooth the resu
 * Planning still speeds up training, also for the gradient-based algorithm.
 * There is no clear difference between the mean-based and gradient-based algorithms.
 
-# Conclusions
+# Experiment 2 - Conclusions
 * Overall, the gradient-based method seems to work as well as the mean-based method.
 * The gradient-based method handles planning as well as the mean-based method.
