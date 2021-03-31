@@ -21,7 +21,7 @@ class MarkovDecisionProcedure:
         self.interface_file_name: str = 'markov_decision_procedure.lp'
         self.problem_file_name: str = problem_file_name
 
-        # MDP trajectory: S0, A0, R1, S1, A1, R2, S2, A2, ... 
+        # MDP trajectory: S0, A0, R1, S1, A1, R2, S2, A2, ...
         self.state_history: List[Set[str]] = [frozenset(state_initial)] # S0
         self.action_history: List[str] = [] #A0 will be given later once the first action is executed
         self.reward_history: List[float] = [None] # R0, which is undefined
@@ -37,7 +37,6 @@ class MarkovDecisionProcedure:
         return self.file_path(self.problem_file_name)
 
     def transition(self, action: str):
-        
         ctl = clingo.Control()
 
         ctl.load(self.file_path(self.interface_file_name))
@@ -61,7 +60,7 @@ class MarkovDecisionProcedure:
 
             if symbol.name == 'nextState':
 
-                #˙Atom is of the form `state(f(...))` 
+                #˙Atom is of the form `state(f(...))`
                 # where`f(...)` is an uninterpreted function belonging to the state representation.
                 f = symbol.arguments[0]
                 next_state.add(str(f))
@@ -73,7 +72,7 @@ class MarkovDecisionProcedure:
 
             if symbol.name == 'nextExecutable':
 
-                # Atom is of the form `nextExecutable(f(...))` 
+                # Atom is of the form `nextExecutable(f(...))`
                 # where`f(...)` is an uninterpreted function representing an executable action.
                 available_actions.add(str(symbol.arguments[0]))
 
@@ -117,9 +116,8 @@ class MarkovDecisionProcedure:
         available_actions = set()
         for symbol in model.symbols(shown=True):
 
-            # We expect atoms of the form `currentExecutable(move(X, Y)` 
+            # We expect atoms of the form `currentExecutable(move(X, Y)`
             # but we are only interested in the first argument `move(X, Y)`
             available_actions.add(str(symbol.arguments[0]))
 
         return available_actions
-
