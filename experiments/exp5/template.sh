@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export PATH
-. env/bin/activate 
+. ~/miniconda3/bin/activate rlasp 
 
 cd src
 python main.py {args_imported_by_python}
