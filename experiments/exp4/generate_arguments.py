@@ -7,7 +7,7 @@ learning_rates = [0.1, 0.3, 0.6]
 tf = [True, False]
 
 
-mdps = ['blocksworld --blocks_world_size=5', 
+mdps = ['blocksworld --blocks_world_size=5',
         '--epsilon=0.2 sokoban --sokoban_level_name=suitcase-05-01']
 
 
@@ -18,7 +18,7 @@ def setup(i, mdp, la, no_planning):
     args = [
         f'--db_file=returns.{i:04d}.csv',
         f'--episodes=3000',
-        f'--max_episode_length=15', 
+        f'--max_episode_length=15',
         f'--planning_horizon=4',
         f'--control_algorithm={control_algorithm}',
     ]
