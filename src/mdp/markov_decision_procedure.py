@@ -48,10 +48,10 @@ class MarkovDecisionProcedure:
         ctl.add('base', [], '#show nextState/1. #show nextReward/1. #show nextExecutable/1.')
 
         ctl.ground(parts=[('base', [])])
-        models = ctl.solve(yield_=True)
+        solvehandle = ctl.solve(yield_=True)
 
         # Since we are only modelling deterministic actions, there is only one possible next state (model).
-        model = next(models)
+        model = solvehandle.model()
 
         next_reward = None
         next_state = set()
@@ -109,10 +109,10 @@ class MarkovDecisionProcedure:
         ctl.add('base', [], '#show currentExecutable/1.')
 
         ctl.ground(parts=[('base', [])])
-        models = ctl.solve(yield_=True)
+        solvehandle = ctl.solve(yield_=True)
 
         # In search for next actions, we only expect one answer set.
-        model = next(models)
+        model = solvehandle.model()
 
         available_actions = set()
         for symbol in model.symbols(shown=True):
