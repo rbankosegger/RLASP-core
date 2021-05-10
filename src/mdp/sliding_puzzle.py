@@ -18,12 +18,13 @@ class SlidingPuzzle(MarkovDecisionProcedure):
 
 class SlidingPuzzleBuilder:
 
-    def __init__(self, puzzle_size: int, state_enumeration_limit: int = 9):
+    def __init__(self, puzzle_size: int, missing_pieces: int, state_enumeration_limit: int = 9):
 
         self.puzzle_size: int = puzzle_size
+        self.missing_pieces: int = missing_pieces
         self.state_enumeration_limit: int = state_enumeration_limit
 
-        self.piece_terms: List[str] = [f'p{n}' for n in range(self.puzzle_size**2-2)]
+        self.piece_terms: List[str] = [f'p{n}' for n in range(self.puzzle_size**2-self.missing_pieces)]
 
         self.file_name: str  = 'sliding_puzzle_initial_states.lp'
         self.file_path: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), self.file_name)
