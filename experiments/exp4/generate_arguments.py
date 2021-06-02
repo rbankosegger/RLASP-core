@@ -18,7 +18,7 @@ def setup(i, mdp, la, no_planning):
     args = [
         f'--db_file=returns.{i:04d}.csv',
         f'--episodes=3000',
-        f'--max_episode_length=15',
+        f'--max_episode_length=15', 
         f'--planning_horizon=4',
         f'--control_algorithm={control_algorithm}',
     ]
