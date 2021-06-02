@@ -4,8 +4,9 @@
 % PROBLEM-SPECIFIC DOMAIN (UNINTERPRETED FUNCTIONS) ****************************
 
 %	VARIABLES:
+%	S			... describes the size of the sliding puzzle.
 %	P			... describes a piece (`p1`, `p2`, ...) in the sliding puzzle.
-%	X,Y			... describes a location to put pieces on
+%	X,Y	  ... describes a location to put pieces on
 %					(`1,1`, `1,2`, `1,3`, ...).
 
 % 	STATE FUNCTIONS S(...):
@@ -20,18 +21,9 @@
 
 
 % KNOWLEDGE ********************************************************************
-% currentState(on(p1,1,1)).
-% currentState(on(p0,1,0)).
-% subgoal(p1,0,1).
-% subgoal(p1,0,1). subgoal(p0,0,0).
-
 % Static knowledge
 piece(P) :- tic(on(P,_,_), 0).
-
-size(2..4).
-square(R,S) :- size(R), S = R**2.
-squareSize(S) :- N = #count{P : piece(P)}, S = #min{ R : square(T,R), R > N}.
-location(0..R-1,0..R-1) :- squareSize(S), square(R,S).
+location(0..S-1,0..S-1) :- size(S).
 
 % Describe which actions are executable in a given state
 % 	INPUT:		tic(S(...), T)
