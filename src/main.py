@@ -50,8 +50,8 @@ if __name__ == '__main__':
     parser_sokoban.set_defaults(mdp='sokoban', behavior_policy='planning_epsilon_greedy')
 
     parser_slidingpuzzle = subparsers.add_parser('slidingpuzzle', help='The sliding puzzle.')
-    parser_slidingpuzzle.add_argument('--sliding_level_size', help='The sliding puzzle size.', type=int, default=2)
-    parser_slidingpuzzle.add_argument('--missing_pieces', help='Missing pieces in the sliding puzzle.', type=int, default=2)
+    parser_slidingpuzzle.add_argument('--sliding_puzzle_size', help='The sliding puzzle size.', type=int, default=2)
+    parser_slidingpuzzle.add_argument('--sliding_puzzle_missing_pieces', help='Missing pieces in the sliding puzzle.', type=int, default=2)
     parser_slidingpuzzle.set_defaults(mdp='slidingpuzzle', behavior_policy='planning_epsilon_greedy')
 
     parser_vacuum = subparsers.add_parser('vacuumworld', help='The sliding puzzle.')
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     elif args.mdp == 'sokoban':
         mdp_builder = SokobanBuilder(args.sokoban_level_name)
     elif args.mdp == 'slidingpuzzle':
-        mdp_builder = SlidingPuzzleBuilder(args.sliding_level_size, args.missing_pieces)
+        mdp_builder = SlidingPuzzleBuilder(args.sliding_puzzle_size, args.sliding_puzzle_missing_pieces)
     elif args.mdp == 'vacuumworld':
         mdp_builder = VacuumCleanerWorldBuilder()
 

@@ -45,6 +45,7 @@ class SlidingPuzzleBuilder:
         for piece in self.piece_terms:
             position = next(positions)
             state_static.add('subgoal({},{},{})'.format(piece, position[0], position[1]))
+        state_static.add('size({})'.format(self.puzzle_size))
 
         while True:
 

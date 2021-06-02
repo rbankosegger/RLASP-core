@@ -100,7 +100,6 @@ class MarkovDecisionProcedure:
     def _compute_available_actions(self) -> Set[str]:
 
         ctl = clingo.Control()
-
         ctl.load(self.file_path(self.interface_file_name))
         ctl.load(self.file_path(self.problem_file_name))
         ctl.add('base', [], ' '.join(f'currentState({s}).' for s in self.state))
@@ -112,12 +111,10 @@ class MarkovDecisionProcedure:
 
         # In search for next actions, we only expect one answer set.
         model = solvehandle.model()
-
         available_actions = set()
         for symbol in model.symbols(shown=True):
 
             # We expect atoms of the form `currentExecutable(move(X, Y)`
             # but we are only interested in the first argument `move(X, Y)`
             available_actions.add(str(symbol.arguments[0]))
-
         return available_actions
