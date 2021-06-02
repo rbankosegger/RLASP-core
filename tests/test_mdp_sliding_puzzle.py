@@ -14,28 +14,28 @@ class TestSlidingPuzzle(unittest.TestCase):
     def test_available_actions_1(self):
 
         mdp = SlidingPuzzle(state_initial={'on(p0,1,0)'},
-                          state_static={'subgoal(p0,0,0)'})
+                          state_static={'size(2)', 'subgoal(p0,0,0)'})
         self.assertSetEqual({'move(p0,0,0)','move(p0,1,1)'},
                          mdp.available_actions)
 
     def test_available_actions_2(self):
 
         mdp = SlidingPuzzle(state_initial={'on(p0,1,0)', 'on(p1,1,1)'},
-                          state_static={'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
+                          state_static={'size(2)', 'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
         self.assertSetEqual({'move(p0,0,0)', 'move(p1,0,1)'},
                          mdp.available_actions)
 
     def test_available_actions_3(self):
 
         mdp = SlidingPuzzle(state_initial={'on(p0,1,0)', 'on(p1,0,1)'},
-                          state_static={'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
+                          state_static={'size(2)', 'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
         self.assertEqual({'move(p0,0,0)', 'move(p0,1,1)', 'move(p1,0,0)', 'move(p1,1,1)'},
                          mdp.available_actions)
 
     def test_available_actions_4(self):
 
         mdp = SlidingPuzzle(state_initial={'on(p0,0,0)', 'on(p1,1,1)'},
-                          state_static={'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
+                          state_static={'size(2)', 'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
 
         # Available actions should be updated after state transitions.
         mdp.transition('move(p1,1,0)')
@@ -45,7 +45,7 @@ class TestSlidingPuzzle(unittest.TestCase):
     def test_available_actions_5(self):
 
         mdp = SlidingPuzzle(state_initial={'on(p0,0,0)', 'on(p1,0,1)'},
-                          state_static={'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
+                          state_static={'size(2)', 'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
 
         # No actions available in the goal state
         self.assertEqual(set(),
@@ -55,7 +55,7 @@ class TestSlidingPuzzle(unittest.TestCase):
 
         # Transition to arbitrary state
         mdp = SlidingPuzzle(state_initial={'on(p0,0,0)', 'on(p1,1,0)'},
-                          state_static={'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
+                          state_static={'size(2)', 'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
 
         next_state, next_reward = mdp.transition('move(p1,1,1)')
         self.assertEqual({'on(p0,0,0)', 'on(p1,1,1)'}, next_state)
@@ -80,7 +80,7 @@ class TestSlidingPuzzle(unittest.TestCase):
 
         # Optimal way to goal
         mdp = SlidingPuzzle(state_initial={'on(p0,1,0)', 'on(p1,0,1)'},
-                          state_static = {'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
+                          state_static = {'size(2)', 'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
         mdp.transition('move(p0,0,0)')
 
         # G[t] = R[t+1] + ...
@@ -92,7 +92,7 @@ class TestSlidingPuzzle(unittest.TestCase):
         # Undiscounted return
 
         mdp = SlidingPuzzle(state_initial={'on(p0,1,1)', 'on(p1,1,0)'},
-                          state_static = {'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
+                          state_static = {'size(2)', 'subgoal(p0,0,0)', 'subgoal(p1,0,1)'})
         mdp.transition('move(p0,0,1)')
         mdp.transition('move(p0,0,0)')
         mdp.transition('move(p1,1,1)')
