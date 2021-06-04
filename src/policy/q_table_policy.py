@@ -12,7 +12,7 @@ class QTablePolicy:
         self.initial_value_estimate: float = initial_value_estimate
 
     def is_new_state(self, state) -> bool:
-        return not state in self._q_table 
+        return not state in self._q_table
 
     def value_for(self, state, action) -> float:
 
@@ -28,15 +28,15 @@ class QTablePolicy:
         if len(available_estimates) == 0:
             return None
 
-        current_maximal_estimate = max(v for _,v in available_estimates) 
+        current_maximal_estimate = max(v for _,v in available_estimates)
 
-        current_optimal_actions = [a for (a, v) in available_estimates 
+        current_optimal_actions = [a for (a, v) in available_estimates
                                    if v==current_maximal_estimate]
 
         return random.choice(current_optimal_actions)
 
     def initialize_state(self, state, available_actions: Set):
-        self._q_table[state] = { a: self.initial_value_estimate for a in available_actions } 
+        self._q_table[state] = { a: self.initial_value_estimate for a in available_actions }
 
     def update(self, state, action, delta:float):
         self._q_table[state][action] += delta
