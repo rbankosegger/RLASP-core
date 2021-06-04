@@ -42,9 +42,8 @@ class SlidingPuzzleBuilder:
         # Use goal state in which all pieces are in numerical order
         state_static = set()
         positions = iter((i,j) for i in range(self.puzzle_size) for j in range(self.puzzle_size))
-        for piece in self.piece_terms:
-            position = next(positions)
-            state_static.add('subgoal({},{},{})'.format(piece, position[0], position[1]))
+        for piece, (x, y) in zip(self.piece_terms, positions):
+            state_static.add(f'subgoal({piece},{x},{y})')
         state_static.add('size({})'.format(self.puzzle_size))
 
         while True:
