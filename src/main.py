@@ -1,5 +1,5 @@
 import copy
-from mdp import BlocksWorldBuilder, VacuumCleanerWorldBuilder, SokobanBuilder
+from mdp import BlocksWorldBuilder, VacuumCleanerWorldBuilder, SokobanBuilder, SlidingPuzzleBuilder
 from control import *
 from policy import *
 #import pandas as pd
@@ -49,6 +49,14 @@ if __name__ == '__main__':
     parser_sokoban.add_argument('--sokoban_level_name', help='The sokoban level name.', default='suitcase-05-01')
     parser_sokoban.set_defaults(mdp='sokoban', behavior_policy='planning_epsilon_greedy')
 
+    parser_slidingpuzzle = subparsers.add_parser('slidingpuzzle', help='The sliding puzzle.')
+    parser_slidingpuzzle.add_argument('--sliding_puzzle_size', help='The sliding puzzle size.', type=int, default=2)
+    parser_slidingpuzzle.add_argument('--sliding_puzzle_missing_pieces', help='Missing pieces in the sliding puzzle.', type=int, default=2)
+    parser_slidingpuzzle.set_defaults(mdp='slidingpuzzle', behavior_policy='planning_epsilon_greedy')
+
+    parser_vacuum = subparsers.add_parser('vacuumworld', help='The sliding puzzle.')
+    parser_vacuum.set_defaults(mdp='vacuumworld', behavior_policy='planning_exploring_starts')
+
     args = parser.parse_args()
 
 
@@ -59,6 +67,10 @@ if __name__ == '__main__':
         mdp_builder = BlocksWorldBuilder(args.blocks_world_size)
     elif args.mdp == 'sokoban':
         mdp_builder = SokobanBuilder(args.sokoban_level_name)
+    elif args.mdp == 'slidingpuzzle':
+        mdp_builder = SlidingPuzzleBuilder(args.sliding_puzzle_size, args.sliding_puzzle_missing_pieces)
+    elif args.mdp == 'vacuumworld':
+        mdp_builder = VacuumCleanerWorldBuilder()
 
     if args.behavior_policy == 'planning_exploring_starts':
 
@@ -95,21 +107,21 @@ if __name__ == '__main__':
 #        episode_ids = tqdm(episode_ids, total=args.episodes)
 
     for episode_id in episode_ids:
-        
+
         if args.show_progress_bar:
             print(f'\x1b[2K\rTraining:{episode_id * 100 / (args.episodes-1):3.0f}%', end='')
-        
+
         mdp = mdp_builder.build_mdp()
         control.try_initialize_state(mdp.state, mdp.available_actions)
-        #print()
+        #   print()
         #print(f'Beginning episode {episode_id}')
         #print('Start state = ', mdp.state)
         #print(f'Estimated value for start state = {target_policy.optimal_value_for(mdp.state):4.2f}')
 
-        # First, test the target policy and see how it would perform 
+        # First, test the target policy and see how it would perform
         mdp_target = copy.deepcopy(mdp)
         control.generate_episode_with_target_policy(mdp_target, step_limit=args.max_episode_length)
-    
+
         # Second, train the target policy and the behavior policy on the mdp
         #print('Updating states backwards...')
         control.learn_episode(mdp, step_limit=args.max_episode_length)
@@ -123,7 +135,7 @@ if __name__ == '__main__':
             'behavior_policy_return': mdp.return_history[0],
             'target_policy_return': mdp_target.return_history[0],
         }
-        
+
         #df = df.append(pd.Series(row, name=episode_id))
         df.append(row)
 
@@ -142,4 +154,3 @@ if __name__ == '__main__':
             writer = csv.DictWriter(csvfile, fieldnames=list(csv_headers))
             writer.writeheader()
             writer.writerows(df)
-
