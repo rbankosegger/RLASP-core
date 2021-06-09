@@ -6,7 +6,7 @@ import unittest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
 # Framework imports
-from mdp import BlocksWorld
+from mdp import BlocksWorld, BlocksWorldBuilder
 
 class TestBlocksWorld(unittest.TestCase):
 
@@ -63,9 +63,9 @@ class TestBlocksWorld(unittest.TestCase):
         self.assertEqual({'on(b1,table)', 'on(b2,table)'}, mdp.state)
 
         next_state, next_reward = mdp.transition('move(b1,b2)')
-        self.assertEqual({'on(b1,b2)', 'on(b2,table)'}, next_state)
+        self.assertEqual({'on(b1,b2)', 'on(b2,table)', 'goal'}, next_state)
         self.assertEqual(99, next_reward)
-        self.assertEqual({'on(b1,b2)', 'on(b2,table)'}, mdp.state)
+        self.assertEqual({'on(b1,b2)', 'on(b2,table)', 'goal'}, mdp.state)
 
         # Check if trajectory is correct: S0, A0, R1, S1, A1, R2, S2
         self.assertEqual({'on(b1,table)', 'on(b2,b1)'}, mdp.state_history[0]) # S0
@@ -74,7 +74,7 @@ class TestBlocksWorld(unittest.TestCase):
         self.assertEqual({'on(b1,table)', 'on(b2,table)'}, mdp.state_history[1]) #S1
         self.assertEqual('move(b1,b2)', mdp.action_history[1]) # A1
         self.assertEqual(100-1, mdp.reward_history[2]) # R2
-        self.assertEqual({'on(b1,b2)', 'on(b2,table)'}, mdp.state_history[2]) #S2
+        self.assertEqual({'on(b1,b2)', 'on(b2,table)', 'goal'}, mdp.state_history[2]) #S2
 
     def test_returns_1(self):
 
@@ -102,3 +102,10 @@ class TestBlocksWorld(unittest.TestCase):
         self.assertEqual(mdp.return_history[1], -1 + 99)
         self.assertEqual(mdp.return_history[2], 99)
         self.assertEqual(mdp.return_history[3], 0) # Return is zero in terminal state
+
+    def test_ground_state(self):
+
+        mdp = BlocksWorld(state_initial={'on(b1,table)', 'on(b2,table)'},
+                          state_static = {'subgoal(b2,b1)'})
+
+        self.assertEqual({'on(b1,table)', 'on(b2,table)'}, mdp.ground_state)

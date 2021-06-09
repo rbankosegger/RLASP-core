@@ -3,3 +3,6 @@ from .blocksworld import BlocksWorld, BlocksWorldBuilder
 from .vacuum_cleaner_world import VacuumCleanerWorld, VacuumCleanerWorldBuilder
 from .sokoban import Sokoban, SokobanBuilder
 from .sliding_puzzle import SlidingPuzzle, SlidingPuzzleBuilder
+from .state_history import StateHistory
+
+from . import abstraction
