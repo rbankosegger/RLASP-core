@@ -1,5 +1,5 @@
 import copy
-from mdp import BlocksWorldBuilder, VacuumCleanerWorldBuilder, SokobanBuilder, SlidingPuzzleBuilder
+from mdp import *
 from mdp.abstraction import Carcass, CarcassBuilder
 from control import *
 from policy import *
@@ -60,6 +60,12 @@ if __name__ == '__main__':
     parser_slidingpuzzle.add_argument('--sliding_puzzle_missing_pieces', help='Missing pieces in the sliding puzzle.', type=int, default=2)
     parser_slidingpuzzle.set_defaults(mdp='slidingpuzzle', behavior_policy='planning_epsilon_greedy')
 
+    parser_minigrid = subparsers.add_parser('minigrid', help='The minigrid environment from openAI gym')
+    parser_minigrid.add_argument('--minigrid_level', help='The minigrid level id', default='MiniGrid-MultiRoom-N6-v0')
+    parser_minigrid.add_argument('--minigrid_fully_observable', help='If true, the entire environment will be part of the agents observatons. If false, the agent sees only its immediate environment',
+                                 default=True)
+    parser_minigrid.set_defaults(mdp='minigrid', behavior_policy='planning_epsilon_greedy', max_episode_length=100)
+
     parser_vacuum = subparsers.add_parser('vacuumworld', help='The sliding puzzle.')
     parser_vacuum.set_defaults(mdp='vacuumworld', behavior_policy='planning_exploring_starts')
 
@@ -75,6 +81,8 @@ if __name__ == '__main__':
         mdp_builder = SokobanBuilder(args.sokoban_level_name)
     elif args.mdp == 'slidingpuzzle':
         mdp_builder = SlidingPuzzleBuilder(args.sliding_puzzle_size, args.sliding_puzzle_missing_pieces)
+    elif args.mdp == 'minigrid':
+        mdp_builder = GymMinigridBuilder(args.minigrid_level, args.minigrid_fully_observable)
     elif args.mdp == 'vacuumworld':
         mdp_builder = VacuumCleanerWorldBuilder()
 

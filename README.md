@@ -4,6 +4,19 @@ The technique used for reinforcement learning is a first-visit Exploring Starts 
 For the ASP parts, like executing actions and determining the current state of the environment, `clingo` by [Potassco, the Potsdam Answer Set Solving Collection][potassco] is used.
 ASP is also used to generate plans for accelerating the learning process.
 
+## Install
+
+### 
+
+TODO: How to install RLASP
+
+### OpenAI Gym & Minigrid
+
+	conda install -c conda-forge gym
+	pip install gym-minigrid
+
+
+
 ## Usage
 Run `main.py` with `python3`. Note that this program requires the `clingo` and `numpy` modules.
 You may want to use a `conda` [environment][conda].
