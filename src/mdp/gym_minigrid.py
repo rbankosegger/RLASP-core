@@ -58,6 +58,7 @@ class GymMinigrid(StateHistory):
 
         observation = self.env.reset()
         self.state = self._observation_to_state(observation)
+        self.state_static = set()
 
         self.done = False
 

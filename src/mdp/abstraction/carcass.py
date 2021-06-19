@@ -10,10 +10,11 @@ class Carcass(StateHistory):
     def file_path(file_name):
         return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'carcass_rules', file_name)
 
-    def __init__(self, mdp, rules_filename):
+    def __init__(self, mdp, rules_filename, debug=False):
 
         self.mdp = mdp
         self.rules_filename = rules_filename 
+        self.debug = debug
 
         self.available_actions=set()
         self._ground_actions=dict()
@@ -34,11 +35,16 @@ class Carcass(StateHistory):
         ctl.load(self.file_path(self.rules_filename))
         ctl.add('base', [], ' '.join(f'{s}.' for s in self.mdp.state))
         ctl.add('base', [], ' '.join(f'{s}.' for s in self.mdp.state_static))
+
+        if self.debug:
+           ctl.add('base', [], '#show highlight/3. #show line/3. #show arrow/3.')
+
+        ctl.configuration.solve.models = 0  # create all stable models and find the optimal one
         ctl.ground(parts=[('base', [])])
 
         solvehandle = ctl.solve(yield_=True)
 
-        model = solvehandle.model()
+        model = list(solvehandle)[0]
 
     
         #self.state=f'abstract{rule_id}'
