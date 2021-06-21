@@ -76,7 +76,7 @@ for episode_id in episode_ids:
 
     # Ground MDP
     ground_control.try_initialize_state(mdp.state, mdp.available_actions)
-    #ground_control.generate_episode_with_target_policy(mdp_target)
+    ground_control.generate_episode_with_target_policy(mdp_target)
     ground_control.learn_episode(mdp)
 
     # Abstract MDP
