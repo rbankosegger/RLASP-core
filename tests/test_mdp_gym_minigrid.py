@@ -261,3 +261,24 @@ class TestGymMinigrid(unittest.TestCase):
         self.assertSetEqual(should_be_state, mdp.state)
         self.assertSetEqual(set(), mdp.available_actions)
         self.assertTrue(mdp.done)
+
+    def test_internal_step_limit(self):
+
+        mdp = GymMinigridBuilder('MiniGrid-Empty-5x5-v0').build_mdp()
+
+        # Calculation from minigrid:
+        step_limit = 4*5*5
+
+        for s in range(step_limit):
+        
+            self.assertSetEqual({'left', 'right', 'forward', 'pickup', 'drop', 'toggle', 'done'},
+                                mdp.available_actions)
+
+            mdp.transition('right')
+
+        # After this amount of steps, the environment should be done.
+
+        self.assertTrue(mdp.done)
+        self.assertSetEqual(set(), mdp.available_actions)
+
+

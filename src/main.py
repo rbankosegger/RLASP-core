@@ -64,7 +64,8 @@ if __name__ == '__main__':
     parser_minigrid.add_argument('--minigrid_level', help='The minigrid level id', default='MiniGrid-MultiRoom-N6-v0')
     parser_minigrid.add_argument('--minigrid_fully_observable', help='If true, the entire environment will be part of the agents observatons. If false, the agent sees only its immediate environment',
                                  default=True)
-    parser_minigrid.set_defaults(mdp='minigrid', behavior_policy='planning_epsilon_greedy', max_episode_length=100)
+    # Note: max_episode_length is handled internally by minigrid environments -> set it to `None`.
+    parser_minigrid.set_defaults(mdp='minigrid', behavior_policy='planning_epsilon_greedy', max_episode_length=None)
 
     parser_vacuum = subparsers.add_parser('vacuumworld', help='The sliding puzzle.')
     parser_vacuum.set_defaults(mdp='vacuumworld', behavior_policy='planning_exploring_starts')
