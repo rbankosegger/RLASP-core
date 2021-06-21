@@ -337,14 +337,9 @@ class TestGymMinigrid(unittest.TestCase):
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
         abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
 
-        #abstract_mdp.transition('toggle')
-        #abstract_mdp.transition('forward')
-        #abstract_mdp.transition('forward')
+        abstract_mdp.transition('toggle')
+        abstract_mdp.transition('forward')
 
         desired_abstract_state = "carcass_(facing(east),objective_x_is(east),objective_y_is(south),touching(none),in_choke(horizontal))[done,drop,forward,left,pickup,right,toggle]"
-        #self.assertEqual(desired_abstract_state, abstract_mdp.state)
-
-        mdp.env.render(tile_size=40)
-        plt.title(abstract_mdp.state)
-        input()
+        self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
