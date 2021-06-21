@@ -23,8 +23,13 @@ tile_size=40
 #builder = GymMinigridBuilder('MiniGrid-DoorKey-16x16-v0')
 #builder = GymMinigridBuilder('MiniGrid-MultiRoom-N6-v0')
 #builder = GymMinigridBuilder('MiniGrid-Dynamic-Obstacles-16x16-v0')
+builder = GymMinigridBuilder('MiniGrid-Dynamic-Obstacles-Random-5x5-v0')
 #builder = GymMinigridBuilder('MiniGrid-LavaCrossingS9N1-v0')
-builder = GymMinigridBuilder('MiniGrid-LavaCrossingS11N5-v0')
+#builder = GymMinigridBuilder('MiniGrid-LavaCrossingS11N5-v0')
+#builder = GymMinigridBuilder('MiniGrid-LavaGapS7-v0')
+#builder = GymMinigridBuilder('MiniGrid-LavaGapS6-v0')
+#builder = GymMinigridBuilder('MiniGrid-LavaGapS5-v0')
+#builder = GymMinigridBuilder('MiniGrid-Empty-Random-5x5-v0')
 
 
 mdp = builder.build_mdp()

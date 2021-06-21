@@ -117,7 +117,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_(facing(north),objective_x_is(west),objective_y_is(on_axis),touching(door(closed)),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -136,7 +136,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_(facing(west),objective_x_is(west),objective_y_is(on_axis),touching(door(open)),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -155,7 +155,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_(facing(south),objective_x_is(west),objective_y_is(south),touching(none),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -174,7 +174,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_(facing(west),objective_x_is(west),objective_y_is(on_axis),touching(choke),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -192,7 +192,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_facing_danger[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -209,7 +209,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_facing_danger[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -226,7 +226,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_facing_danger[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -243,7 +243,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_facing_danger[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -260,7 +260,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'done', 'drop', 'forward', 'left', 'pickup', 'right', 'toggle'},
@@ -309,7 +309,7 @@ class TestGymMinigrid(unittest.TestCase):
         """
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         abstract_mdp.transition('forward')
 
@@ -318,9 +318,40 @@ class TestGymMinigrid(unittest.TestCase):
 
     def test_in_vertical_choke(self):
 
-        pass
+        world = """
+            kW  kW  kW
+            kW  ^   kW
+            kW  G   kW
+            kW  kW  kW
+
+        """
 
 
+        mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
+
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_choke(vertical))[done,drop,forward,left,pickup,right,toggle]"
+        self.assertEqual(desired_abstract_state, abstract_mdp.state)
+
+    def test_in_horizontal_choke(self):
+
+        world = """
+            kW  kW  kW  kW
+            kW  ^   G   kW
+            kW  kW  kW  kW
+
+        """
+
+
+        mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
+
+        #for s in abstract_mdp._asp_model_symbols:
+            #print(s)
+
+
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_choke(horizontal))[done,drop,forward,left,pickup,right,toggle]"
+        self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
     def test_what_happens_after_going_through_door(self):
 
@@ -335,7 +366,7 @@ class TestGymMinigrid(unittest.TestCase):
 
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
         abstract_mdp.transition('toggle')
         abstract_mdp.transition('forward')

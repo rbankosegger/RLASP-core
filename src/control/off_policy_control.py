@@ -24,11 +24,15 @@ class OffPolicyControl:
 
     def try_initialize_state(self, state, available_actions):
 
+        self.state_was_new = False
+
         if self.target_policy.is_new_state(state):
             self.target_policy.initialize_state(state, available_actions)
+            self.state_was_new = True
 
         if self.behavior_policy.is_new_state(state):
             self.behavior_policy.initialize_state(state, available_actions)
+            self.state_was_new = True
 
     def learn_episode(self, mdp, step_limit=None, per_step_callback=None):
 

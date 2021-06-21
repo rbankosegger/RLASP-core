@@ -115,12 +115,12 @@ class TestGymMinigrid(unittest.TestCase):
                          mdp.state)
         
         next_state, next_reward = mdp.transition('forward')
-        self.assertEqual((static_state | {'obj(agent(south),(3,3))'}) - {'obj(goal,(3,3))'},
+        self.assertEqual((static_state | {'obj(agent(south),(3,3))', 'terminal'}) - {'obj(goal,(3,3))'},
                          next_state)
         step_count = 6
         max_steps = 100.0
         self.assertEqual(1 - 0.9 * (step_count / max_steps), next_reward)
-        self.assertEqual((static_state | {'obj(agent(south),(3,3))'}) - {'obj(goal,(3,3))'},
+        self.assertEqual((static_state | {'obj(agent(south),(3,3))', 'terminal'}) - {'obj(goal,(3,3))'},
                          mdp.state)
 
         # Check if trajectory is correct: S0, A0, R1, S1, A1, R2, S2 ...
@@ -235,7 +235,8 @@ class TestGymMinigrid(unittest.TestCase):
         mdp.transition('forward')
 
         should_be_state = {
-            'obj(agent(east),(1,0))'
+            'obj(agent(east),(1,0))',
+            'terminal'
         }
 
         self.assertSetEqual(should_be_state, mdp.state)
@@ -255,7 +256,8 @@ class TestGymMinigrid(unittest.TestCase):
         mdp.transition('forward')
 
         should_be_state = {
-            'obj(agent(east),(1,0))'
+            'obj(agent(east),(1,0))',
+            'terminal'
         }
 
         self.assertSetEqual(should_be_state, mdp.state)

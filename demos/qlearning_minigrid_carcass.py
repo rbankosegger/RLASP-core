@@ -22,18 +22,20 @@ from policy import *
 
 # Parameters
 
-level = 'MiniGrid-Empty-Random-5x5-v0'
+#level = 'MiniGrid-Empty-Random-5x5-v0'
 #level = 'MiniGrid-Empty-16x16-v0'
 #level = 'MiniGrid-FourRooms-v0'
 # level = 'MiniGrid-DoorKey-16x16-v0'
 # level = 'MiniGrid-MultiRoom-N6-v0'
 # level = 'MiniGrid-Dynamic-Obstacles-16x16-v0'
 # level = 'MiniGrid-LavaCrossingS9N1-v0'
-# level = 'MiniGrid-Dynamic-Obstacles-6x16-v0'
-#level = 'MiniGrid-Dynamic-Obstacles-Random-5x5-v0'
+# level = 'MiniGrid-Dynamic-Obstacles-16x16-v0'
+#level = 'MiniGrid-LavaGapS5-v0'
+#level = 'MiniGrid-LavaGapS7-v0'
+level = 'MiniGrid-Dynamic-Obstacles-Random-5x5-v0'
 
 # Note: max_episode_length is handled internaly by the minigrid environment
-episodes = 300
+episodes = 1000
 learning_rate=0.03
 epsilon=0.05
 
@@ -74,7 +76,7 @@ for episode_id in episode_ids:
 
     # Ground MDP
     ground_control.try_initialize_state(mdp.state, mdp.available_actions)
-    ground_control.generate_episode_with_target_policy(mdp_target)
+    #ground_control.generate_episode_with_target_policy(mdp_target)
     ground_control.learn_episode(mdp)
 
     # Abstract MDP

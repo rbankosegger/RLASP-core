@@ -80,7 +80,7 @@ objective_x_is(on_axis) :- agent((AX,AY)), nextGoal((GX,GY)), AX = GX.
 
 touching(goal) :- agent(A), nextGoal(G), adjacent(A,G), obj(goal, G).
 touching(door(S)) :- agent(A), nextGoal(G), adjacent(A,G), obj(door(_, S), G).
-touching(choke) :- agent(A), nextGoal(G), adjacent(A,G), choke(G,_).
+touching(choke) :- agent(A), nextGoal(G), adjacent(A,G), choke(G,_), not touching(goal), not touching(door(_)).
 touching(none) :- not touching(goal), not touching(door(_)), not touching(choke).
 
 in_choke(D) :- agent(XY), choke(XY,D).

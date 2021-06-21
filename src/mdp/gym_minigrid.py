@@ -57,11 +57,11 @@ class GymMinigrid(StateHistory):
 
         self.env = env
 
+        self.done = False
+
         observation = self.env.reset()
         self.state = self._observation_to_state(observation)
         self.state_static = set()
-
-        self.done = False
 
         self.discount_rate = 1
         super().__init__(frozenset(self.state))
@@ -74,11 +74,15 @@ class GymMinigrid(StateHistory):
         state = { world_object_tuple_to_term(x, y, *img[x,y]) 
                     for x in range(width) for y in range(height) } - { None }
 
+        if self.done:
+            state.add('terminal')
+
         return frozenset(state)
 
 
     @property
     def available_actions(self):
+
         if self.done:
             return set()
         else:
@@ -93,8 +97,8 @@ class GymMinigrid(StateHistory):
         action_as_enum = self.env.actions[action]
         observation, next_reward, done, info = self.env.step(action_as_enum)
 
-        self.state = self._observation_to_state(observation)
         self.done = done
+        self.state = self._observation_to_state(observation)
 
 
         super().transition(action, # A[t]
