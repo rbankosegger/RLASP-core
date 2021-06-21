@@ -1,0 +1,5 @@
+kW  kW  kW  kW  kW
+kW  _   _   _   kW
+kW  _   v   _   kW
+kW  _   _   G   kW
+kW  kW  kW  kW  kW

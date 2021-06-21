@@ -44,7 +44,6 @@ class OffPolicyControl:
             current_state = mdp.state
             current_action = self.suggest_action_for_state(mdp.state, mdp.ground_state)
 
-
             next_state, next_reward = mdp.transition(current_action)
             current_action = mdp.action_history[-1]
 

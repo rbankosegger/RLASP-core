@@ -13,26 +13,31 @@ from matplotlib import patches as patches
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
 # Framework imports
-from mdp import GymMinigrid, GymMinigridBuilder
+from mdp import GymMinigrid, GymMinigridBuilder, GymMinigridCustomLevelBuilder
 from mdp.abstraction import Carcass
 
 # The number of pixels rendered per tile
 tile_size=40
 
-#builder = GymMinigridBuilder('MiniGrid-FourRooms-v0')
-#builder = GymMinigridBuilder('MiniGrid-DoorKey-16x16-v0')
-#builder = GymMinigridBuilder('MiniGrid-MultiRoom-N6-v0')
-#builder = GymMinigridBuilder('MiniGrid-Dynamic-Obstacles-16x16-v0')
-#builder = GymMinigridBuilder('MiniGrid-LavaCrossingS9N1-v0')
-builder = GymMinigridBuilder('MiniGrid-LavaCrossingS11N5-v0')
+
+world = """
+    kW  kW  kW  kW  kW  kW
+    kW  >   gDc _   _   kW
+    kW  _   kW  G   _   kW
+    kW  kW  kW  kW  kW  kW
+
+"""
 
 
-mdp = builder.build_mdp()
-abstract_mdp = Carcass(mdp, 'minigrid.lp', debug=True)
-action = random.choice(list(abstract_mdp.available_actions))
-next_state, next_reward = abstract_mdp.transition(action)
-print(next_state)
-print(next_reward)
+mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
+abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
+
+abstract_mdp.transition('toggle')
+abstract_mdp.transition('forward')
+#abstract_mdp.transition('forward')
+#abstract_mdp.transition('right')
+#abstract_mdp.transition('forward')
+
 mdp.env.render(tile_size=tile_size, highlight=False)
 
 def fill(x, y, color, alpha):
@@ -88,5 +93,7 @@ for s in abstract_mdp._asp_model_symbols:
 
 
 plt.show()
+
+plt.title(abstract_mdp.state)
 
 _ = input('Press any key to close')
