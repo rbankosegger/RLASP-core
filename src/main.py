@@ -1,18 +1,15 @@
-import copy
-from mdp import *
-from mdp.abstraction import Carcass, CarcassBuilder
-from control import *
-from policy import *
-#import pandas as pd
-#from matplotlib import pyplot as plt
-#from tqdm import tqdm
+from .mdp import *
+from .mdp.abstraction import Carcass, CarcassBuilder
+from .control import *
+from .policy import *
 
 import argparse
-import sys
+import copy
 import csv
+import sys
 from datetime import datetime
 
-if __name__ == '__main__':
+def main():
 
     parser = argparse.ArgumentParser(description='Train a RLASP agent in a given MDP.')
 
@@ -179,3 +176,6 @@ if __name__ == '__main__':
             writer = csv.DictWriter(csvfile, fieldnames=list(csv_headers))
             writer.writeheader()
             writer.writerows(df)
+
+if __name__ == '__main__':
+    main()

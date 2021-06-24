@@ -1,0 +1,6 @@
+include src/mdp/*.lp
+include src/mdp/abstraction/carcass_rules/*.lp
+include src/policy/*.dl
+
+include src/mdp/minigrid_levels/*.txt
+include src/mdp/sokoban_levels/*.txt

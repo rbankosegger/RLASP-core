@@ -2,8 +2,6 @@ import os
 import clingo
 from typing import Tuple, Set
 
-from mdp import MarkovDecisionProcedure
-
 class PlannerPolicy:
 
     def __init__(self, planning_horizon: int, mdp_builder):

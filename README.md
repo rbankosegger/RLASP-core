@@ -10,14 +10,25 @@ ASP is also used to generate plans for accelerating the learning process.
 
 TODO: How to install RLASP
 
+### Build requirements
+
+    conda install pip
+	pip install build
+
 ### OpenAI Gym & Minigrid
 
 	conda install -c conda-forge gym
 	pip install gym-minigrid
-
+	
+	
+## Install and use package
 
 
 ## Usage
+
+Run `python -m src blocksworld`.
+
+
 Run `main.py` with `python3`. Note that this program requires the `clingo` and `numpy` modules.
 You may want to use a `conda` [environment][conda].
 A guide on how to install the `clingo` Python API can be found [here][clingo_python_api].
