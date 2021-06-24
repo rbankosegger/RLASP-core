@@ -53,10 +53,15 @@ linked(U, V) :- linkable(U), linkable(V), adjacent(U,V).
 %accessible(XY) :- obj(agent(_), XY).
 %accessible(T2) :- accessible(T1), linked(T1,T2), not obj(door(_,locked), T2).
 
+% The goal should be the "goal" object in the world.
+% Unless, there is a key to be picked up. Then, until the key is picked up, the key is the goal instead.
+goal(XY) :- obj(key(_),XY).
+goal(XY) :- obj(goal,XY), not obj(key(_),_).
+
 
 path(0, XY) :- obj(agent(_), XY).
 0 { path(N+1, T1) : linked(T0,T1), T0 != T1 } 1 :- path(N, T0), N < 20.
-:~ obj(goal, XY), not path(_, XY). [ 1@2 ]
+:~ goal(XY), not path(_, XY). [ 1@2 ]
 #minimize { 1@1, N : path(N, _) }.
 
 nextGoal(T) :- path(1, T).
@@ -79,6 +84,7 @@ objective_x_is(west) :- agent((AX,AY)), nextGoal((GX,GY)), AX > GX.
 objective_x_is(on_axis) :- agent((AX,AY)), nextGoal((GX,GY)), AX = GX.
 
 touching(goal) :- agent(A), nextGoal(G), adjacent(A,G), obj(goal, G).
+touching(key(C)) :- agent(A), nextGoal(G), adjacent(A,G), obj(key(C), G).
 touching(door(S)) :- agent(A), nextGoal(G), adjacent(A,G), obj(door(_, S), G).
 touching(choke) :- agent(A), nextGoal(G), adjacent(A,G), choke(G,_), not touching(goal), not touching(door(_)).
 touching(none) :- not touching(goal), not touching(door(_)), not touching(choke).
@@ -131,3 +137,4 @@ applicable(gutterState, ()).
 
 #show applicable/2.
 #show nextGoal/1.
+#show goal/1.

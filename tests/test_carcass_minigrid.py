@@ -346,8 +346,6 @@ class TestGymMinigrid(unittest.TestCase):
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
         abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
 
-        #for s in abstract_mdp._asp_model_symbols:
-            #print(s)
 
 
         desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_choke(horizontal))[done,drop,forward,left,pickup,right,toggle]"
@@ -374,3 +372,33 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_(facing(east),objective_x_is(east),objective_y_is(south),touching(none),in_choke(horizontal))[done,drop,forward,left,pickup,right,toggle]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
+    def test_pickup_key_before_door(self):
+
+        # If there is a key in the world, pick it up before moving to the goal!
+        # Note: This only works with the MiniGrid-DoorKey environment, not more complex environments with multiple locked / open doors and keys!
+
+
+        world = """
+            v   _   G
+            _   _   _
+            gK  _   _
+
+        """
+
+        mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
+
+        # Before picking up the key, treat the key as the goal!
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(none),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
+        self.assertEqual(desired_abstract_state, abstract_mdp.state)
+
+        abstract_mdp.transition('forward')
+
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(key(green)),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
+        self.assertEqual(desired_abstract_state, abstract_mdp.state)
+
+        abstract_mdp.transition('pickup')
+
+        # After picking up the key, the `goal` object should be the goal!
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(east),objective_y_is(north),touching(none),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
+        self.assertEqual(desired_abstract_state, abstract_mdp.state)
