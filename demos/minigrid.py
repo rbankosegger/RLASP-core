@@ -21,9 +21,12 @@ tile_size=40
 
 #builder = GymMinigridBuilder('MiniGrid-FourRooms-v0')
 #builder = GymMinigridBuilder('MiniGrid-DoorKey-16x16-v0')
+#builder = GymMinigridBuilder('MiniGrid-DoorKey-5x5-v0')
+builder = GymMinigridBuilder('MiniGrid-MultiRoom-N2-S4-v0')
+#builder = GymMinigridBuilder('MiniGrid-MultiRoom-N4-S5-v0')
 #builder = GymMinigridBuilder('MiniGrid-MultiRoom-N6-v0')
 #builder = GymMinigridBuilder('MiniGrid-Dynamic-Obstacles-16x16-v0')
-builder = GymMinigridBuilder('MiniGrid-Dynamic-Obstacles-Random-5x5-v0')
+#builder = GymMinigridBuilder('MiniGrid-Dynamic-Obstacles-Random-5x5-v0')
 #builder = GymMinigridBuilder('MiniGrid-LavaCrossingS9N1-v0')
 #builder = GymMinigridBuilder('MiniGrid-LavaCrossingS11N5-v0')
 #builder = GymMinigridBuilder('MiniGrid-LavaGapS7-v0')
