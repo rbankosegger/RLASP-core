@@ -49,7 +49,6 @@ You can also look at all the available options for training by executing
 
  * [potassco](https://potassco.org)
  * [clingo_python_api](https://potassco.org/clingo/#packages)
- * [conda](https://docs.conda.io/en/latest/)
  * [Gym](http://gym.openai.com/)
  * [Gym Minigrid](https://github.com/maximecb/gym-minigrid)
  * [Elias' Bachelor's thesis (2020)](https://fuxgeist.com/thesis.pdf)
