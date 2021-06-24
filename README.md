@@ -1,39 +1,49 @@
 # RLASP
 This program combines reinforcement learning (RL) with answer set programming (ASP) to evaluate policies for solving blocks world problems.
-The technique used for reinforcement learning is a first-visit Exploring Starts Monte Carlo policy evaluation method.
-For the ASP parts, like executing actions and determining the current state of the environment, `clingo` by [Potassco, the Potsdam Answer Set Solving Collection][potassco] is used.
-ASP is also used to generate plans for accelerating the learning process.
 
-## Install
+## Install and use for development
 
-### 
+I would recommend setting up a virtual environment to work with.
 
-TODO: How to install RLASP
+To install:
 
-### Build requirements
-
-    conda install pip
-	pip install build
-
-### OpenAI Gym & Minigrid
-
-	conda install -c conda-forge gym
-	pip install gym-minigrid
+	python -m venv .venv
+	source .venv/bin/activate
+	pip install -r requirements.txt	
+	deactivate
 	
+Before starting a development session:
+
+	source .venv/bin/activate
 	
-## Install and use package
+To run the core functions:
 
+	python -m src.train --db_file=test.csv blocksworld
+	python -m src.plot test.csv
+	
+After the development session:
 
-## Usage
+	deactivate
+	
+## Install and use for experiments (e.g. on a server)
 
-Run `python -m src blocksworld`.
+Again, I would suggest creating a new virtual environment.
+This time, we can install everything directly from the github source!
+	
+	python -m venv env-rlasp
+	source env-rlasp/bin/activate
+	pip install git+https://github.com/rbankosegger/RLASP-core.git
+	deactivate
+	
+After install, as long as `env-rlasp` is activated, you will have access to binaries that can be directly executed or embedded into a `.sh` file.
 
+	rlasp-train --db_file=test.csv blocksworld
+	rlasp-plot test.csv
 
-Run `main.py` with `python3`. Note that this program requires the `clingo` and `numpy` modules.
-You may want to use a `conda` [environment][conda].
-A guide on how to install the `clingo` Python API can be found [here][clingo_python_api].
-Hyperparameters can be set in `main.py`, specifically at the `mc` variable.
-You can add as many blocks and define the goal state as you wish in `*.lp`, but performance might decrease as more blocks are used.
+You can also look at all the available options for training by executing
+
+	rlasp-train -h
+	
 
 ## Reference
 To read the full reference and theoretical backgrounds, take a look at and download the [thesis][thesis].
@@ -41,4 +51,6 @@ To read the full reference and theoretical backgrounds, take a look at and downl
 [potassco]: https://potassco.org
 [clingo_python_api]: https://potassco.org/clingo/#packages
 [conda]: https://docs.conda.io/en/latest/
-[thesis]: https://fuxgeist.com/thesis.pdf
+[Bachelor's thesis (2020)]: https://fuxgeist.com/thesis.pdf
+[Gym] : http://gym.openai.com/
+[Gym Minigrid] : https://github.com/maximecb/gym-minigrid
