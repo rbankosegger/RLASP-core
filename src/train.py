@@ -9,6 +9,8 @@ import csv
 import sys
 from datetime import datetime
 
+from tqdm import tqdm
+
 def main():
 
     parser = argparse.ArgumentParser(description='Train a RLASP agent in a given MDP.')
@@ -29,7 +31,7 @@ def main():
 
     parser.add_argument('--no_planning', help='Don\'t show progress in stdout',
                         dest='plan_for_new_states', action='store_false')
-    parser.set_defaults(plan_for_new_states=True)
+    parser.set_defaults(plan_for_new_states=False)
 
     # Control algorithms
     parser.add_argument('--control_algorithm', help='The control algorithm to be used for training', default='q_learning',
@@ -118,13 +120,13 @@ def main():
     df = list()
 
     episode_ids = range(args.episodes)
-#    if args.show_progress_bar:
-#        episode_ids = tqdm(episode_ids, total=args.episodes)
+    if args.show_progress_bar:
+        episode_ids = tqdm(episode_ids, total=args.episodes)
 
     for episode_id in episode_ids:
 
-        if args.show_progress_bar:
-            print(f'\x1b[2K\rTraining:{episode_id * 100 / (args.episodes-1):3.0f}%', end='')
+        #if args.show_progress_bar:
+        #    print(f'\x1b[2K\rTraining:{episode_id * 100 / (args.episodes-1):3.0f}%', end='')
 
         mdp = mdp_builder.build_mdp()
         control.try_initialize_state(mdp.state, mdp.available_actions)
