@@ -8,10 +8,12 @@
 % choose(R) 									... rule R was chosen
 % abstractAction(abstract(...), ground(...))	... abstract action `abstract(...)` is available and has a corresponding ground action `ground(...)`.
 
-width(W) :- W = #max { X : obj(_, (X, _)) }.
-height(H) :- H = #max { Y : obj(_, (_, Y)) }.
+northmost(N) :- N = #min { Y : obj(_, (_, Y)) }.
+southmost(S) :- S = #max { Y : obj(_, (_, Y)) }.
+westmost(W) :- W = #min { X : obj(_, (X, _)) }.
+eastmost(E) :- E = #max { X : obj(_, (X, _)) }.
 
-tile((0..W, 0..H)) :- width(W), height(H).
+tile((W..E, N..S)) :- westmost(W), eastmost(E), northmost(N), southmost(S).
 
 blocked(XY) :- obj(wall(_), XY).
 blocked(XY) :- obj(door(_,_), XY).
@@ -134,7 +136,3 @@ applicable(gutterState, ()).
 
 #show choose/1.
 #show abstractAction/2.
-
-#show applicable/2.
-#show nextGoal/1.
-#show goal/1.

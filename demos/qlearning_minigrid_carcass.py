@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib.offsetbox import AnchoredText
+from tqdm import tqdm
 
 # Make sure the path of the framework is included in the import path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
@@ -26,8 +27,10 @@ from policy import *
 #level = 'MiniGrid-Empty-16x16-v0'
 #level = 'MiniGrid-FourRooms-v0'
 #level = 'MiniGrid-DoorKey-16x16-v0'
-level = 'MiniGrid-DoorKey-5x5-v0'
-# level = 'MiniGrid-MultiRoom-N6-v0'
+#level = 'MiniGrid-DoorKey-5x5-v0'
+#level = 'MiniGrid-MultiRoom-N2-S4-v0'
+#level = 'MiniGrid-MultiRoom-N2-S5-v0'
+level = 'MiniGrid-MultiRoom-N6-v0'
 # level = 'MiniGrid-Dynamic-Obstacles-16x16-v0'
 # level = 'MiniGrid-LavaCrossingS9N1-v0'
 # level = 'MiniGrid-Dynamic-Obstacles-16x16-v0'
@@ -66,9 +69,9 @@ adf = pd.DataFrame() # Dataframe for storing detailed information about the abst
 
 episode_ids = range(episodes)
 
-for episode_id in episode_ids:
+for episode_id in tqdm(episode_ids):
 
-    print(f'\x1b[2K\rTraining:{episode_id * 100 / (episodes-1):3.0f}%', end='')
+    #print(f'\x1b[2K\rTraining:{episode_id * 100 / (episodes-1):3.0f}%', end='')
 
     mdp = mdp_builder.build_mdp()
     mdp_target = copy.deepcopy(mdp)
