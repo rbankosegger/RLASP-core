@@ -39,8 +39,8 @@ def main():
     ax0.add_artist(at)
     ax0.legend(loc='center right')
 
-    ax1.plot(df['behavior_policy_return'].cumsum(), label='Behavior policy')
-    ax1.plot(df['target_policy_return'].cumsum(), label='Target policy')
+    ax1.plot(df['behavior_policy_return_cumulative'], label='Behavior policy')
+    ax1.plot(df['target_policy_return_cumulative'], label='Target policy')
     ax1.set_xlabel('Episodes')
     ax1.set_ylabel('Cumulative return per episode')
     ax1.legend()

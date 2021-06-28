@@ -122,6 +122,10 @@ def main():
     episode_ids = range(args.episodes)
     if args.show_progress_bar:
         episode_ids = tqdm(episode_ids, total=args.episodes)
+    
+    behavior_policy_return_cumulative = 0.0
+    target_policy_return_cumulative = 0.0
+
 
     for episode_id in episode_ids:
 
@@ -148,6 +152,10 @@ def main():
         t1 = datetime.now()
         time_spent_in_behavior_episode = (t1 - t0).total_seconds()
 
+        # Compute cumulative returns
+        behavior_policy_return_cumulative += mdp.return_history[0]
+        target_policy_return_cumulative += mdp_target.return_history[0]
+
         # Finally, store all results in the dataframe
         row = {
 
@@ -156,6 +164,8 @@ def main():
             'episode_id': episode_id,
             'behavior_policy_return': mdp.return_history[0],
             'target_policy_return': mdp_target.return_history[0],
+            'behavior_policy_return_cumulative': behavior_policy_return_cumulative,
+            'target_policy_return_cumulative': target_policy_return_cumulative,
             'time_spent_in_behavior_episode': time_spent_in_behavior_episode,
             'time_spent_in_target_episode': time_spent_in_target_episode,
         }
