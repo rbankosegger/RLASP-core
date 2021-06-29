@@ -25,7 +25,6 @@ def main():
     parser.add_argument('--qtable_output', help='Provides a file location to write a qtable description of the target policy after training.', metavar='qtable.pickle', default=None)
 
     parser.add_argument('--db_file', help='Location to store the generated data. If `None`, no file will be generated.', metavar='db_file.csv', default='out.csv')
-    #parser.add_argument('--plt_file', help='Location to store the generated plot. if `None`, no file will be generated.', metavar='plt_file.pdf')
 
     parser.add_argument('--episodes', help='The number of episodes to train for.', type=int, default=100)
     parser.add_argument('--max_episode_length', help='The maximum number of steps within an episode.', type=int, default=10)
@@ -132,7 +131,6 @@ def main():
     elif args.control_algorithm == 'q_learning_reversed_update':
         control = QLearningReversedUpdateControl(target_policy, behavior_policy, args.learning_rate)
 
-    #df = pd.DataFrame()
     df = list()
 
     episode_ids = range(args.episodes)
@@ -145,15 +143,8 @@ def main():
 
     for episode_id in episode_ids:
 
-        #if args.show_progress_bar:
-        #    print(f'\x1b[2K\rTraining:{episode_id * 100 / (args.episodes-1):3.0f}%', end='')
-
         mdp = mdp_builder.build_mdp()
         control.try_initialize_state(mdp.state, mdp.available_actions)
-        #   print()
-        #print(f'Beginning episode {episode_id}')
-        #print('Start state = ', mdp.state)
-        #print(f'Estimated value for start state = {target_policy.optimal_value_for(mdp.state):4.2f}')
 
         # First, test the target policy and see how it would perform
         mdp_target = copy.deepcopy(mdp)
@@ -186,13 +177,10 @@ def main():
             'time_spent_in_target_episode': time_spent_in_target_episode,
         }
 
-        #df = df.append(pd.Series(row, name=episode_id))
         df.append(row)
 
-        #print(f'Achieved return = {mdp.return_history[0]}')
-
     if args.db_file:
-        #df.to_csv(args.db_file)
+
         csv_headers = set()
         for row in df:
             csv_headers |= row.keys()
