@@ -132,6 +132,24 @@ class TestQTablePolicy(unittest.TestCase):
 
         self.assertEqual(10, policy.optimal_value_for('s'))
 
+    def test_read_exposed_qtable(self):
+
+        policy = QTablePolicy()
+
+        policy.initialize_state('u', {'a', 'b'})
+        policy.update('u', 'a', -1)
+
+        policy.initialize_state('v', {'a', 'c'})
+        policy.update('v', 'a', 1.23)
+        policy.update('v', 'c', 2.34)
+
+        should_be_q_table = {
+            'u' : { 'a' : -1,   'b' : 0     },
+            'v' : { 'a' : 1.23, 'c' : 2.34  }
+        }
+
+        self.assertEqual(should_be_q_table, policy.q_table)
+
 #    def test_random_recommendation_in_available_actions(self):
 #
 #        s0 = {'on(b0,table)', 'on(b1,table)', 'on(b2,b1)'}

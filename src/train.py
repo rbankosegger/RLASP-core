@@ -7,6 +7,8 @@ import argparse
 import copy
 import csv
 import sys
+import os
+import pickle
 from datetime import datetime
 
 from tqdm import tqdm
@@ -18,6 +20,9 @@ def main():
     parser.add_argument('--no_progress_bar', help='Don\'t show progress in stdout',
                         dest='show_progress_bar', action='store_false')
     parser.set_defaults(show_progress_bar=True)
+
+    parser.add_argument('--qtable_input', help='TODO', metavar='qtable.csv', default=None)
+    parser.add_argument('--qtable_output', help='TODO', metavar='qtable.csv', default=None)
 
     parser.add_argument('--db_file', help='Location to store the generated data. If `None`, no file will be generated.', metavar='db_file.csv', default='out.csv')
     #parser.add_argument('--plt_file', help='Location to store the generated plot. if `None`, no file will be generated.', metavar='plt_file.pdf')
@@ -89,11 +94,19 @@ def main():
     if args.carcass:
         mdp_builder = CarcassBuilder(mdp_builder, args.carcass)
 
+
+    behavior_policy_qtable = QTablePolicy(initial_value_estimate)
+    if args.qtable_input:
+        with open(args.qtable_input, 'rb') as f:
+            behavior_policy_qtable.q_table = pickle.load(f)
+
+        print(behavior_policy_qtable.q_table)
+
     if args.behavior_policy == 'planning_exploring_starts':
 
         behavior_policy = PlanningExploringStartsPolicy(PlannerPolicy(args.planning_horizon, mdp_builder),
                                                         RandomPolicy(),
-                                                        QTablePolicy(initial_value_estimate),
+                                                        behavior_policy_qtable,
                                                         planning_factor=0,
                                                         plan_for_new_states=args.plan_for_new_states)
 
@@ -101,11 +114,15 @@ def main():
 
         behavior_policy = PlanningEpsilonGreedyPolicy(PlannerPolicy(args.planning_horizon, mdp_builder),
                                                       RandomPolicy(),
-                                                      QTablePolicy(initial_value_estimate),
+                                                      behavior_policy_qtable,
                                                       args.epsilon,
                                                       args.plan_for_new_states)
 
     target_policy = QTablePolicy(initial_value_estimate)
+    if args.qtable_input:
+        with open(args.qtable_input, 'rb') as f:
+            target_policy.q_table = pickle.load(f)
+        print(target_policy.q_table)
 
     if args.control_algorithm == 'monte_carlo':
         control = FirstVisitMonteCarloControl(behavior_policy)
@@ -188,6 +205,12 @@ def main():
             writer = csv.DictWriter(csvfile, fieldnames=list(csv_headers))
             writer.writeheader()
             writer.writerows(df)
+
+
+    if args.qtable_output:
+        print(target_policy.q_table)
+        with open(args.qtable_output, 'wb') as f:
+            pickle.dump(target_policy.q_table, f)
 
 if __name__ == '__main__':
     main()

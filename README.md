@@ -44,6 +44,31 @@ You can also look at all the available options for training by executing
 
 	rlasp-train -h
 	
+## Save and load training progress
+
+It is possible to save the contents of the target policy q-table by providing a filename for `--qtable_output`.
+
+	python -m src.train --qtable_output=qtable.pickle --db_file=train1.csv --episodes=1000 blocksworld
+	python -m src.plot train1.csv
+	
+Then, the saved q-table can be re-used in future training sessions by providing its filename via `--qtable_input`.
+
+	python -m src.train --qtable_input=qtable.pickle --db_file=train2.csv --episodes=1000 blocksworld
+	python -m src.plot train2.csv
+	
+### Transfer learning
+
+The saving and loading of the training progress provides a framework for transfer learning. For example by changing the blocks world size.
+
+	python -m src.train --qtable_output=qtable.pickle --db_file=train1.csv --episodes=200 --learning_rate=0.03 --epsilon=0.05 --carcass=blocksworld_stackordered.lp blocksworld --blocks_world_size=4
+	python -m src.plot train1.csv
+	
+	python -m src.train --qtable_input=qtable.pickle --db_file=train2.csv --episodes=200 --learning_rate=0.03 --epsilon=0.05 --carcass=blocksworld_stackordered.lp blocksworld --blocks_world_size=10
+	python -m src.plot train2.csv
+
+	
+### With a carcass
+	
 
 ## Reference
 

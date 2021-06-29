@@ -72,7 +72,7 @@ class TestControl(unittest.TestCase):
         mdp = VacuumCleanerWorldBuilder().build_mdp()
         control.learn_episode(mdp, step_limit=3)
 
-        self.assertEqual(target_policy._q_table, behavior_policy._q_table)
+        self.assertEqual(target_policy.q_table, behavior_policy.q_table)
 
 
     def test_qlearning_control_1(self):
@@ -121,7 +121,7 @@ class TestControl(unittest.TestCase):
         mdp = VacuumCleanerWorldBuilder().build_mdp()
         control.learn_episode(mdp, step_limit=3)
 
-        self.assertEqual(target_policy._q_table, behavior_policy._q_table)
+        self.assertEqual(target_policy.q_table, behavior_policy.q_table)
 
     def test_qlearning_reversed_update_control_1(self):
 
