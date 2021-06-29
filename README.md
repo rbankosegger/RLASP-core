@@ -65,9 +65,6 @@ The saving and loading of the training progress provides a framework for transfe
 	
 	python -m src.train --qtable_input=qtable.pickle --db_file=train2.csv --episodes=200 --learning_rate=0.03 --epsilon=0.05 --carcass=blocksworld_stackordered.lp blocksworld --blocks_world_size=10
 	python -m src.plot train2.csv
-
-	
-### With a carcass
 	
 
 ## Reference
