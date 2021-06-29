@@ -1,5 +1,5 @@
 # RLASP
-This program combines reinforcement learning (RL) with answer set programming (ASP) to for solving blocksworlds and other problems.
+This program combines reinforcement learning (RL) with answer set programming (ASP) for solving blocksworlds and other problems.
 
 ## Install and use for development
 
