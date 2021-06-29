@@ -22,8 +22,9 @@ tile_size=40
 
 world = """
     kW  kW  kW  kW  kW  kW
-    kW  >   gDc _   _   kW
-    kW  _   kW  G   _   kW
+    kW  >   _   gDl _   kW
+    kW  _   _   kW  _   kW
+    kW  _   gK  kW  G   kW
     kW  kW  kW  kW  kW  kW
 
 """
@@ -32,11 +33,18 @@ world = """
 mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
 abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp', debug=True)
 
-abstract_mdp.transition('toggle')
 abstract_mdp.transition('forward')
-#abstract_mdp.transition('forward')
-#abstract_mdp.transition('right')
-#abstract_mdp.transition('forward')
+abstract_mdp.transition('right')
+abstract_mdp.transition('forward')
+abstract_mdp.transition('pickup')
+abstract_mdp.transition('left')
+abstract_mdp.transition('left')
+abstract_mdp.transition('forward')
+abstract_mdp.transition('right')
+abstract_mdp.transition('toggle')
+abstract_mdp.transition('right')
+abstract_mdp.transition('drop')
+abstract_mdp.transition('pickup')
 
 mdp.env.render(tile_size=tile_size, highlight=False)
 
