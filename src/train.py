@@ -21,8 +21,8 @@ def main():
                         dest='show_progress_bar', action='store_false')
     parser.set_defaults(show_progress_bar=True)
 
-    parser.add_argument('--qtable_input', help='TODO', metavar='qtable.csv', default=None)
-    parser.add_argument('--qtable_output', help='TODO', metavar='qtable.csv', default=None)
+    parser.add_argument('--qtable_input', help='Provides a file location to read a qtable description from. This will be used to initialize the qtables in both behavior and target policy before training.', metavar='qtable.pickle', default=None)
+    parser.add_argument('--qtable_output', help='Provides a file location to write a qtable description of the target policy after training.', metavar='qtable.pickle', default=None)
 
     parser.add_argument('--db_file', help='Location to store the generated data. If `None`, no file will be generated.', metavar='db_file.csv', default='out.csv')
     #parser.add_argument('--plt_file', help='Location to store the generated plot. if `None`, no file will be generated.', metavar='plt_file.pdf')
@@ -53,6 +53,7 @@ def main():
 
     parser_blocksworld = subparsers.add_parser('blocksworld', help='The classic blocksworld.')
     parser_blocksworld.add_argument('--blocks_world_size', help='The number of blocks in the blocks world.', type=int, default=5)
+    parser_blocksworld.add_argument('--reverse_stack_order', help='If true, block need to be stacked in reverse order.', type=bool, default=False)
     parser_blocksworld.set_defaults(mdp='blocksworld', behavior_policy='planning_epsilon_greedy')
 
     parser_sokoban = subparsers.add_parser('sokoban', help='The sokoban game.')
@@ -81,7 +82,7 @@ def main():
 
 
     if args.mdp == 'blocksworld':
-        mdp_builder = BlocksWorldBuilder(args.blocks_world_size)
+        mdp_builder = BlocksWorldBuilder(args.blocks_world_size, reverse_stack_order = args.reverse_stack_order)
     elif args.mdp == 'sokoban':
         mdp_builder = SokobanBuilder(args.sokoban_level_name)
     elif args.mdp == 'slidingpuzzle':
@@ -100,7 +101,6 @@ def main():
         with open(args.qtable_input, 'rb') as f:
             behavior_policy_qtable.q_table = pickle.load(f)
 
-        print(behavior_policy_qtable.q_table)
 
     if args.behavior_policy == 'planning_exploring_starts':
 
@@ -122,7 +122,6 @@ def main():
     if args.qtable_input:
         with open(args.qtable_input, 'rb') as f:
             target_policy.q_table = pickle.load(f)
-        print(target_policy.q_table)
 
     if args.control_algorithm == 'monte_carlo':
         control = FirstVisitMonteCarloControl(behavior_policy)
@@ -192,9 +191,6 @@ def main():
 
         #print(f'Achieved return = {mdp.return_history[0]}')
 
-
-    print()
-
     if args.db_file:
         #df.to_csv(args.db_file)
         csv_headers = set()
@@ -208,7 +204,6 @@ def main():
 
 
     if args.qtable_output:
-        print(target_policy.q_table)
         with open(args.qtable_output, 'wb') as f:
             pickle.dump(target_policy.q_table, f)
 

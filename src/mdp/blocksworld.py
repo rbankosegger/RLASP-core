@@ -16,12 +16,14 @@ class BlocksWorld(MarkovDecisionProcedure):
 
 class BlocksWorldBuilder():
 
-    def __init__(self, blocks_world_size: int, state_enumeration_limit: int = 9, state_static: Set = None):
+    def __init__(self, blocks_world_size: int, state_enumeration_limit: int = 9, state_static: Set = None, reverse_stack_order = False):
 
         self.blocks_world_size: int = blocks_world_size
         self.state_enumeration_limit: int = state_enumeration_limit
 
         self.block_terms: List[str] = [f'b{n}' for n in range(blocks_world_size)]
+        if reverse_stack_order:
+            self.block_terms = list(reversed(self.block_terms))
 
         if state_static:
             self.state_static: Set = state_static
