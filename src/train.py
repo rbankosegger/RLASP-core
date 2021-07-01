@@ -52,7 +52,8 @@ def main():
 
     parser_blocksworld = subparsers.add_parser('blocksworld', help='The classic blocksworld.')
     parser_blocksworld.add_argument('--blocks_world_size', help='The number of blocks in the blocks world.', type=int, default=5)
-    parser_blocksworld.add_argument('--reverse_stack_order', help='If true, block need to be stacked in reverse order.', type=bool, default=False)
+    parser_blocksworld.add_argument('--blocks_world_reversed_stack_order', help='If true, block need to be stacked in reverse order.', 
+                                    default=False, action='store_true')
     parser_blocksworld.set_defaults(mdp='blocksworld', behavior_policy='planning_epsilon_greedy')
 
     parser_sokoban = subparsers.add_parser('sokoban', help='The sokoban game.')
@@ -76,12 +77,14 @@ def main():
 
     args = parser.parse_args()
 
+    print(args.blocks_world_reversed_stack_order)
+
 
     initial_value_estimate = -1
 
 
     if args.mdp == 'blocksworld':
-        mdp_builder = BlocksWorldBuilder(args.blocks_world_size, reverse_stack_order = args.reverse_stack_order)
+        mdp_builder = BlocksWorldBuilder(args.blocks_world_size, reverse_stack_order = args.blocks_world_reversed_stack_order)
     elif args.mdp == 'sokoban':
         mdp_builder = SokobanBuilder(args.sokoban_level_name)
     elif args.mdp == 'slidingpuzzle':
