@@ -77,9 +77,6 @@ def main():
 
     args = parser.parse_args()
 
-    print(args.blocks_world_reversed_stack_order)
-
-
     initial_value_estimate = -1
 
 
@@ -91,6 +88,7 @@ def main():
         mdp_builder = SlidingPuzzleBuilder(args.sliding_puzzle_size, args.sliding_puzzle_missing_pieces)
     elif args.mdp == 'minigrid':
         mdp_builder = GymMinigridBuilder(args.minigrid_level, args.minigrid_fully_observable)
+
     elif args.mdp == 'vacuumworld':
         mdp_builder = VacuumCleanerWorldBuilder()
 
@@ -120,19 +118,33 @@ def main():
                                                       args.epsilon,
                                                       args.plan_for_new_states)
 
-    target_policy = QTablePolicy(initial_value_estimate)
-    if args.qtable_input:
-        with open(args.qtable_input, 'rb') as f:
-            target_policy.q_table = pickle.load(f)
-
     if args.control_algorithm == 'monte_carlo':
+
         control = FirstVisitMonteCarloControl(behavior_policy)
+        
+        qtable_policy_for_export = behavior_policy.qtable_policy
 
     elif args.control_algorithm == 'q_learning':
+
+        target_policy = QTablePolicy(initial_value_estimate)
+        if args.qtable_input:
+            with open(args.qtable_input, 'rb') as f:
+                target_policy.q_table = pickle.load(f)
+
         control = QLearningControl(target_policy, behavior_policy, args.learning_rate)
 
+        qtable_policy_for_export = target_policy
+
     elif args.control_algorithm == 'q_learning_reversed_update':
-        control = QLearningReversedUpdateControl(target_policy, behavior_policy, args.learning_rate)
+
+        target_policy = QTablePolicy(initial_value_estimate)
+        if args.qtable_input:
+            with open(args.qtable_input, 'rb') as f:
+                target_policy.q_table = pickle.load(f)
+
+            control = QLearningReversedUpdateControl(target_policy, behavior_policy, args.learning_rate)
+
+        qtable_policy_for_export = target_policy
 
     df = list()
 
@@ -196,7 +208,7 @@ def main():
 
     if args.qtable_output:
         with open(args.qtable_output, 'wb') as f:
-            pickle.dump(target_policy.q_table, f)
+            pickle.dump(qtable_policy_for_export.q_table, f)
 
 if __name__ == '__main__':
     main()
