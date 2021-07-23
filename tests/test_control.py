@@ -274,7 +274,7 @@ class TestControl(unittest.TestCase):
         behavior_policy = GuidedPolicy(['vacuum', 'move(right)', 'vacuum']*2)
         control = QLearningControl(target_policy, behavior_policy, alpha=0.3)
 
-        mdp = VacuumCleanerWorldBuilder().build_mdp()
+        mdp1 = VacuumCleanerWorldBuilder().build_mdp()
 
         # This class's callback funciton should be called whenever an action yields a state and reward
         class MyCallbackCls:
@@ -289,64 +289,107 @@ class TestControl(unittest.TestCase):
 
         # Test when learning an episode
 
-        control.learn_episode(mdp, per_step_callback=my_callback_obj)
+        control.learn_episode(mdp1, per_step_callback=my_callback_obj)
 
-        self.assertEqual([
+        self.assertDictEqual(
             { 'current_state': { 'robot(left)', 'dirty(left)', 'dirty(right)' },
               'current_action': 'vacuum',
               'next_state': { 'robot(left)', 'dirty(right)' },
-              'next_reward': -1
+              'next_reward': -1,
+              'mdp':mdp1,
+              'control':control
             },
+            my_callback_obj.history[0])
+
+        self.assertDictEqual(
             { 'current_state': { 'robot(left)', 'dirty(right)' },
               'current_action': 'move(right)',
               'next_state': { 'robot(right)', 'dirty(right)' },
-              'next_reward': -1
+              'next_reward': -1,
+              'mdp':mdp1,
+              'control':control
+
             },
+            my_callback_obj.history[1])
+
+        self.assertDictEqual(
             { 'current_state': { 'robot(right)', 'dirty(right)' },
               'current_action': 'vacuum',
               'next_state': { 'robot(right)'},
-              'next_reward': 99
+              'next_reward': 99,
+              'mdp':mdp1,
+              'control':control
             },
-
-        ], my_callback_obj.history)
+            my_callback_obj.history[2])
 
         # Test when running an episode without learning.
         # Note that history from the previous mdp should not be erased
 
-        mdp = VacuumCleanerWorldBuilder().build_mdp()
+        mdp2 = VacuumCleanerWorldBuilder().build_mdp()
         control.target_policy = GuidedPolicy(['vacuum', 'move(right)', 'vacuum']*2)
-        control.generate_episode_with_target_policy(mdp, per_step_callback=my_callback_obj)
+        control.generate_episode_with_target_policy(mdp2, per_step_callback=my_callback_obj)
 
-        self.assertEqual([
+        self.assertDictEqual(
             { 'current_state': { 'robot(left)', 'dirty(left)', 'dirty(right)' },
               'current_action': 'vacuum',
               'next_state': { 'robot(left)', 'dirty(right)' },
-              'next_reward': -1
+              'next_reward': -1,
+              'mdp':mdp1,
+              'control':control
             },
+            my_callback_obj.history[0])
+
+        self.assertDictEqual(
             { 'current_state': { 'robot(left)', 'dirty(right)' },
               'current_action': 'move(right)',
               'next_state': { 'robot(right)', 'dirty(right)' },
-              'next_reward': -1
+              'next_reward': -1,
+              'mdp':mdp1,
+              'control':control
+
             },
+            my_callback_obj.history[1])
+
+        self.assertDictEqual(
             { 'current_state': { 'robot(right)', 'dirty(right)' },
               'current_action': 'vacuum',
               'next_state': { 'robot(right)'},
-              'next_reward': 99
+              'next_reward': 99,
+              'mdp':mdp1,
+              'control':control
+
             },
+            my_callback_obj.history[2])
+
+        self.assertDictEqual(
             { 'current_state': { 'robot(left)', 'dirty(left)', 'dirty(right)' },
               'current_action': 'vacuum',
               'next_state': { 'robot(left)', 'dirty(right)' },
-              'next_reward': -1
+              'next_reward': -1,
+              'mdp':mdp2,
+              'control':control
+
             },
+            my_callback_obj.history[3])
+
+        self.assertDictEqual(
             { 'current_state': { 'robot(left)', 'dirty(right)' },
               'current_action': 'move(right)',
               'next_state': { 'robot(right)', 'dirty(right)' },
-              'next_reward': -1
+              'next_reward': -1,
+              'mdp':mdp2,
+              'control':control
+
             },
+            my_callback_obj.history[4])
+
+        self.assertDictEqual(
             { 'current_state': { 'robot(right)', 'dirty(right)' },
               'current_action': 'vacuum',
               'next_state': { 'robot(right)'},
-              'next_reward': 99
-            },
+              'next_reward': 99,
+              'mdp':mdp2,
+              'control':control
 
-        ], my_callback_obj.history)
+            },
+            my_callback_obj.history[5])

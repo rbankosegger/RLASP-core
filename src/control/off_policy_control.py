@@ -60,7 +60,9 @@ class OffPolicyControl:
                 per_step_callback.callback(current_state=current_state, 
                                            current_action=current_action, 
                                            next_state=next_state,
-                                           next_reward=next_reward)
+                                           next_reward=next_reward,
+                                           mdp=mdp,
+                                           control=self)
 
         self.policy_update_after_episode(mdp)
 
@@ -85,4 +87,6 @@ class OffPolicyControl:
                 per_step_callback.callback(current_state=current_state, 
                                   current_action=current_action, 
                                   next_state=next_state,
-                                  next_reward=next_reward)
+                                  next_reward=next_reward,
+                                  mdp=mdp,
+                                  control=self)
