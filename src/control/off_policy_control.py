@@ -51,11 +51,6 @@ class OffPolicyControl:
             next_state, next_reward = mdp.transition(current_action)
             current_action = mdp.action_history[-1]
 
-            self.try_initialize_state(next_state, mdp.available_actions)
-            self.policy_update_after_step(current_state, current_action,
-                                          next_state, next_reward,
-                                          mdp)
-
             if per_step_callback:
                 per_step_callback.callback(current_state=current_state, 
                                            current_action=current_action, 
@@ -63,6 +58,12 @@ class OffPolicyControl:
                                            next_reward=next_reward,
                                            mdp=mdp,
                                            control=self)
+
+            self.try_initialize_state(next_state, mdp.available_actions)
+            self.policy_update_after_step(current_state, current_action,
+                                          next_state, next_reward,
+                                          mdp)
+
 
         self.policy_update_after_episode(mdp)
 
