@@ -57,6 +57,7 @@ class GymMinigrid(StateHistory):
 
         self.env = env
 
+        self.carries_key = False
         self.done = False
 
         observation = self.env.reset()
@@ -74,6 +75,9 @@ class GymMinigrid(StateHistory):
         state = { world_object_tuple_to_term(x, y, *img[x,y]) 
                     for x in range(width) for y in range(height) } - { None }
 
+        if self.carries_key:
+            state.add('carriesKey')
+
         if self.done:
             state.add('terminal')
 
@@ -86,6 +90,7 @@ class GymMinigrid(StateHistory):
         if self.done:
             return set()
         else:
+            # TODO: This is the full list of all actions, but actions may be limited in individual minigrid levels!
             return { a.name for a in self.env.actions }
 
     @property
@@ -96,6 +101,8 @@ class GymMinigrid(StateHistory):
 
         action_as_enum = self.env.actions[action]
         observation, next_reward, done, info = self.env.step(action_as_enum)
+
+        self.carries_key = isinstance(self.env.carrying, minigrid.Key)
 
         self.done = done
         self.state = self._observation_to_state(observation)
