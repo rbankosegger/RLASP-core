@@ -142,7 +142,7 @@ def main():
             with open(args.qtable_input, 'rb') as f:
                 target_policy.q_table = pickle.load(f)
 
-            control = QLearningReversedUpdateControl(target_policy, behavior_policy, args.learning_rate)
+        control = QLearningReversedUpdateControl(target_policy, behavior_policy, args.learning_rate)
 
         qtable_policy_for_export = target_policy
 
