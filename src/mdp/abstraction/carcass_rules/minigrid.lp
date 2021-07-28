@@ -86,10 +86,10 @@ objective_x_is(west) :- agent((AX,AY)), nextGoal((GX,GY)), AX > GX.
 objective_x_is(on_axis) :- agent((AX,AY)), nextGoal((GX,GY)), AX = GX.
 
 touching(goal) :- agent(A), nextGoal(G), adjacent(A,G), obj(goal, G).
-touching(key(C)) :- agent(A), nextGoal(G), adjacent(A,G), obj(key(C), G).
+touching(key) :- agent(A), nextGoal(G), adjacent(A,G), obj(key(C), G).
 touching(door(S)) :- agent(A), nextGoal(G), adjacent(A,G), obj(door(_, S), G).
-touching(choke) :- agent(A), nextGoal(G), adjacent(A,G), choke(G,_), not touching(goal), not touching(door(_)).
-touching(none) :- not touching(goal), not touching(door(_)), not touching(choke).
+touching(choke) :- agent(A), nextGoal(G), adjacent(A,G), choke(G,_), not touching(goal), not touching(door(_)), not touching(key).
+touching(none) :- not touching(goal), not touching(door(_)), not touching(choke), not touching(key).
 
 in_choke(D) :- agent(XY), choke(XY,D).
 in_choke(none) :- not in_choke(horizontal), not in_choke(vertical).
@@ -109,7 +109,7 @@ applicable(facing_danger, ()) :- obj(agent(west),(X,Y)), dangerous((X-1,Y)).
 rule((facing(north;south;east;west),
 	  objective_x_is(east;west;on_axis),
       objective_y_is(north;south;on_axis),
-      touching(goal;door(closed;open);choke;none),
+      touching(goal;door(closed;open;locked);choke;none;key),
 	  in_choke(horizontal;vertical;none),
 	 ), 2).
 
@@ -136,3 +136,6 @@ applicable(gutterState, ()).
 
 #show choose/1.
 #show abstractAction/2.
+% #show applicable/2.
+% #show rule/2.
+% #show touching/1.

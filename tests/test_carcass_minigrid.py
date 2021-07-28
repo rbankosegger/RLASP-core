@@ -394,11 +394,27 @@ class TestGymMinigrid(unittest.TestCase):
 
         abstract_mdp.transition('forward')
 
-        desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(key(green)),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(key),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
         abstract_mdp.transition('pickup')
 
         # After picking up the key, the `goal` object should be the goal!
         desired_abstract_state = "carcass_(facing(south),objective_x_is(east),objective_y_is(north),touching(none),in_choke(none))[done,drop,forward,left,pickup,right,toggle]"
+        self.assertEqual(desired_abstract_state, abstract_mdp.state)
+
+    def test_bugfix_1(self):
+
+        world = """
+           kW   kW  kW  kW  kW
+           kW   _   kW  _   kW
+           kW   yK  yDl _   kW
+           kW   ^   kW  G   kW
+           kW   kW  kW  kW  kW
+        
+        """
+        mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid.lp')
+
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(north),touching(key),in_choke(vertical))[done,drop,forward,left,pickup,right,toggle]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
