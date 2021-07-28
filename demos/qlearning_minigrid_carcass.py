@@ -24,17 +24,16 @@ from policy import *
 # Parameters
 
 #level = 'MiniGrid-Empty-Random-5x5-v0'
-#level = 'MiniGrid-Empty-16x16-v0'
+#level = 'MiniGrid-Empty-8x8-v0'
 #level = 'MiniGrid-FourRooms-v0'
 #level = 'MiniGrid-DoorKey-16x16-v0'
-#level = 'MiniGrid-DoorKey-5x5-v0'
+level = 'MiniGrid-DoorKey-5x5-v0'
 #level = 'MiniGrid-MultiRoom-N2-S4-v0'
 #level = 'MiniGrid-MultiRoom-N2-S5-v0'
-level = 'MiniGrid-MultiRoom-N6-v0'
+#level = 'MiniGrid-MultiRoom-N6-v0'
 # level = 'MiniGrid-Dynamic-Obstacles-16x16-v0'
 # level = 'MiniGrid-LavaCrossingS9N1-v0'
-# level = 'MiniGrid-Dynamic-Obstacles-16x16-v0'
-#level = 'MiniGrid-LavaGapS5-v0'
+# level = 'MiniGrid-Dynamic-Obstacles-16x16-v0' #level = 'MiniGrid-LavaGapS5-v0'
 #level = 'MiniGrid-LavaGapS7-v0'
 #level = 'MiniGrid-Dynamic-Obstacles-Random-5x5-v0'
 
@@ -44,6 +43,35 @@ learning_rate=0.03
 epsilon=0.05
 
 mdp_builder = GymMinigridBuilder(level)
+
+class CallBack:
+
+    def __init__(self):
+        self.df = pd.DataFrame()
+        self.cnt = 0
+        self.rc = 0
+
+    def reset(self):
+        cb.df.to_csv('callback_df.csv')
+        self.cnt = 0 
+        self.rc += 1 
+
+    def callback(self, current_state, current_action, next_state, next_reward, mdp, control):
+
+        self.cnt += 1
+
+        qs = control.behavior_policy.qtable_policy.q_table[current_state]
+        maxq = max(qs.values())
+
+        #self.df.loc[self.cnt, f'{self.rc}.next_ground_state'] = str(mdp.ground_state)
+        #self.df.loc[self.cnt, f'{self.rc}.next_state'] = str(mdp.state)
+        self.df.loc[self.cnt, f'{self.rc}.state'] = current_state
+        self.df.loc[self.cnt, f'{self.rc}.action'] = current_action
+        self.df.loc[self.cnt, f'{self.rc}.reward'] = next_reward
+        self.df.loc[self.cnt, f'{self.rc}.q-entry'] = ', '.join(f'{k}: {v:.2E}' for k, v in sorted(qs.items(), key=lambda kv: kv[1], reverse=True))
+
+
+cb = CallBack()
 
 # Ground control
 ground_behavior_policy = PlanningEpsilonGreedyPolicy(planner_policy=None,
@@ -61,7 +89,9 @@ abstract_behavior_policy = PlanningEpsilonGreedyPolicy(planner_policy=None,
                                                        epsilon=epsilon,
                                                        plan_for_new_states=False)
 abstract_target_policy = QTablePolicy(initial_value_estimate=0.0)
-abstract_control = QLearningControl(abstract_target_policy, abstract_behavior_policy, alpha=learning_rate)
+
+#abstract_control = QLearningControl(abstract_target_policy, abstract_behavior_policy, alpha=learning_rate)
+abstract_control = QLearningReversedUpdateControl(abstract_target_policy, abstract_behavior_policy, alpha=learning_rate)
 
 
 df = pd.DataFrame() # Dataframe for storing rewards, returns, etc.
@@ -71,11 +101,9 @@ episode_ids = range(episodes)
 
 for episode_id in tqdm(episode_ids):
 
-    #print(f'\x1b[2K\rTraining:{episode_id * 100 / (episodes-1):3.0f}%', end='')
-
     mdp = mdp_builder.build_mdp()
     mdp_target = copy.deepcopy(mdp)
-    amdp = Carcass(copy.deepcopy(mdp), 'minigrid.lp')
+    amdp = Carcass(copy.deepcopy(mdp), 'minigrid_restricted_actions.lp')
     amdp_target = copy.deepcopy(amdp)
 
     # Ground MDP
@@ -85,7 +113,8 @@ for episode_id in tqdm(episode_ids):
 
     # Abstract MDP
     abstract_control.try_initialize_state(amdp.state, amdp.available_actions)
-    abstract_control.generate_episode_with_target_policy(amdp_target)
+    cb.reset()
+    abstract_control.generate_episode_with_target_policy(amdp_target, per_step_callback=cb)
     abstract_control.learn_episode(amdp)
 
 
@@ -102,9 +131,10 @@ for episode_id in tqdm(episode_ids):
 
     arow = {
         ** { abstract_state: abstract_target_policy.suggest_action_for_state(abstract_state) 
-                for abstract_state in abstract_target_policy._q_table.keys() }
+                for abstract_state in abstract_target_policy.q_table.keys() }
     }
     adf = adf.append(pd.Series(arow, name=episode_id))
+
 
 print()
 
@@ -166,9 +196,11 @@ for y, abstract_state in enumerate(abstract_states):
     for x, label in enumerate(all_best_actions):
         ax2.text(x*(float(episodes) / len(all_best_actions)), y+0.25, label, color=cmap[label])
 
+
 ax2.set_yticks(range(len(abstract_states)))
 ax2.set_yticklabels(abstract_states)
 ax2.set_ylim(-1,len(abstract_states))
 ax2.set_xlabel('Episodes')
 
 plt.show()
+
