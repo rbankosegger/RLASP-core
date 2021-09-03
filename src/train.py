@@ -77,7 +77,7 @@ def main():
 
     args = parser.parse_args()
 
-    initial_value_estimate = -1
+    initial_value_estimate = 0.3
 
 
     if args.mdp == 'blocksworld':
