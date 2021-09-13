@@ -64,7 +64,7 @@ class GymMinigrid(StateHistory):
         self.state = self._observation_to_state(observation)
         self.state_static = set()
 
-        self.discount_rate = 1
+        self.discount_rate = 0.9
         super().__init__(frozenset(self.state))
 
     def _observation_to_state(self, obs):
@@ -101,6 +101,9 @@ class GymMinigrid(StateHistory):
 
         action_as_enum = self.env.actions[action]
         observation, next_reward, done, info = self.env.step(action_as_enum)
+
+        if next_reward > 0:
+            next_reward = 1
 
         self.carries_key = isinstance(self.env.carrying, minigrid.Key)
 
