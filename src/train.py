@@ -42,6 +42,7 @@ def main():
                               choices={'monte_carlo', 'q_learning', 'q_learning_reversed_update'})
 
     parser.add_argument('--learning_rate', help='The learning rate (also step-size parameter or alpha) considered by some control algorithms.', type=float, default=0.3)
+    parser.add_argument('--initial_q_estimate', help='The starting q-value estimate for a new state-action pair.', type=float, default=0)
 
     # Abstraction / Carcass
     parser.add_argument('--carcass', help='The filename of the logic programm describing a carcass for the given MDP. The file must be located in `src/mdp/abstraction/carcass_rules`.', 
@@ -77,8 +78,6 @@ def main():
 
     args = parser.parse_args()
 
-    initial_value_estimate = -1
-
 
     if args.mdp == 'blocksworld':
         mdp_builder = BlocksWorldBuilder(args.blocks_world_size, reverse_stack_order = args.blocks_world_reversed_stack_order)
@@ -96,7 +95,7 @@ def main():
         mdp_builder = CarcassBuilder(mdp_builder, args.carcass)
 
 
-    behavior_policy_qtable = QTablePolicy(initial_value_estimate)
+    behavior_policy_qtable = QTablePolicy(args.initial_q_estimate)
     if args.qtable_input:
         with open(args.qtable_input, 'rb') as f:
             behavior_policy_qtable.q_table = pickle.load(f)
@@ -126,7 +125,7 @@ def main():
 
     elif args.control_algorithm == 'q_learning':
 
-        target_policy = QTablePolicy(initial_value_estimate)
+        target_policy = QTablePolicy(args.initial_q_estimate)
         if args.qtable_input:
             with open(args.qtable_input, 'rb') as f:
                 target_policy.q_table = pickle.load(f)
@@ -137,7 +136,7 @@ def main():
 
     elif args.control_algorithm == 'q_learning_reversed_update':
 
-        target_policy = QTablePolicy(initial_value_estimate)
+        target_policy = QTablePolicy(args.initial_q_estimate)
         if args.qtable_input:
             with open(args.qtable_input, 'rb') as f:
                 target_policy.q_table = pickle.load(f)
