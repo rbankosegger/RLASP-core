@@ -117,7 +117,10 @@ class TestGymMinigrid(unittest.TestCase):
         next_state, next_reward = mdp.transition('forward')
         self.assertEqual((static_state | {'obj(agent(south),(3,3))', 'terminal'}) - {'obj(goal,(3,3))'},
                          next_state)
-        self.assertEqual(1, next_reward)
+
+        step_count = 6
+        max_steps = 100.0
+        self.assertEqual(1 - 0.9 * (step_count / max_steps), next_reward)
         self.assertEqual((static_state | {'obj(agent(south),(3,3))', 'terminal'}) - {'obj(goal,(3,3))'},
                          mdp.state)
 
@@ -139,7 +142,8 @@ class TestGymMinigrid(unittest.TestCase):
         self.assertEqual(0, mdp.reward_history[5]) # R5
         self.assertEqual(static_state | {'obj(agent(south),(3,2))'}, mdp.state_history[5]) # S5
         self.assertEqual('forward', mdp.action_history[5]) # A5
-        self.assertEqual(1, mdp.reward_history[6]) # R6
+        self.assertEqual(1 - 0.9 * (step_count / max_steps), mdp.reward_history[6]) # R6
+
 
     def test_returns(self):
 
@@ -150,6 +154,43 @@ class TestGymMinigrid(unittest.TestCase):
         mdp.transition('right')
         mdp.transition('forward')
         mdp.transition('forward')
+
+        step_count = 5
+        max_steps = 100.0
+        final_reward = 1 - 0.9 * (step_count / max_steps)
+
+        # G[t] = R[t+1] + R[t+2] + R[t+3] + ...
+        self.assertEqual(mdp.return_history[0], 0 + 0 + 0 + 0 + final_reward)
+        self.assertEqual(mdp.return_history[1], 0 + 0 + 0 + final_reward)
+        self.assertEqual(mdp.return_history[2], 0 + 0 + final_reward)
+        self.assertEqual(mdp.return_history[3], 0 + final_reward)
+        self.assertEqual(mdp.return_history[4], final_reward)
+        self.assertEqual(mdp.return_history[5], 0) # Return is zero in terminal state
+
+
+    def test_adjusted_reward_system(self):
+
+        # In the original MDP, there is no discounting (gamma = 1) and the reward in the last episode
+        # is proportional to the time it took to get to the goal.
+        # i.e. the ground MDP is not markov!
+        # To remedy this, we experimented with changing the return.
+        # We intruduced a discount factor of 0.9 and set the reward when reaching to goal to be 1.
+
+        # This behavior can be turned on via a parameter in the minigrid builder!
+        # By default, the original reward system is used.
+
+        mdp = GymMinigridBuilder('MiniGrid-Empty-5x5-v0', use_alternative_reward_system=True).build_mdp()
+
+        _, next_reward = mdp.transition('forward')
+        self.assertEqual(0, next_reward)
+        _, next_reward = mdp.transition('forward')
+        self.assertEqual(0, next_reward)
+        _, next_reward = mdp.transition('right')
+        self.assertEqual(0, next_reward)
+        _, next_reward = mdp.transition('forward')
+        self.assertEqual(0, next_reward)
+        _, next_reward = mdp.transition('forward')
+        self.assertEqual(1, next_reward)
 
         # G[t] = R[t+1] + R[t+2] + R[t+3] + ...
         self.assertEqual(mdp.return_history[0], 0 + 0 + 0 + 0 + 1*0.9*0.9*0.9*0.9)

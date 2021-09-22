@@ -53,9 +53,10 @@ def world_object_tuple_to_term(x, y, type_idx, color_idx, state_idx):
 
 class GymMinigrid(StateHistory):
 
-    def __init__(self, env):
+    def __init__(self, env, use_alternative_reward_system=False):
 
         self.env = env
+        self.use_alternative_reward_system = use_alternative_reward_system
 
         self.carries_key = False
         self.done = False
@@ -64,7 +65,10 @@ class GymMinigrid(StateHistory):
         self.state = self._observation_to_state(observation)
         self.state_static = set()
 
-        self.discount_rate = 0.9
+        if self.use_alternative_reward_system:
+            self.discount_rate = 0.9
+        else:
+            self.discount_rate = 1
         super().__init__(frozenset(self.state))
 
     def _observation_to_state(self, obs):
@@ -102,8 +106,9 @@ class GymMinigrid(StateHistory):
         action_as_enum = self.env.actions[action]
         observation, next_reward, done, info = self.env.step(action_as_enum)
 
-        if next_reward > 0:
-            next_reward = 1
+        if self.use_alternative_reward_system:
+            if next_reward > 0:
+                 next_reward = 1
 
         self.carries_key = isinstance(self.env.carrying, minigrid.Key)
 
@@ -123,10 +128,12 @@ class GymMinigrid(StateHistory):
 
 class GymMinigridBuilder:
 
-    def __init__(self, env_label='MiniGrid-MultiRoom-N6-v0', full_observability=True):
+    def __init__(self, env_label='MiniGrid-MultiRoom-N6-v0', full_observability=True, 
+                 use_alternative_reward_system=False):
 
         self.env_label = env_label
         self.full_observability = full_observability
+        self.use_alternative_reward_system = use_alternative_reward_system
 
         # So far, no planner is available for this.
         self.mdp_interface_file_path = None
@@ -141,7 +148,7 @@ class GymMinigridBuilder:
         if self.full_observability:
             env = FullyObsWrapper(env)
 
-        return GymMinigrid(env)
+        return GymMinigrid(env, self.use_alternative_reward_system)
 
 
 class CustomMinigridEnvironment(minigrid.MiniGridEnv):

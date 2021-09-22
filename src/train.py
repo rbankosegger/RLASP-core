@@ -70,6 +70,9 @@ def main():
     parser_minigrid.add_argument('--minigrid_level', help='The minigrid level id', default='MiniGrid-MultiRoom-N6-v0')
     parser_minigrid.add_argument('--minigrid_fully_observable', help='If true, the entire environment will be part of the agents observatons. If false, the agent sees only its immediate environment',
                                  default=True)
+    parser_minigrid.add_argument('--minigrid_use_alternative_reward_system', 
+                                 help='If `false`, use the original rewards with no discounting. If `true`, a discount factor is introduced and the reward for reaching the goal state will always be 1.',
+                                 action='store_true', default=False)
     # Note: max_episode_length is handled internally by minigrid environments -> set it to `None`.
     parser_minigrid.set_defaults(mdp='minigrid', behavior_policy='planning_epsilon_greedy', max_episode_length=None)
 
@@ -86,7 +89,7 @@ def main():
     elif args.mdp == 'slidingpuzzle':
         mdp_builder = SlidingPuzzleBuilder(args.sliding_puzzle_size, args.sliding_puzzle_missing_pieces)
     elif args.mdp == 'minigrid':
-        mdp_builder = GymMinigridBuilder(args.minigrid_level, args.minigrid_fully_observable)
+        mdp_builder = GymMinigridBuilder(args.minigrid_level, args.minigrid_fully_observable, args.minigrid_use_alternative_reward_system)
 
     elif args.mdp == 'vacuumworld':
         mdp_builder = VacuumCleanerWorldBuilder()
@@ -176,6 +179,8 @@ def main():
         # Compute cumulative returns
         behavior_policy_return_cumulative += mdp.return_history[0]
         target_policy_return_cumulative += mdp_target.return_history[0]
+
+        print(mdp_target.return_history[0])
 
         # Finally, store all results in the dataframe
         row = {
