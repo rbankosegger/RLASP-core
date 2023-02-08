@@ -27,16 +27,16 @@ def main():
 
     carcass = df.iloc[0]['arg_carcass']
 
-    fig, (ax0, ax1, ax2) = plt.subplots(3,1, sharex=True)
+    fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2,2, sharex=True)
 
-    ax0.plot(df['behavior_policy_return'], '.', alpha=0.7, label='Behavior policy')
-    ax0.plot(df['target_policy_return'], '.', alpha=0.7, label='Target policy')
+    ax0.plot(df['behavior_policy_return'], '.', label='Behavior policy', alpha=0.7)
+    ax0.plot(df['target_policy_return'], '.', label='Target policy', alpha=0.7)
     ax0.set_xlabel('Episodes')
     ax0.set_ylabel('Return per episode')
 
     attxt = '\n'.join(f'{k}: {v}' for k, v in df.iloc[0].items() if 'arg_' in k)
     at = AnchoredText(attxt, loc='center left')
-    ax0.add_artist(at)
+    ax3.add_artist(at)
     ax0.legend(loc='center right')
 
     ax1.plot(df['behavior_policy_return_cumulative'], label='Behavior policy')
@@ -45,8 +45,8 @@ def main():
     ax1.set_ylabel('Cumulative return per episode')
     ax1.legend()
 
-    ax2.plot(df['time_spent_in_behavior_episode'], label='Behavior policy')
-    ax2.plot(df['time_spent_in_target_episode'], label='Target policy')
+    ax2.plot(df['time_spent_in_behavior_episode'], '.', label='Behavior policy', alpha=0.7)
+    ax2.plot(df['time_spent_in_target_episode'], '.', label='Target policy', alpha=0.7)
     ax2.set_xlabel('Episodes')
     ax2.set_ylabel('Time spent in episode (s)')
     ax2.legend()
