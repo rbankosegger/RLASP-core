@@ -52,8 +52,8 @@ class TestControl(unittest.TestCase):
 
     def test_generate_episode_with_target_policy(self):
 
-        behavior_policy = GuidedPolicy(['move(right)', 'move(left)', 'vacuum', 'move(right)', 'vacuum'])
-        target_policy = QTablePolicy()
+        behavior_policy = GuidedPolicy(['vacuum', 'move(right)', 'vacuum'])
+        target_policy = GuidedPolicy(['move(right)', 'move(left)', 'vacuum', 'move(right)', 'vacuum'])
 
         control = OffPolicyControl(target_policy, behavior_policy)
 
@@ -61,6 +61,15 @@ class TestControl(unittest.TestCase):
         control.generate_episode_with_target_policy(mdp)
         self.assertEqual([None, -1, -1, -1, -1, 99], mdp.reward_history)
         self.assertEqual(95, mdp.return_history[0])
+        self.assertEqual([
+            frozenset({'robot(left)', 'dirty(left)', 'dirty(right)'}),
+            frozenset({'robot(right)', 'dirty(left)', 'dirty(right)'}),
+            frozenset({'robot(left)', 'dirty(left)', 'dirty(right)'}),
+            frozenset({'robot(left)', 'dirty(right)'}),
+            frozenset({'robot(right)', 'dirty(right)'}),
+            frozenset({'robot(right)'}),
+        ], mdp.state_history)
+
 
 
     def test_qlearning_updates_both_policies(self):
