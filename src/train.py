@@ -35,6 +35,7 @@ def main():
 
     parser.add_argument('--no_planning', help='Don\'t show progress in stdout',
                         dest='plan_for_new_states', action='store_false')
+    parser.add_argument('--yes_planning', dest='plan_for_new_states', action='store_true')
     parser.set_defaults(plan_for_new_states=False)
 
     # Control algorithms
@@ -179,8 +180,6 @@ def main():
         # Compute cumulative returns
         behavior_policy_return_cumulative += mdp.return_history[0]
         target_policy_return_cumulative += mdp_target.return_history[0]
-
-        print(mdp_target.return_history[0])
 
         # Finally, store all results in the dataframe
         row = {
