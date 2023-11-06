@@ -21,6 +21,9 @@ class BlocksWorldBuilder():
         self.blocks_world_size: int = blocks_world_size
         self.state_enumeration_limit: int = state_enumeration_limit
 
+        # Used for sampling random states
+        self._g_cache = dict()
+
         self.block_terms: List[str] = [f'b{n}' for n in range(blocks_world_size)]
         if reverse_stack_order:
             self.block_terms = list(reversed(self.block_terms))
@@ -60,25 +63,70 @@ class BlocksWorldBuilder():
     def _generate_random_state(self):
 
         if self.blocks_world_size <= self.state_enumeration_limit:
+            # print('true random enumerated')
             return random.choice(self.all_states)
+        #   else:
+        #       print('pseudo random')
+        #       return self._generate_pseudo_random_state()
         else:
-            return self._generate_pseudo_random_state()
+            # print('true random scalable')
+            return self._generate_random_uniform_state()
 
-    def _generate_pseudo_random_state(self):
+    def _g(self, n, k):
+        # A count of the number of states 
+        # that extend a part-state 
+        # in which there are k grounded towers and n ungrounded ones.
+        # See p.123 of Slaney, Thiebaux. Blocks World revisited. 2021.
+
+        if n == 0:
+            return 1
+
+        # Chache the results to reduce redundant computations
+        if (n,k) in self._g_cache.keys():
+            return self._g_cache[n,k]
+
+        x = self._g(n-1,k+1) + (n-1+k) * self._g(n-1,k)
+        self._g_cache[n,k] = x
+        return x
+
+    def _generate_random_uniform_state(self):
+
+        # Algorithm from page 126 of:
+        # Slaney, Thiebaux. Blocks World revisited. 2021.
+        # Samples blocksworld states from a random uniform distribution.
+        # Does not scale well but fine for our purposes.
+        # Better would be the algorithm on page 127.
+
+        # (1) start with an empty table and n ungrounded towers each consisting of a single block,
+        ungrounded_towers = [ [b] for b in self.block_terms ]
+        grounded_towers = []
+
+        # (2) repeat until all towers are grounded:
+        while(len(ungrounded_towers) > 0):
+        
+            phi = len(ungrounded_towers)
+            tau = len(grounded_towers)
+        
+            # (2a) arbitrarily select one of the φ yet ungrounded towers,
+            t = ungrounded_towers.pop(random.randrange(len(ungrounded_towers)))
+        
+            if random.uniform(0.0,1.0) <= self._g(phi-1,tau+1)/self._g(phi,tau):
+                # (2b) select the table with probability g(φ − 1, τ + 1)/g(φ, τ ) ...
+                grounded_towers.append(t)
+            else:
+                # (2b ct'd.) ... or one of the other towers (grounded or not) 
+                # each with probability g(φ − 1, τ )/g(φ, τ ), 
+                # and place the selected ungrounded tower onto it.
+                i = random.randrange(len(ungrounded_towers) + len(grounded_towers))
+                if i < len(ungrounded_towers):
+                    ungrounded_towers[i] += t
+                else:
+                    grounded_towers[i-len(ungrounded_towers)] += t
         
         generated_state = set()
-        placed = list()
-        shuffled_blocks = random.sample(self.block_terms, len(self.block_terms))
-
-        for t, block in enumerate(shuffled_blocks):
-
-            if 1.0 / (t+1.0) >= random.random():
-                generated_state.add(f'on({block}, table)')
-            else:
-                generated_state.add(f'on({block},{random.choice(placed)})')
-
-            placed.append(block)
-
+        for t in grounded_towers:
+            generated_state |= { f'on({x},{y})' for x,y in zip(t, ['table'] + t) }
+        
         return generated_state
 
     def _generate_all_states(self):
