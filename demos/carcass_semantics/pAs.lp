@@ -1,3 +1,7 @@
-move(3,floor).
-move(1,3).
-move(3,1).
+move(a,b).
+move(a,c).
+move(b,a).
+move(b,c).
+move(c,a).
+move(c,b).
+

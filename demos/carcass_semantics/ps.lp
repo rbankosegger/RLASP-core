@@ -1,3 +1,6 @@
-on(1,floor).
-on(2,floor).
-on(3,2).
+on(a,floor).
+on(b,floor).
+on(c,floor).
+clear(a).
+clear(b).
+clear(c).
