@@ -2,10 +2,12 @@ import random
 import copy
 import os
 
-import gym
-import gym_minigrid
-from gym_minigrid.wrappers import FullyObsWrapper
-from gym_minigrid import minigrid
+import gymnasium as gym
+import minigrid
+from minigrid.wrappers import FullyObsWrapper
+from minigrid.minigrid_env import MiniGridEnv
+from minigrid.core.mission import MissionSpace
+from minigrid.core.grid import Grid
 
 from .state_history import StateHistory
 
@@ -24,8 +26,8 @@ IDX_TO_DOOR_STATE = {
 
 def world_object_tuple_to_term(x, y, type_idx, color_idx, state_idx):
 
-    obj_type = minigrid.IDX_TO_OBJECT[type_idx]
-    color = minigrid.IDX_TO_COLOR[color_idx]
+    obj_type = minigrid.core.constants.IDX_TO_OBJECT[type_idx]
+    color = minigrid.core.constants.IDX_TO_COLOR[color_idx]
 
     if obj_type == 'empty' or obj_type == 'unseen':
         return None
@@ -61,7 +63,8 @@ class GymMinigrid(StateHistory):
         self.carries_key = False
         self.done = False
 
-        observation = self.env.reset()
+        result = self.env.reset(seed=random.randint(0, 9999))
+        observation = result[0]
         self.state = self._observation_to_state(observation)
         self.state_static = set()
 
@@ -95,7 +98,7 @@ class GymMinigrid(StateHistory):
             return set()
         else:
             # TODO: This is the full list of all actions, but actions may be limited in individual minigrid levels!
-            return { a.name for a in self.env.actions }
+            return { a.name for a in self.env.unwrapped.actions }
 
     @property
     def ground_state(self):
@@ -103,18 +106,22 @@ class GymMinigrid(StateHistory):
 
     def transition(self, action: str):
 
-        action_as_enum = self.env.actions[action]
-        observation, next_reward, done, info = self.env.step(action_as_enum)
+        action_as_enum = self.env.unwrapped.actions[action]
+
+        result = self.env.step(action_as_enum)
+        observation = result[0]
+        next_reward = result[1]
+        terminated = result[2]
+        truncated = result[3]
 
         if self.use_alternative_reward_system:
             if next_reward > 0:
                  next_reward = 1
 
-        self.carries_key = isinstance(self.env.carrying, minigrid.Key)
+        self.carries_key = isinstance(self.env.unwrapped.carrying, minigrid.core.world_object.Key)
 
-        self.done = done
+        self.done = terminated or truncated
         self.state = self._observation_to_state(observation)
-
 
         super().transition(action, # A[t]
                            frozenset(self.state), # S[t+1]
@@ -143,7 +150,6 @@ class GymMinigridBuilder:
     def build_mdp(self):
 
         env = gym.make(self.env_label)
-        env.seed(random.randint(0, 9999))
 
         if self.full_observability:
             env = FullyObsWrapper(env)
@@ -151,7 +157,7 @@ class GymMinigridBuilder:
         return GymMinigrid(env, self.use_alternative_reward_system)
 
 
-class CustomMinigridEnvironment(minigrid.MiniGridEnv):
+class CustomMinigridEnvironment(MiniGridEnv):
 
     ASCII_TO_COLOR = { 
 
@@ -165,18 +171,18 @@ class CustomMinigridEnvironment(minigrid.MiniGridEnv):
 
     ASCII_TO_OBJECTS = {
 
-        ** { f'{c}W' : (minigrid.Wall,  dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
-        ** { f'{c}F' : (minigrid.Floor, dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
-        ** { f'{c}K' : (minigrid.Key,   dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
-        ** { f'{c}A' : (minigrid.Ball,  dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
-        ** { f'{c}B' : (minigrid.Box,   dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
+        ** { f'{c}W' : (minigrid.core.world_object.Wall,  dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
+        ** { f'{c}F' : (minigrid.core.world_object.Floor, dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
+        ** { f'{c}K' : (minigrid.core.world_object.Key,   dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
+        ** { f'{c}A' : (minigrid.core.world_object.Ball,  dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
+        ** { f'{c}B' : (minigrid.core.world_object.Box,   dict(color=color)) for c, color in ASCII_TO_COLOR.items() },
 
-        ** { f'{c}Do' : (minigrid.Door, dict(color=color, is_open=True, is_locked=False)) for c, color in ASCII_TO_COLOR.items() },
-        ** { f'{c}Dc' : (minigrid.Door, dict(color=color, is_open=False, is_locked=False)) for c, color in ASCII_TO_COLOR.items() },
-        ** { f'{c}Dl' : (minigrid.Door, dict(color=color, is_open=False, is_locked=True)) for c, color in ASCII_TO_COLOR.items() },
+        ** { f'{c}Do' : (minigrid.core.world_object.Door, dict(color=color, is_open=True, is_locked=False)) for c, color in ASCII_TO_COLOR.items() },
+        ** { f'{c}Dc' : (minigrid.core.world_object.Door, dict(color=color, is_open=False, is_locked=False)) for c, color in ASCII_TO_COLOR.items() },
+        ** { f'{c}Dl' : (minigrid.core.world_object.Door, dict(color=color, is_open=False, is_locked=True)) for c, color in ASCII_TO_COLOR.items() },
 
-        'G' : (minigrid.Goal, dict()),
-        '~' : (minigrid.Lava, dict()),
+        'G' : (minigrid.core.world_object.Goal, dict()),
+        '~' : (minigrid.core.world_object.Lava, dict()),
     }
 
     ASCII_TO_DIRECTIONS = {
@@ -191,14 +197,17 @@ class CustomMinigridEnvironment(minigrid.MiniGridEnv):
 
         self.ascii_symbols = ascii_symbols
 
+        mission_space = MissionSpace(mission_func=lambda: 'unspecified')
+
         super().__init__(
             width=width,
             height=height,
-            see_through_walls=False)
+            see_through_walls=False,
+            mission_space=mission_space)
 
     def _gen_grid(self, width, height):
 
-        self.grid = minigrid.Grid(width, height)
+        self.grid = Grid(width, height)
 
         for x, y, symbol in self.ascii_symbols:
             self._build_from_symbol(x, y, symbol)
@@ -260,7 +269,6 @@ class GymMinigridCustomLevelBuilder:
 
 
     def _level_from_textfile(self, path_to_level):
-
 
         with open(path_to_level, 'r') as level_file:
             for y, line in enumerate(level_file, start=0):

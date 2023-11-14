@@ -3,8 +3,6 @@ import sys
 import unittest
 import warnings
 
-from gym_minigrid import *
-
 # Make sure the path of the framework is included in the import path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src/')))
 
@@ -12,12 +10,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 from mdp import GymMinigrid, GymMinigridBuilder, GymMinigridCustomLevelBuilder
 
 class TestGymMinigrid(unittest.TestCase):
-
-    def setUp(self):
-
-        # At time of development, some deprecation warnings occurred in the gym_minigrid package.
-        # They are not useful for unittesting, so we suppress them here for all unttests in this class.
-        warnings.simplefilter('ignore', category=DeprecationWarning)
 
     def test_available_actions(self):
 

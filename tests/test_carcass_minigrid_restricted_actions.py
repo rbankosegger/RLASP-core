@@ -3,8 +3,6 @@ import sys
 import unittest
 import warnings
 
-from gym_minigrid import *
-
 from matplotlib import pyplot as plt
 
 # Make sure the path of the framework is included in the import path
