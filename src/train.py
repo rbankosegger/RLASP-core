@@ -9,9 +9,17 @@ import csv
 import sys
 import os
 import pickle
+import signal
 from datetime import datetime
 
 from tqdm import tqdm
+
+keyboard_interrupt_occurred = False
+def handle_keyboard_interrupt(sig, frame):
+    global keyboard_interrupt_occurred
+    keyboard_interrupt_occurred = True
+    print('\nKeyboard interrupt detected! Quitting after saving this episode...')
+signal.signal(signal.SIGINT, handle_keyboard_interrupt)
 
 def write_experiment_data(data, filename):
     if filename:
@@ -24,8 +32,17 @@ def write_experiment_data(data, filename):
             writer.writeheader()
             writer.writerows(data)
 
+def build_episode_generator(episode_limit):
+    i = 0
+    while True:
+        yield i
+        i += 1
+        if episode_limit and i == episode_limit:
+            return
 
 def main():
+
+    global keyboard_interrupt_occurred
 
     parser = argparse.ArgumentParser(description='Train a RLASP agent in a given MDP.')
 
@@ -42,7 +59,7 @@ def main():
 
     parser.add_argument('--db_file', help='Location to store the generated data. If `None`, no file will be generated.', metavar='db_file.csv', default='out.csv')
 
-    parser.add_argument('--episodes', help='The number of episodes to train for.', type=int, default=100)
+    parser.add_argument('--episodes', help='The number of episodes to train for.', type=int, default=None)
     parser.add_argument('--max_episode_length', help='The maximum number of steps within an episode.', type=int, default=10)
 
     # Behavior policies
@@ -166,9 +183,13 @@ def main():
 
     df = list()
 
-    episode_ids = range(args.episodes)
+
+    episode_ids = build_episode_generator(args.episodes)
     if args.show_progress_bar:
-        episode_ids = tqdm(episode_ids, total=args.episodes)
+        if args.episodes:
+            episode_ids = tqdm(episode_ids, total=args.episodes, bar_format='{l_bar}{bar:20}{r_bar}')
+        else:
+            episode_ids = tqdm(episode_ids)
     
     behavior_policy_return_cumulative = 0.0
     target_policy_return_cumulative = 0.0
@@ -214,6 +235,9 @@ def main():
         df.append(row)
 
         write_experiment_data(df, args.db_file)
+
+        if keyboard_interrupt_occurred:
+            sys.exit('\nProgram exit due to keyboard interrupt.')
 
 
     if args.qtable_output:
