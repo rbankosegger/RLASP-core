@@ -13,6 +13,18 @@ from datetime import datetime
 
 from tqdm import tqdm
 
+def write_experiment_data(data, filename):
+    if filename:
+        csv_headers = set()
+        for row in data:
+            csv_headers |= row.keys()
+
+        with open(filename, 'w') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=list(csv_headers))
+            writer.writeheader()
+            writer.writerows(data)
+
+
 def main():
 
     parser = argparse.ArgumentParser(description='Train a RLASP agent in a given MDP.')
@@ -33,8 +45,7 @@ def main():
     parser.add_argument('--epsilon', help='The "epsilon" parameter for the epsilon-greedy behavior policy. Does nothing for other behavior policies.', type=float, default=0.3)
     parser.add_argument('--planning_horizon', help='The number of steps into the future considered by the planner', type=int, default=4)
 
-    parser.add_argument('--no_planning', help='Don\'t show progress in stdout',
-                        dest='plan_for_new_states', action='store_false')
+    parser.add_argument('--no_planning', dest='plan_for_new_states', action='store_false')
     parser.add_argument('--yes_planning', dest='plan_for_new_states', action='store_true')
     parser.set_defaults(plan_for_new_states=False)
 
@@ -158,7 +169,6 @@ def main():
     behavior_policy_return_cumulative = 0.0
     target_policy_return_cumulative = 0.0
 
-
     for episode_id in episode_ids:
 
         mdp = mdp_builder.build_mdp()
@@ -197,16 +207,7 @@ def main():
 
         df.append(row)
 
-    if args.db_file:
-
-        csv_headers = set()
-        for row in df:
-            csv_headers |= row.keys()
-
-        with open(args.db_file, 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=list(csv_headers))
-            writer.writeheader()
-            writer.writerows(df)
+        write_experiment_data(df, args.db_file)
 
 
     if args.qtable_output:
