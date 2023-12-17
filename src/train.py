@@ -33,6 +33,10 @@ def main():
                         dest='show_progress_bar', action='store_false')
     parser.set_defaults(show_progress_bar=True)
 
+    parser.add_argument('--test_target_policy', help='Generate every episode, twice (with same starting state). Once with the behavior policy and learning as usual. Once with the target policy and no learning.',
+                        dest='test_target_policy', action='store_true')
+    parser.set_defaults(test_target_policy=False)
+
     parser.add_argument('--qtable_input', help='Provides a file location to read a qtable description from. This will be used to initialize the qtables in both behavior and target policy before training.', metavar='qtable.pickle', default=None)
     parser.add_argument('--qtable_output', help='Provides a file location to write a qtable description of the target policy after training.', metavar='qtable.pickle', default=None)
 
@@ -174,36 +178,38 @@ def main():
         mdp = mdp_builder.build_mdp()
         control.try_initialize_state(mdp.state, mdp.available_actions)
 
-        # First, test the target policy and see how it would perform
-        mdp_target = copy.deepcopy(mdp)
-        t0 = datetime.now()
-        control.generate_episode_with_target_policy(mdp_target, step_limit=args.max_episode_length)
-        t1 = datetime.now()
-        time_spent_in_target_episode = (t1 - t0).total_seconds()
+        if args.test_target_policy:
+            # Test the target policy and see how it would perform.
+            mdp_target = copy.deepcopy(mdp)
+            t0 = datetime.now()
+            control.generate_episode_with_target_policy(mdp_target, step_limit=args.max_episode_length)
+            t1 = datetime.now()
+            time_spent_in_target_episode = (t1 - t0).total_seconds()
 
-        # Second, train the target policy and the behavior policy on the mdp
+        # Train the target policy and the behavior policy on the mdp
         t0 = datetime.now()
         control.learn_episode(mdp, step_limit=args.max_episode_length)
         t1 = datetime.now()
         time_spent_in_behavior_episode = (t1 - t0).total_seconds()
 
-        # Compute cumulative returns
+        # Store results in the dataframe
         behavior_policy_return_cumulative += mdp.return_history[0]
-        target_policy_return_cumulative += mdp_target.return_history[0]
-
-        # Finally, store all results in the dataframe
         row = {
-
             ** { f'arg_{k}':v for k, v in vars(args).items() },
 
             'episode_id': episode_id,
             'behavior_policy_return': mdp.return_history[0],
-            'target_policy_return': mdp_target.return_history[0],
             'behavior_policy_return_cumulative': behavior_policy_return_cumulative,
-            'target_policy_return_cumulative': target_policy_return_cumulative,
             'time_spent_in_behavior_episode': time_spent_in_behavior_episode,
-            'time_spent_in_target_episode': time_spent_in_target_episode,
         }
+
+        if args.test_target_policy: 
+            target_policy_return_cumulative += mdp_target.return_history[0]
+            row |= {
+                'target_policy_return': mdp_target.return_history[0],
+                'time_spent_in_target_episode': time_spent_in_target_episode,
+                'target_policy_return_cumulative': target_policy_return_cumulative,
+            }
 
         df.append(row)
 

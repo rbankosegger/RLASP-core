@@ -30,25 +30,28 @@ def main():
     fig, ((ax0, ax1), (ax2, ax3)) = plt.subplots(2,2, sharex=True)
 
     ax0.plot(df['behavior_policy_return'], '.', label='Behavior policy', alpha=0.7)
-    ax0.plot(df['target_policy_return'], '.', label='Target policy', alpha=0.7)
+    if 'target_policy_return' in df.columns:
+        ax0.plot(df['target_policy_return'], '.', label='Target policy', alpha=0.7)
     ax0.set_xlabel('Episodes')
     ax0.set_ylabel('Return per episode')
 
-    attxt = '\n'.join(f'{k}: {v}' for k, v in df.iloc[0].items() if 'arg_' in k)
+    attxt = '\n'.join(f'{k}: {df.iloc[0][k]}' for k in sorted(df.iloc[0].keys()) if 'arg_' in k)
     at = AnchoredText(attxt, loc='center left')
     ax3.add_artist(at)
     ax0.legend(loc='center right')
 
     ax1.plot(df['behavior_policy_return_cumulative'], label='Behavior policy')
-    ax1.plot(df['target_policy_return_cumulative'], label='Target policy')
+    if 'target_policy_return_cumulative' in df.columns:
+        ax1.plot(df['target_policy_return_cumulative'], label='Target policy')
     ax1.set_xlabel('Episodes')
     ax1.set_ylabel('Cumulative return per episode')
     ax1.legend()
 
-    ax2.plot(df['time_spent_in_behavior_episode'], '.', label='Behavior policy', alpha=0.7)
-    ax2.plot(df['time_spent_in_target_episode'], '.', label='Target policy', alpha=0.7)
+    ax2.plot(df['time_spent_in_behavior_episode'].cumsum()/60, '-', label='Behavior policy', alpha=0.7)
+    if 'time_spent_in_target_episode' in df.columns:
+        ax2.plot(df['time_spent_in_target_episode'].cumsum()/60, '-', label='Target policy', alpha=0.7)
     ax2.set_xlabel('Episodes')
-    ax2.set_ylabel('Time spent in episode (s)')
+    ax2.set_ylabel('Cumulative time spent in episode (minutes)')
     ax2.legend()
 
     plt.suptitle(f'MDP={mdp} {mdp_params}\nControl={control_algorithm}\nCarcass={carcass}')
