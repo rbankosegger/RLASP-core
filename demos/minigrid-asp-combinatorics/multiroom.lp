@@ -2,6 +2,8 @@
 
 width(25).
 height(25).
+%width(7).
+%height(4).
 
 % Configuration MiniGrid-MultiRoom-N2-S4-v0
 % Add more rooms of different sizes as needed
@@ -57,19 +59,28 @@ nonOverlap(R1,R2) :-
 	T2Y+S2Y <= T1Y.
 :- room(R1), room(R2), R1<R2, not nonOverlap(R1,R2), not prevRoom(R1,R2), not prevRoom(R2,R1).
 
+color(red;green;blue;purple;yellow;grey).
+1 = { doorColor(XY, C) : color(C) } :- exitDoorPos(_,XY).
+:- doorColor(XY1, C1), doorColor(XY2,C2), XY1<XY2, C1=C2.
+
 % Place agent and goal inside the rooms.
 insideRoom(R, (X,Y)) :- roomTop(R, (TX,TY)), roomSize(R, (SX,SY)), X=TX+1..TX+SX-2, Y=TY+1..TY+SY-2.
-1 = { doorState(XY, o;c) } :- exitDoorPos(_,XY).
+doorStateOption(o;c).
+1 = { doorState(XY, S) : doorStateOption(S) } :- exitDoorPos(_,XY).
 1 = { goalPos(XY) : insideRoom(R, XY) } :- room(R), not prevRoom(R,_).
 canEnter(XY) :- insideRoom(_, XY).
 canEnter(XY) :- exitDoorPos(_, XY), doorState(XY, o).
 1 = { agentPos(XY) : canEnter(XY) }.
 1 = { agentDir(n;w;s;e)}.
 
-% Uncomment this line to generate only initial states!
+% Uncomment this to generate only initial states!
 % It constrains the agent position to the first room.
-1 = { agentPos(XY) : insideRoom(R, XY) } :- room(R), not prevRoom(_,R).
+% Also, doors must be closed.
+% 	1 = { agentPos(XY) : insideRoom(R, XY) } :- room(R), not prevRoom(_,R).
+% 	doorState(XY, c) :- exitDoorPos(_,XY).
 
 #show goalPos/1.
 #show roomTop/2.
 #show agentPos/1.
+#show doorState/2.
+#show doorColor/2.
