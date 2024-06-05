@@ -59,13 +59,13 @@ class TestGymMinigrid(unittest.TestCase):
 
         """
 
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_choke(none))[left,right]"
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_choke(none))[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
         abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
-        self.assertSetEqual({'left', 'right'},
+        self.assertSetEqual({'forward', 'left', 'right'},
                             abstract_mdp.available_actions)
 
     def test_touching_goal_3(self):
@@ -76,13 +76,13 @@ class TestGymMinigrid(unittest.TestCase):
 
         """
 
-        desired_abstract_state = "carcass_(facing(west),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_choke(none))[left,right]"
+        desired_abstract_state = "carcass_(facing(west),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_choke(none))[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
         abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
-        self.assertSetEqual({'left', 'right'},
+        self.assertSetEqual({'forward','left', 'right'},
                             abstract_mdp.available_actions)
 
     def test_distant_goal_1(self):

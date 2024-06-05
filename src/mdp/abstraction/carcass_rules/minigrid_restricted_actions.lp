@@ -11,10 +11,10 @@
 % carriesKey defines whether the agent has in the past picked up a key from the environment (and not dropped so far).
 #defined carriesKey/0.
 
-northmost(N) :- N = #min { 0; Y : obj(_, (_, Y)) }.
-southmost(S) :- S = #max { 3; Y : obj(_, (_, Y)) }.
-westmost(W) :- W = #min { 0; X : obj(_, (X, _)) }.
-eastmost(E) :- E = #max { 3; X : obj(_, (X, _)) }.
+northmost(N) :- N = #min { Y : obj(_, (_, Y)) }.
+southmost(S) :- S = #max { Y : obj(_, (_, Y)) }.
+westmost(W) :- W = #min { X : obj(_, (X, _)) }.
+eastmost(E) :- E = #max { X : obj(_, (X, _)) }.
 
 tile((W..E, N..S)) :- westmost(W), eastmost(E), northmost(N), southmost(S).
 
@@ -134,7 +134,6 @@ forwardMoveBlocked :- facing(XY), obj(wall(_), XY).
 forwardMoveBlocked :- facing(XY), obj(door(_, closed), XY).
 forwardMoveBlocked :- facing(XY), obj(door(_, locked), XY).
 forwardMoveBlocked :- facing(XY), obj(key(_), XY).
-forwardMoveBlocked :- facing(XY), not tile(XY).
 abstractAction(forward, forward) :- not forwardMoveBlocked.
 
 % Picking up action makes sense only if agent is facing a key or other object.
