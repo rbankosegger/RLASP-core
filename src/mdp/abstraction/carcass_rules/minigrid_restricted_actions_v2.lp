@@ -11,6 +11,7 @@
 % carries defines items that are carried by the agent.
 #defined carries/1.
 
+agent(XY) :- obj(agent(_), XY).
 dangerous(XY) :- obj(ball(blue), XY).
 dangerous(XY) :- obj(lava, XY).
 
@@ -49,8 +50,9 @@ e(U,V) :- v(U), v(V), inRoom(U,R), inRoom(V,R), U!=V.
 
 p(0, U) :- obj(agent(_), U).
 0 { p(T+1, V) : e(U,V) } 1 :- p(T,U), T<#count{ X : v(X) }.
-:- obj(goal,U), not p(_,U).
-#minimize{ T : p(T,_) }. 
+:- obj(goal,_), 0 = #count{ U : p(_,U), obj(goal,U) }.
+:~ p(T,_). [1@2, T]
+:~ p(1,(X1,Y1)), agent((X2,Y2)), D=|X2-X1|+|Y2-Y1|. [D@1]
 
 % Make sure the agent gets the key before.
 needsKeyBefore(C,T) :- p(T, U), obj(door(C,locked), U), not carries(key(C)).
@@ -59,7 +61,6 @@ keyOnPath(C,T) :- p(T,U), obj(key(C), U).
 
 nextOnPath(V) :- p(1,V).
 
-agent(XY) :- obj(agent(_), XY).
 facing((X,Y-1)) :- obj(agent(north),(X,Y)).
 facing((X,Y+1)) :- obj(agent(south),(X,Y)).
 facing((X+1,Y)):- obj(agent(east),(X,Y)).

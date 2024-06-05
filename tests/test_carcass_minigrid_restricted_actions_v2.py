@@ -443,3 +443,26 @@ class TestGymMinigrid(unittest.TestCase):
         abstract_mdp.transition('left')
         desired_abstract_state = "carcass_(facing(west),objective_x_is(east),objective_y_is(north),touching(none),in_gap(vertical))[left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
+
+    def test_tie_break_preferring_nearer_goals(self):
+
+        # In some cases, multiple paths to a goal are available.
+        # For a practical example, consider the FourRooms Environment.
+        # In this case, multiple paths to the goal are minimal.
+        # We need to break those ties deterministically.
+        # -> Add rule to pick a path where the next subgoal has the smallest manhattan distance!
+
+        world = """
+           kW   kW  kW  kW  kW
+           kW   _   G   _   kW
+           kW   _   _   _   kW
+           kW   ^   _   G   kW
+           kW   kW  kW  kW  kW
+
+        """
+
+        mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
+
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(none),in_gap(none))[forward,left,right]"
+        self.assertEqual(desired_abstract_state, abstract_mdp.state)
