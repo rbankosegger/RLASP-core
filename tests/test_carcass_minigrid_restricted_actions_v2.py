@@ -30,7 +30,7 @@ class TestGymMinigrid(unittest.TestCase):
         desired_abstract_state = "carcass_gutterState[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -39,14 +39,15 @@ class TestGymMinigrid(unittest.TestCase):
     def test_touching_goal_1(self):
 
         world = """
-            > G
-
+            kW  kW  kW  kW
+            kW  >   G   kW
+            kW  kW  kW  kW
         """
 
-        desired_abstract_state = "carcass_(facing(east),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(east),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_gap(none))[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -55,51 +56,54 @@ class TestGymMinigrid(unittest.TestCase):
     def test_touching_goal_2(self):
 
         world = """
-            ^ G
-
+            kW  kW  kW  kW
+            kW  ^   G   kW
+            kW  kW  kW  kW
         """
 
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_gap(none))[left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
-        self.assertSetEqual({'forward', 'left', 'right'},
+        self.assertSetEqual({'left', 'right'},
                             abstract_mdp.available_actions)
 
     def test_touching_goal_3(self):
 
         world = """
-            <
-            G
-
+            kW  kW  kW
+            kW  <   kW
+            kW  G   kW
+            kW  kW  kW
         """
 
-        desired_abstract_state = "carcass_(facing(west),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(west),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_gap(none))[left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
-        self.assertSetEqual({'forward','left', 'right'},
+        self.assertSetEqual({'left', 'right'},
                             abstract_mdp.available_actions)
 
     def test_distant_goal_1(self):
 
         world = """
-            _ G
-            v
-
+            kW  kW  kW  kW
+            kW  _   G   kW
+            kW  v   _   kW
+            kW  kW  kW  kW
         """
 
-        desired_abstract_state = "carcass_(facing(south),objective_x_is(east),objective_y_is(north),touching(none),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(east),objective_y_is(north),touching(none),in_gap(none))[left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
-        self.assertSetEqual({'forward', 'left', 'right'},
+        self.assertSetEqual({'left', 'right'},
                             abstract_mdp.available_actions)
 
     def test_goal_behind_touching_closed_door(self):
@@ -112,10 +116,10 @@ class TestGymMinigrid(unittest.TestCase):
 
         """
 
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(west),objective_y_is(on_axis),touching(door(closed)),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(west),objective_y_is(on_axis),touching(door(closed)),in_gap(none))[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -131,10 +135,10 @@ class TestGymMinigrid(unittest.TestCase):
 
         """
 
-        desired_abstract_state = "carcass_(facing(west),objective_x_is(west),objective_y_is(on_axis),touching(door(open)),in_choke(none))[forward,left,right,toggle]"
+        desired_abstract_state = "carcass_(facing(west),objective_x_is(west),objective_y_is(on_axis),touching(door(open)),in_gap(none))[forward,left,right,toggle]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right', 'toggle'},
@@ -150,16 +154,16 @@ class TestGymMinigrid(unittest.TestCase):
 
         """
 
-        desired_abstract_state = "carcass_(facing(south),objective_x_is(west),objective_y_is(south),touching(none),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(west),objective_y_is(south),touching(none),in_gap(none))[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
                             abstract_mdp.available_actions)
 
-    def test_goal_behind_touching_choke_point(self):
+    def test_goal_behind_touching_gap_point(self):
 
         world = """
             kW  kW  kW  kW  kW
@@ -169,10 +173,10 @@ class TestGymMinigrid(unittest.TestCase):
 
         """
 
-        desired_abstract_state = "carcass_(facing(west),objective_x_is(west),objective_y_is(on_axis),touching(choke),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(west),objective_x_is(west),objective_y_is(on_axis),touching(gap),in_gap(none))[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -180,17 +184,19 @@ class TestGymMinigrid(unittest.TestCase):
 
 
     def test_facing_lava_1(self):
-        
-        world = """
-            >  ~
-            G  _
 
+        world = """
+            kW  kW  kW  kW
+            kW  >   ~   kW
+            kW  G   _   kW
+            kW  kW  kW  kW
         """
+        
 
         desired_abstract_state = "carcass_facing_danger[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -199,15 +205,16 @@ class TestGymMinigrid(unittest.TestCase):
     def test_facing_lava_2(self):
         
         world = """
-            ~  <
-            G  _
-
+            kW  kW  kW  kW
+            kW  ~   <   kW
+            kW  G   _   kW
+            kW  kW  kW  kW
         """
 
         desired_abstract_state = "carcass_facing_danger[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -216,15 +223,16 @@ class TestGymMinigrid(unittest.TestCase):
     def test_facing_lava_3(self):
         
         world = """
-            _  ~
-            G  ^
-
+            kW  kW  kW  kW
+            kW  _   ~   kW
+            kW  G   ^   kW
+            kW  kW  kW  kW
         """
 
         desired_abstract_state = "carcass_facing_danger[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -233,15 +241,16 @@ class TestGymMinigrid(unittest.TestCase):
     def test_facing_lava_4(self):
         
         world = """
-            _  v
-            G  ~
-
+            kW  kW  kW  kW
+            kW  _   v   kW
+            kW  G   ~   kW
+            kW  kW  kW  kW
         """
 
         desired_abstract_state = "carcass_facing_danger[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -250,15 +259,16 @@ class TestGymMinigrid(unittest.TestCase):
     def test_touching_but_not_facing_lava(self):
 
         world = """
-            v  ~
-            G  ~
-
+            kW  kW  kW  kW
+            kW  v   ~   kW
+            kW  G   ~   kW
+            kW  kW  kW  kW
         """
 
-        desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_gap(none))[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
         self.assertSetEqual({'forward', 'left', 'right'},
@@ -267,15 +277,16 @@ class TestGymMinigrid(unittest.TestCase):
     def test_facing_dangerous_blue_ball(self):
 
         world = """
-            >  bA
-            G  _
-
+            kW  kW  kW  kW
+            kW  >   bA  kW
+            kW  G   _   kW
+            kW  kW  kW  kW
         """
 
         desired_abstract_state = "carcass_facing_danger[forward,left,right]"
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
 
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
@@ -287,12 +298,13 @@ class TestGymMinigrid(unittest.TestCase):
         # After reaching the goal, the MDP should be finished (no more actions available)
 
         world = """
-            > G
-
+            kW  kW  kW  kW
+            kW  >   G   kW
+            kW  kW  kW  kW
         """
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
         abstract_mdp.transition('forward')
 
         self.assertEqual('carcass_gutterState[]', abstract_mdp.state)
@@ -307,46 +319,47 @@ class TestGymMinigrid(unittest.TestCase):
         """
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         abstract_mdp.transition('forward')
 
         self.assertEqual('carcass_gutterState[]', abstract_mdp.state)
         self.assertSetEqual(set(), abstract_mdp.available_actions)
 
-    def test_in_vertical_choke(self):
+    def test_in_vertical_gap(self):
 
         world = """
-            kW  kW  kW
-            kW  ^   kW
-            kW  G   kW
-            kW  kW  kW
-
+            kW  kW  kW  kW  kW
+            kW  _   _   _   kW
+            kW  kW  ^   kW  kW
+            kW  _   G   _   kW
+            kW  kW  kW  kW  kW
         """
 
 
-        mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
 
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_choke(vertical))[left,right]"
+        mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
+
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(south),touching(goal),in_gap(vertical))[forward,left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
-    def test_in_horizontal_choke(self):
+    def test_in_horizontal_gap(self):
 
         world = """
-            kW  kW  kW  kW
-            kW  ^   G   kW
-            kW  kW  kW  kW
-
+            kW  kW  kW  kW  kW
+            kW  _   kW  _   kW
+            kW  _   ^   G   kW
+            kW  _   kW  _   kW
+            kW  kW  kW  kW  kW
         """
 
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
 
-
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_choke(horizontal))[left,right]"
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(on_axis),touching(goal),in_gap(horizontal))[left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
     def test_what_happens_after_going_through_door(self):
@@ -362,43 +375,40 @@ class TestGymMinigrid(unittest.TestCase):
 
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
         abstract_mdp.transition('toggle')
         abstract_mdp.transition('forward')
 
-        desired_abstract_state = "carcass_(facing(east),objective_x_is(east),objective_y_is(south),touching(none),in_choke(horizontal))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(east),objective_x_is(east),objective_y_is(south),touching(none),in_gap(horizontal))[forward,left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
-    def test_pickup_key_before_door(self):
+    def test_pickup_key_before_goal(self):
 
-        # If there is a key in the world, pick it up before moving to the goal!
-        # Note: This only works with the MiniGrid-DoorKey environment, not more complex environments with multiple locked / open doors and keys!
-
+        # If there is a key in the world, but no door, picking it up should not matter!
 
         world = """
-            v   _   G
-            _   _   _
-            gK  _   _
-
+            kW  kW  kW  kW  kW
+            kW  v   _   _   kW
+            kW  _   _   G   kW
+            kW  gK  _   _   kW
+            kW  kW  kW  kW  kW
         """
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
-        # Before picking up the key, treat the key as the goal!
-        desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(none),in_choke(none))[forward,left,right]"
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(east),objective_y_is(south),touching(none),in_gap(none))[forward,left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
         abstract_mdp.transition('forward')
 
-        desired_abstract_state = "carcass_(facing(south),objective_x_is(on_axis),objective_y_is(south),touching(key),in_choke(none))[left,pickup,right]"
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(east),objective_y_is(on_axis),touching(none),in_gap(none))[left,pickup,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
         abstract_mdp.transition('pickup')
 
-        # After picking up the key, the `goal` object should be the goal!
-        desired_abstract_state = "carcass_(facing(south),objective_x_is(east),objective_y_is(north),touching(none),in_choke(none))[drop,forward,left,right]"
+        desired_abstract_state = "carcass_(facing(south),objective_x_is(east),objective_y_is(on_axis),touching(none),in_gap(none))[drop,forward,left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
     def test_key_drop_and_pickup_restricted_actions(self):
@@ -413,23 +423,23 @@ class TestGymMinigrid(unittest.TestCase):
         """
 
         mdp = GymMinigridCustomLevelBuilder(ascii_encoding=world).build_mdp()
-        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions.lp')
+        abstract_mdp = Carcass(mdp, rules_filename='minigrid_restricted_actions_v2.lp')
 
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(north),touching(key),in_choke(vertical))[left,pickup,right]"
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(north),touching(key),in_gap(vertical))[left,pickup,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
         abstract_mdp.transition('pickup')
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(north),touching(choke),in_choke(vertical))[drop,forward,left,right]"
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(north),touching(none),in_gap(vertical))[drop,forward,left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
         abstract_mdp.transition('drop')
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(north),touching(key),in_choke(vertical))[left,pickup,right]"
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(north),touching(key),in_gap(vertical))[left,pickup,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
         abstract_mdp.transition('pickup')
-        desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(north),touching(choke),in_choke(vertical))[drop,forward,left,right]"
+        desired_abstract_state = "carcass_(facing(north),objective_x_is(east),objective_y_is(north),touching(none),in_gap(vertical))[drop,forward,left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
         abstract_mdp.transition('left')
-        desired_abstract_state = "carcass_(facing(west),objective_x_is(on_axis),objective_y_is(north),touching(choke),in_choke(vertical))[left,right]"
+        desired_abstract_state = "carcass_(facing(west),objective_x_is(east),objective_y_is(north),touching(none),in_gap(vertical))[left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
