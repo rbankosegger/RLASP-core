@@ -8,8 +8,9 @@
 % choose(R) 									... rule R was chosen
 % abstractAction(abstract(...), ground(...))	... abstract action `abstract(...)` is available and has a corresponding ground action `ground(...)`.
 
-% carriesKey defines whether the agent has in the past picked up a key from the environment (and not dropped so far).
-#defined carriesKey/0.
+% carries defines items that are carried by the agent.
+#defined carries/1.
+
 
 northmost(N) :- N = #min { Y : obj(_, (_, Y)) }.
 southmost(S) :- S = #max { Y : obj(_, (_, Y)) }.
@@ -143,7 +144,7 @@ abstractAction(pickup, pickup) :- facing(XY), obj(key(_), XY).
 abstractAction(toggle, toggle) :- facing(XY), obj(door(_, _), XY). 
 
 % Drop action makes only sense when an item (e.g. key) is carried and when there is free space.
-abstractAction(drop, drop) :- carriesKey, not forwardMoveBlocked. 
+abstractAction(drop, drop) :- carries(_), not forwardMoveBlocked. 
 
 % `Done` action never does anything -> Ignore it completely!
 % abstractAction(gutterAction, done). 

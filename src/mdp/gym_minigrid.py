@@ -24,8 +24,7 @@ IDX_TO_DOOR_STATE = {
     2: 'locked'
 }
 
-def world_object_tuple_to_term(x, y, type_idx, color_idx, state_idx):
-
+def world_object_tuple_to_atom(type_idx, color_idx, state_idx):
     obj_type = minigrid.core.constants.IDX_TO_OBJECT[type_idx]
     color = minigrid.core.constants.IDX_TO_COLOR[color_idx]
 
@@ -34,24 +33,31 @@ def world_object_tuple_to_term(x, y, type_idx, color_idx, state_idx):
 
     elif obj_type =='agent':
         direction = IDX_TO_AGENT_DIRECTION[state_idx]
-        return f'obj(agent({direction}),({x},{y}))'
+        return f'agent({direction})'
 
     elif obj_type in { 'wall', 'floor', 'ball', 'key', 'box' }:
-        return f'obj({obj_type}({color}),({x},{y}))'
+        return f'{obj_type}({color})'
 
     elif obj_type == 'door':
         state = IDX_TO_DOOR_STATE[state_idx]
-        return f'obj(door({color},{state}),({x},{y}))'
+        return f'door({color},{state})'
 
     elif obj_type == 'goal':
-        return f'obj(goal,({x},{y}))'
+        return f'goal'
 
     elif obj_type == 'lava':
-        return f'obj(lava,({x},{y}))'
+        return f'lava'
 
     else:
         assert False, "unknown object type: '%s'" % obj_type
 
+def world_object_tuple_to_term(x, y, type_idx, color_idx, state_idx):
+
+    atom = world_object_tuple_to_atom(type_idx, color_idx, state_idx)
+    if not atom:
+        return None
+    else:
+        return f'obj({atom},({x},{y}))'
 
 class GymMinigrid(StateHistory):
 
@@ -60,7 +66,6 @@ class GymMinigrid(StateHistory):
         self.env = env
         self.use_alternative_reward_system = use_alternative_reward_system
 
-        self.carries_key = False
         self.done = False
 
         result = self.env.reset(seed=random.randint(0, 9999))
@@ -82,8 +87,10 @@ class GymMinigrid(StateHistory):
         state = { world_object_tuple_to_term(x, y, *img[x,y]) 
                     for x in range(width) for y in range(height) } - { None }
 
-        if self.carries_key:
-            state.add('carriesKey')
+        carrying = self.env.unwrapped.carrying
+        if carrying:
+            carried_obj = world_object_tuple_to_atom(*carrying.encode())
+            state.add(f'carries({carried_obj})')
 
         if self.done:
             state.add('terminal')
@@ -117,8 +124,6 @@ class GymMinigrid(StateHistory):
         if self.use_alternative_reward_system:
             if next_reward > 0:
                  next_reward = 1
-
-        self.carries_key = isinstance(self.env.unwrapped.carrying, minigrid.core.world_object.Key)
 
         self.done = terminated or truncated
         self.state = self._observation_to_state(observation)

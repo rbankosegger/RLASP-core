@@ -419,6 +419,8 @@ class TestGymMinigrid(unittest.TestCase):
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
         abstract_mdp.transition('pickup')
+        print(mdp.state)
+        print(abstract_mdp.state)
         desired_abstract_state = "carcass_(facing(north),objective_x_is(on_axis),objective_y_is(north),touching(choke),in_choke(vertical))[drop,forward,left,right]"
         self.assertEqual(desired_abstract_state, abstract_mdp.state)
 
