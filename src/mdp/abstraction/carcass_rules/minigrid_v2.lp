@@ -114,36 +114,21 @@ preds((facing(F),
 rule(C, 2) :- preds(C).
 applicable(C, ()) :- preds(C).
 
-% Turing left, right is always possible
+% Actions are the same in every state!
 abstractAction(left, left). 
 abstractAction(right, right). 
-
-% Moving forward is only possible when there are no obstacles in the way
-forwardMoveBlocked :- facing(XY), obj(wall(_), XY).
-forwardMoveBlocked :- facing(XY), obj(door(_, closed), XY).
-forwardMoveBlocked :- facing(XY), obj(door(_, locked), XY).
-forwardMoveBlocked :- facing(XY), obj(key(_), XY).
-%	forwardMoveBlocked :- facing(XY), not tile(XY).
-abstractAction(forward, forward) :- not forwardMoveBlocked.
-
-% Picking up action makes sense only if agent is facing a key or other object.
-abstractAction(pickup, pickup) :- facing(XY), obj(key(_), XY). 
-
-% Toggle action only makes sense in front of the door (or other items)
-abstractAction(toggle, toggle) :- facing(XY), obj(door(_, _), XY). 
-
-% Drop action makes only sense when an item (e.g. key) is carried and when there is free space.
-abstractAction(drop, drop) :- carries(_), not forwardMoveBlocked. 
-
-% `Done` action never does anything -> Ignore it completely!
-% abstractAction(gutterAction, done). 
+abstractAction(forward, forward). 
+abstractAction(pickup, pickup). 
+abstractAction(drop, drop). 
+abstractAction(toggle, toggle). 
+abstractAction(done, done). 
 
 % The gutter state collects all states not covered by some rule.
 rule(gutterState, #sup).	
 applicable(gutterState, ()).
 
-%#show choose/1.
-%#show abstractAction/2.
+#show choose/1.
+#show abstractAction/2.
 
 % #show applicable/2.
 % #show rule/2.
