@@ -1,5 +1,5 @@
 from .mdp import *
-from .mdp.abstraction import Carcass, CarcassBuilder
+from .mdp.abstraction import Carcass, CarcassBuilder, PrologCarcass, PrologCarcassBuilder
 from .control import *
 from .policy import *
 
@@ -128,8 +128,11 @@ def main():
         mdp_builder = VacuumCleanerWorldBuilder()
 
     if args.carcass:
-        mdp_builder = CarcassBuilder(mdp_builder, args.carcass)
-
+        if args.carcass.endswith('.lp'):
+            # This is an ASP CARCASS
+            mdp_builder = CarcassBuilder(mdp_builder, args.carcass)
+        elif args.carcass.endswith('.pl'):
+            mdp_builder = PrologCarcassBuilder(mdp_builder, args.carcass)
 
     behavior_policy_qtable = QTablePolicy(args.initial_q_estimate)
     if args.qtable_input:
