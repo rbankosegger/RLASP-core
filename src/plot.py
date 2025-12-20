@@ -40,11 +40,11 @@ def main():
     ax3.add_artist(at)
     ax0.legend(loc='center right')
 
-    ax1.plot(df['behavior_policy_return_cumulative'], label='Behavior policy')
+    ax1.plot(df['behavior_policy_return_cumulative'] / df.index, label='Behavior policy')
     if 'target_policy_return_cumulative' in df.columns:
         ax1.plot(df['target_policy_return_cumulative'], label='Target policy')
     ax1.set_xlabel('Episodes')
-    ax1.set_ylabel('Cumulative return per episode')
+    ax1.set_ylabel('Normalised Cumulative return per episode')
     ax1.legend()
 
     ax2.plot(df['time_spent_in_behavior_episode'].cumsum()/60, '-', label='Behavior policy', alpha=0.7)
