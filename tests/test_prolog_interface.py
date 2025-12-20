@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../s
 
 # Framework imports
 from policy import RandomPolicy
-from utils import PrologInterface
+from mdp.abstraction import PrologInterface
 
 class TestPrologInterface(unittest.TestCase):
 
@@ -63,3 +63,16 @@ class TestPrologInterface(unittest.TestCase):
         response = p.run_query(kb,qu)
 
         self.assertEqual([{'X':2,'Y':'a'},{'X':3,'Y':'b'}], response)
+
+    def test_multiple_queries(self):
+
+        kb = ['p(1)', 'p(2)', 'p(3)', 'q(2,a)', 'q(3,b)', 'r(1,c)']
+        qu1 = 'p(X), q(X,Y)'
+        qu2 = 'p(X), r(X,Y)'
+
+        p = PrologInterface()
+
+        results = p.run_query(kb,[qu1, qu2])
+
+        self.assertEqual([{'X':2,'Y':'a'},{'X':3,'Y':'b'}], results[0])
+        self.assertEqual([{'X':1,'Y':'c'}], results[1])
