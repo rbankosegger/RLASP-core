@@ -8,109 +8,109 @@
 % choose(R) 									... rule R was chosen
 % abstractAction(abstract(...), ground(...))	... abstract action `abstract(...)` is available and has a corresponding ground action `ground(...)`.
 
-%	obj(wall(grey),(8,0)).
-%	obj(agent(west),(15,3)).
-%	obj(wall(grey),(9,5)).
-%	obj(wall(grey),(0,5)).
-%	obj(wall(grey),(18,6)).
-%	obj(wall(grey),(18,7)).
-%	obj(wall(grey),(13,9)).
-%	obj(wall(grey),(0,10)).
-%	obj(wall(grey),(18,10)).
-%	obj(wall(grey),(3,0)).
-%	obj(wall(grey),(18,16)).
-%	obj(wall(grey),(18,14)).
-%	obj(wall(grey),(7,9)).
-%	obj(wall(grey),(9,7)).
-%	obj(wall(grey),(0,15)).
-%	obj(wall(grey),(8,9)).
-%	obj(wall(grey),(5,9)).
-%	obj(wall(grey),(14,18)).
-%	obj(wall(grey),(2,9)).
-%	obj(wall(grey),(18,13)).
-%	obj(wall(grey),(4,0)).
-%	obj(wall(grey),(9,18)).
-%	obj(wall(grey),(17,0)).
-%	obj(wall(grey),(3,18)).
-%	obj(wall(grey),(6,0)).
-%	obj(wall(grey),(0,18)).
-%	obj(wall(grey),(1,0)).
-%	obj(wall(grey),(16,18)).
-%	obj(wall(grey),(18,9)).
-%	obj(wall(grey),(18,1)).
-%	obj(wall(grey),(0,7)).
-%	obj(wall(grey),(12,0)).
-%	obj(wall(grey),(9,12)).
-%	obj(wall(grey),(15,0)).
-%	obj(wall(grey),(18,4)).
-%	obj(wall(grey),(9,10)).
-%	obj(wall(grey),(16,9)).
-%	obj(wall(grey),(0,11)).
-%	obj(wall(grey),(18,8)).
-%	obj(wall(grey),(9,17)).
-%	obj(wall(grey),(11,18)).
-%	obj(wall(grey),(4,18)).
-%	obj(wall(grey),(1,18)).
-%	obj(wall(grey),(18,15)).
-%	obj(wall(grey),(0,4)).
-%	obj(wall(grey),(0,6)).
-%	obj(wall(grey),(18,17)).
-%	obj(wall(grey),(5,18)).
-%	obj(wall(grey),(18,5)).
-%	obj(wall(grey),(14,0)).
-%	obj(wall(grey),(9,1)).
-%	obj(wall(grey),(10,0)).
-%	obj(wall(grey),(8,18)).
-%	obj(wall(grey),(17,18)).
-%	obj(wall(grey),(2,18)).
-%	obj(wall(grey),(9,14)).
-%	obj(wall(grey),(1,9)).
-%	obj(wall(grey),(16,0)).
-%	obj(wall(grey),(18,2)).
-%	obj(wall(grey),(3,9)).
-%	obj(wall(grey),(14,9)).
-%	obj(wall(grey),(0,1)).
-%	obj(wall(grey),(9,15)).
-%	obj(wall(grey),(18,3)).
-%	obj(wall(grey),(6,18)).
-%	obj(wall(grey),(0,2)).
-%	obj(wall(grey),(0,13)).
-%	obj(wall(grey),(10,18)).
-%	obj(wall(grey),(0,14)).
-%	obj(wall(grey),(9,0)).
-%	obj(wall(grey),(0,12)).
-%	obj(wall(grey),(9,6)).
-%	obj(wall(grey),(9,3)).
-%	obj(wall(grey),(0,8)).
-%	obj(wall(grey),(18,11)).
-%	obj(wall(grey),(7,18)).
-%	obj(wall(grey),(7,0)).
-%	obj(wall(grey),(9,9)).
-%	obj(wall(grey),(9,11)).
-%	obj(wall(grey),(11,0)).
-%	obj(wall(grey),(2,0)).
-%	obj(wall(grey),(15,18)).
-%	obj(wall(grey),(18,18)).
-%	obj(wall(grey),(0,3)).
-%	obj(wall(grey),(11,9)).
-%	obj(wall(grey),(6,9)).
-%	obj(wall(grey),(12,18)).
-%	obj(wall(grey),(0,16)).
-%	obj(wall(grey),(18,12)).
-%	obj(wall(grey),(9,16)).
-%	obj(wall(grey),(0,17)).
-%	obj(wall(grey),(9,8)).
-%	obj(wall(grey),(0,9)).
-%	obj(wall(grey),(18,0)).
-%	obj(goal,(2,11)).
-%	obj(wall(grey),(5,0)).
-%	obj(wall(grey),(9,4)).
-%	obj(wall(grey),(13,0)).
-%	obj(wall(grey),(13,18)).
-%	obj(wall(grey),(12,9)).
-%	obj(wall(grey),(10,9)).
-%	obj(wall(grey),(0,0)).
-%	obj(wall(grey),(15,9)).
+obj(wall(grey),(8,0)).
+obj(agent(west),(15,3)).
+obj(wall(grey),(9,5)).
+obj(wall(grey),(0,5)).
+obj(wall(grey),(18,6)).
+obj(wall(grey),(18,7)).
+obj(wall(grey),(13,9)).
+obj(wall(grey),(0,10)).
+obj(wall(grey),(18,10)).
+obj(wall(grey),(3,0)).
+obj(wall(grey),(18,16)).
+obj(wall(grey),(18,14)).
+obj(wall(grey),(7,9)).
+obj(wall(grey),(9,7)).
+obj(wall(grey),(0,15)).
+obj(wall(grey),(8,9)).
+obj(wall(grey),(5,9)).
+obj(wall(grey),(14,18)).
+obj(wall(grey),(2,9)).
+obj(wall(grey),(18,13)).
+obj(wall(grey),(4,0)).
+obj(wall(grey),(9,18)).
+obj(wall(grey),(17,0)).
+obj(wall(grey),(3,18)).
+obj(wall(grey),(6,0)).
+obj(wall(grey),(0,18)).
+obj(wall(grey),(1,0)).
+obj(wall(grey),(16,18)).
+obj(wall(grey),(18,9)).
+obj(wall(grey),(18,1)).
+obj(wall(grey),(0,7)).
+obj(wall(grey),(12,0)).
+obj(wall(grey),(9,12)).
+obj(wall(grey),(15,0)).
+obj(wall(grey),(18,4)).
+obj(wall(grey),(9,10)).
+obj(wall(grey),(16,9)).
+obj(wall(grey),(0,11)).
+obj(wall(grey),(18,8)).
+obj(wall(grey),(9,17)).
+obj(wall(grey),(11,18)).
+obj(wall(grey),(4,18)).
+obj(wall(grey),(1,18)).
+obj(wall(grey),(18,15)).
+obj(wall(grey),(0,4)).
+obj(wall(grey),(0,6)).
+obj(wall(grey),(18,17)).
+obj(wall(grey),(5,18)).
+obj(wall(grey),(18,5)).
+obj(wall(grey),(14,0)).
+obj(wall(grey),(9,1)).
+obj(wall(grey),(10,0)).
+obj(wall(grey),(8,18)).
+obj(wall(grey),(17,18)).
+obj(wall(grey),(2,18)).
+obj(wall(grey),(9,14)).
+obj(wall(grey),(1,9)).
+obj(wall(grey),(16,0)).
+obj(wall(grey),(18,2)).
+obj(wall(grey),(3,9)).
+obj(wall(grey),(14,9)).
+obj(wall(grey),(0,1)).
+obj(wall(grey),(9,15)).
+obj(wall(grey),(18,3)).
+obj(wall(grey),(6,18)).
+obj(wall(grey),(0,2)).
+obj(wall(grey),(0,13)).
+obj(wall(grey),(10,18)).
+obj(wall(grey),(0,14)).
+obj(wall(grey),(9,0)).
+obj(wall(grey),(0,12)).
+obj(wall(grey),(9,6)).
+obj(wall(grey),(9,3)).
+obj(wall(grey),(0,8)).
+obj(wall(grey),(18,11)).
+obj(wall(grey),(7,18)).
+obj(wall(grey),(7,0)).
+obj(wall(grey),(9,9)).
+obj(wall(grey),(9,11)).
+obj(wall(grey),(11,0)).
+obj(wall(grey),(2,0)).
+obj(wall(grey),(15,18)).
+obj(wall(grey),(18,18)).
+obj(wall(grey),(0,3)).
+obj(wall(grey),(11,9)).
+obj(wall(grey),(6,9)).
+obj(wall(grey),(12,18)).
+obj(wall(grey),(0,16)).
+obj(wall(grey),(18,12)).
+obj(wall(grey),(9,16)).
+obj(wall(grey),(0,17)).
+obj(wall(grey),(9,8)).
+obj(wall(grey),(0,9)).
+obj(wall(grey),(18,0)).
+obj(goal,(2,11)).
+obj(wall(grey),(5,0)).
+obj(wall(grey),(9,4)).
+obj(wall(grey),(13,0)).
+obj(wall(grey),(13,18)).
+obj(wall(grey),(12,9)).
+obj(wall(grey),(10,9)).
+obj(wall(grey),(0,0)).
+obj(wall(grey),(15,9)).
 
 % obj(wall(grey),(4,7)).
 % obj(wall(grey),(5,6)).
