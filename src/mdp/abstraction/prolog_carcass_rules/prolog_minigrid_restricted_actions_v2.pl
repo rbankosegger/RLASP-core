@@ -1,44 +1,5 @@
 % Domain knowledge
 
-%	obj(wall(grey),(0,1)).
-%	obj(wall(grey),(2,0)).
-%	obj(wall(grey),(2,2)).
-%	obj(wall(grey),(0,6)).
-%	obj(goal,(6,6)).
-%	obj(wall(grey),(7,2)).
-%	obj(wall(grey),(4,7)).
-%	obj(wall(grey),(3,0)).
-%	obj(wall(grey),(2,5)).
-%	obj(wall(grey),(3,7)).
-%	obj(key(yellow),(1,6)).
-%	obj(agent(south),(1,3)).
-%	obj(wall(grey),(7,6)).
-%	obj(door(yellow,locked),(2,4)).
-%	%carries(key(yellow)).
-%	obj(wall(grey),(7,0)).
-%	obj(wall(grey),(0,2)).
-%	obj(wall(grey),(0,0)).
-%	obj(wall(grey),(7,5)).
-%	obj(wall(grey),(6,0)).
-%	obj(wall(grey),(0,4)).
-%	obj(wall(grey),(0,3)).
-%	obj(wall(grey),(5,0)).
-%	obj(wall(grey),(4,0)).
-%	obj(wall(grey),(2,3)).
-%	obj(wall(grey),(5,7)).
-%	obj(wall(grey),(1,0)).
-%	obj(wall(grey),(7,7)).
-%	obj(wall(grey),(2,1)).
-%	obj(wall(grey),(1,7)).
-%	obj(wall(grey),(7,1)).
-%	obj(wall(grey),(2,7)).
-%	obj(wall(grey),(0,7)).
-%	obj(wall(grey),(6,7)).
-%	obj(wall(grey),(7,3)).
-%	obj(wall(grey),(7,4)).
-%	obj(wall(grey),(2,6)).
-%	obj(wall(grey),(0,5)).
-
 :- dynamic obj/2.
 :- dynamic carries/1.
 
