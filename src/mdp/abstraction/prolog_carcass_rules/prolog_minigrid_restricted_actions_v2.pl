@@ -1,7 +1,63 @@
 % Domain knowledge
 
+%	obj(wall(grey),(0,1)).
+%	obj(wall(grey),(2,0)).
+%	obj(wall(grey),(2,2)).
+%	obj(wall(grey),(0,6)).
+%	obj(goal,(6,6)).
+%	obj(wall(grey),(7,2)).
+%	obj(wall(grey),(4,7)).
+%	obj(wall(grey),(3,0)).
+%	obj(wall(grey),(2,5)).
+%	obj(wall(grey),(3,7)).
+%	obj(key(yellow),(1,6)).
+%	obj(agent(south),(1,3)).
+%	obj(wall(grey),(7,6)).
+%	obj(door(yellow,locked),(2,4)).
+%	%carries(key(yellow)).
+%	obj(wall(grey),(7,0)).
+%	obj(wall(grey),(0,2)).
+%	obj(wall(grey),(0,0)).
+%	obj(wall(grey),(7,5)).
+%	obj(wall(grey),(6,0)).
+%	obj(wall(grey),(0,4)).
+%	obj(wall(grey),(0,3)).
+%	obj(wall(grey),(5,0)).
+%	obj(wall(grey),(4,0)).
+%	obj(wall(grey),(2,3)).
+%	obj(wall(grey),(5,7)).
+%	obj(wall(grey),(1,0)).
+%	obj(wall(grey),(7,7)).
+%	obj(wall(grey),(2,1)).
+%	obj(wall(grey),(1,7)).
+%	obj(wall(grey),(7,1)).
+%	obj(wall(grey),(2,7)).
+%	obj(wall(grey),(0,7)).
+%	obj(wall(grey),(6,7)).
+%	obj(wall(grey),(7,3)).
+%	obj(wall(grey),(7,4)).
+%	obj(wall(grey),(2,6)).
+%	obj(wall(grey),(0,5)).
+
 :- dynamic obj/2.
 :- dynamic carries/1.
+
+:- table blocked/1.
+:- table gap/2.
+:- table alley/1.
+:- table pcp/1.
+:- table rtl/1.
+:- table rbl/1.
+:- table rtr/1.
+:- table rbr/1.
+:- table rect/1.
+:- table contains/2.
+:- table room/1.
+:- table v/1.
+:- table e/2.
+:- table distToAgent/2.
+:- table preds/1.
+:- table nextOnPath/1.
 
 blocked(XY) :- obj(wall(_), XY).
 blocked(XY) :- obj(lava, XY). 
@@ -34,44 +90,23 @@ v(U) :- obj(key(_), U).
 v(U) :- obj(ball(C), U), \+ C=blue.
 v(U) :- gap(U,_), \+ alley(U), \+ obj(door(_,_), U).
 
-% Collect edges by computing the cross product of edges in the same room, for every room
-collectEdges(_,[],[]).
-collectEdges(Vertices,[R|Rooms],Result) :-
-	verticesInRoom(Vertices,R,InRoom),
-	product(InRoom,InRoom,NewEdges),
-	collectEdges(Vertices,Rooms,Edges),
-	append(Edges,NewEdges,Result).
-verticesInRoom([],_,[]).
-verticesInRoom([V|Vs],R,[V|Result]) :-
-	inRoom(V,R),
-	verticesInRoom(Vs,R,Result).
-verticesInRoom([V|Vs],R,Result) :-
-	\+ inRoom(V,R),
-	verticesInRoom(Vs,R,Result).
 inRoom((X,Y),[[X1,Y1],[X2,Y2]]) :- X>=X1, Y>=Y1, X2>=X,Y2>=Y.
-product([],_,[]).
-product([A|As],Bs,Result) :- product2(A,Bs,Result1), product(As,Bs,Result2), append(Result1,Result2,Result).
-product2(_,[],[]).
-product2(A,[B|Bs],[[A,B]|Result]) :- 
-		\+ A=B,
-		product2(A,Bs,Result).
-product2(A,[B|Bs],Result) :- 
-		A=B,
-		product2(A,Bs,Result).
+e(U,V) :- v(U), v(V), \+ U=V, room(R), inRoom(U,R), inRoom(V,R).
 
 % Use breath-first search to find the shortest path
 % BFS Algorithm as in https://book.simply-logical.space/src/text/2_part_ii/5.3.html
-bfs(_, [[XY|Path]|_],[XY|Path]) :- obj(goal,XY).
-bfs(SortedEdges, [Current|Rest],Goal) :- 
-		filteredChildPaths(SortedEdges,Current,_,Filtered), 
-		append(Rest,Filtered,NewAgenda),
-		bfs(SortedEdges,NewAgenda,Goal).
-filteredChildPaths(Edges,[U|Path],Children,Filtered) :- 
-		allChildPaths(Edges,[U|Path],Children),
-		removeLockedDoors(Children,Filtered).
-allChildPaths([], _, []).
-allChildPaths([[U,V]|Edges], [U|Path], [[V,U|Path]|Children]) :- allChildPaths(Edges, [U|Path], Children).
-allChildPaths([[W,_]|Edges], [U|Path], Children) :- \+ W=U, allChildPaths(Edges, [U|Path], Children).
+bfs([[XY|Path]|_],[XY|Path]) :- obj(goal,XY).
+bfs([[Current|Path]|Queue],PathToGoal) :-
+	 findall(Next, e(Current,Next), ChildNodes),
+	 nodesSortedByDist(ChildNodes, SortedChildNodes),
+	 childPaths([Current|Path],SortedChildNodes,ChildPaths),
+	 removeLockedDoors(ChildPaths,FilteredChildPaths),
+	 append(Queue,FilteredChildPaths,NewQueue),
+	 bfs(NewQueue,PathToGoal).
+
+childPaths(_,[],[]).
+childPaths(Path,[NextChild|OtherChildren], [[NextChild|Path]|OtherPaths]) :-
+		childPaths(Path,OtherChildren,OtherPaths).
 
 % Filter out children nodes representing a locked door and with no fitting key on the path so far.
 keysOnPath([],[]).
@@ -99,26 +134,20 @@ removeLockedDoors([[U|Us]|RestOfPath], Filtered) :-
 	removeLockedDoors(RestOfPath, Filtered).
 
 % Sort children by their distance to the agent
-getSortedEdges(Sorted) :-
-	findall(U,v(U),Vertices), 
-	findall(R,room(R),Rooms), 
-	collectEdges(Vertices,Rooms,Edges),
-	sortEdges(Edges,Sorted).
-sortEdges(Edges,Sorted):-
-	distList(Edges,DistMap),
+dist((X1,Y1),(X2,Y2),D) :- D is abs(X2-X1)+abs(Y2-Y1).
+distToAgent(U,D) :- obj(agent(_),V), dist(U,V,D).
+distList([],[]).
+distList([V|Vs], [D-V|Result]) :- distToAgent(V,D), distList(Vs,Result).
+nodesSortedByDist(Vs,Sorted) :-
+	distList(Vs,DistMap),
 	keysort(DistMap,SortedWithKey),
 	pairs_values(SortedWithKey,Sorted).
-distList([],[]).
-distList([[U,V]|Others], [D-[U,V]|Result]) :- distToAgent(V,D), distList(Others,Result).
-distToAgent(U,D) :- obj(agent(_),V), dist(U,V,D).
-dist((X1,Y1),(X2,Y2),D) :- D is abs(X2-X1)+abs(Y2-Y1).
 
 % Choose the first valid path to the goal. BFS guarantees that it is the shortest one.
 nextOnPath(U) :- p([_|[U|_]]).
 p(PathToGoal) :- 
-	getSortedEdges(Edges),
 	obj(agent(_),U), 
-	bfs(Edges,[[U]],PathToGoalReverse), 
+	bfs([[U]],PathToGoalReverse), 
 	reverse(PathToGoalReverse,PathToGoal), !.
 
 facing((X,Y1)) :- obj(agent(north),(X,Y)), Y1 is Y-1.
@@ -126,56 +155,53 @@ facing((X,Y1)) :- obj(agent(south),(X,Y)), Y1 is Y+1.
 facing((X1,Y)):- obj(agent(east),(X,Y)), X1 is X+1.
 facing((X1,Y)):- obj(agent(west),(X,Y)), X1 is X-1.
 	
-objective_y_is((_,Y), north) :- obj(agent(_),(_,AY)), AY>Y.
-objective_y_is((_,Y), south) :- obj(agent(_),(_,AY)), Y>AY.
-objective_y_is((_,Y), on_axis) :- obj(agent(_),(_,Y)).
+objective_y_is(north) :- obj(agent(_),(_,AY)), nextOnPath((_,GY)), AY>GY.
+objective_y_is(south) :- obj(agent(_),(_,AY)), nextOnPath((_,GY)), GY>AY.
+objective_y_is(on_axis) :- obj(agent(_),(_,AY)), nextOnPath((_,GY)), AY=GY.
 
-objective_x_is((X,_), east) :- obj(agent(_),(AX,_)), X>AX.
-objective_x_is((X,_), west) :- obj(agent(_),(AX,_)), AX>X.
-objective_x_is((X,_), on_axis) :- obj(agent(_),(X,_)).
+objective_x_is(east) :- obj(agent(_),(AX,_)), nextOnPath((GX,_)), GX>AX.
+objective_x_is(west) :- obj(agent(_),(AX,_)), nextOnPath((GX,_)), AX>GX.
+objective_x_is(on_axis) :- obj(agent(_),(AX,_)), nextOnPath((GX,_)), AX=GX.
 
 adj((X1, Y)) :- obj(agent(_),(X,Y)), X1 is X+1.
 adj((X1, Y)) :- obj(agent(_),(X,Y)), X1 is X-1.
 adj((X, Y1)) :- obj(agent(_),(X,Y)), Y1 is Y+1.
 adj((X, Y1)) :- obj(agent(_),(X,Y)), Y1 is Y-1.
 
-touching(G, goal) :- adj(G), obj(goal, G).
-touching(G, key) :- adj(G), obj(key(_),G).
-touching(G, door(S)) :- adj(G), obj(door(_, S), G).
-touching(G, gap) :- adj(G), gap(G,_), \+ alley(G), \+ touching(G,goal), \+ touching(G,door(_)), \+ touching(G,key).
-touching(G, none) :- \+ touching(G,goal), \+ touching(G,door(_)), \+ touching(G,gap), \+ touching(G,key).
+touching(goal) :- nextOnPath(G), adj(G), obj(goal, G).
+touching(key) :- nextOnPath(G), adj(G), obj(key(_),G).
+touching(door(S)) :- nextOnPath(G), adj(G), obj(door(_,S),G).
+touching(gap) :- nextOnPath(G), adj(G), gap(G,_), \+ alley(G), \+ touching(goal), \+ touching(door(_)), \+ touching(key).
+touching(none) :- \+ touching(goal), \+ touching(door(_)), \+ touching(gap), \+ touching(key).
 
 in_gap(D) :- obj(agent(_),XY), gap(XY,D), \+ alley(XY).
 in_gap(none) :- \+ in_gap(horizontal), \+ in_gap(vertical).
 
-preds([facing(F),objective_x_is(OX),objective_y_is(OY),touching(T),in_gap(C)]) :- 
-		obj(goal,_),
-		nextOnPath(Next), 
-		obj(agent(F), _),
-		objective_x_is(Next,OX),
-		objective_y_is(Next,OY), 
- 		touching(Next,T), 
-		in_gap(C).
-preds([]) :- \+ obj(goal,_).
-
 %	%%%%%%%%%%%%%%%%%%% CARCASS RULES %%%%%%%%%%%%%%%%%%%
 
 % Informs the system that the clauses of the specified predicate(s) might not be together in the source file.
-:- discontiguous applicable/3.
-:- discontiguous rule/3.
+:- discontiguous applicable/2.
+:- discontiguous rule/2.
 :- discontiguous abstractAction/2.
 
-not_min_choice(Preds, I1) :- rule(Preds,R2,I2), I2<I1, applicable(Preds,R2,_). 
-choose(R) :- preds(Preds), rule(Preds,R,I), applicable(Preds,R,_), \+ not_min_choice(Preds,I), !.
+not_min_choice(I1) :- rule(R2,I2), I2<I1, applicable(R2,_). 
+choose(R) :- rule(R,I), applicable(R,_), \+ not_min_choice(I), !.
 	
-rule(_,facing_danger, 1).
+rule(facing_danger, 1).
 	
 dangerous(XY) :- obj(ball(blue), XY).
 dangerous(XY) :- obj(lava, XY).
-applicable(_,facing_danger, []) :- facing(T), dangerous(T).
+applicable(facing_danger, []) :- facing(T), dangerous(T).
 	
-rule(Preds,Preds,2).
-applicable(Preds, Preds, []) :- \+ Preds=[], rule(Preds,Preds,2).
+preds([facing(F),objective_x_is(OX),objective_y_is(OY),touching(T),in_gap(C)]) :- 
+		obj(goal,_),
+		obj(agent(F), _),
+		objective_x_is(OX),
+		objective_y_is(OY), 
+ 		touching(T), 
+		in_gap(C).
+rule(Preds,2) :- preds(Preds).
+applicable(Preds, []) :- preds(Preds).
 
 % Turing left, right is always possible
 abstractAction(left, left). 
@@ -202,5 +228,5 @@ abstractAction(drop, drop) :- carries(_), \+ forwardMoveBlocked.
 % abstractAction(gutterAction, done). 
 
 % The gutter state collects all states not covered by some rule.
-rule(_,gutter_custom_actions, 1.0Inf).	
-applicable(_,gutter_custom_actions, []).
+rule(gutter_custom_actions, 1.0Inf).	
+applicable(gutter_custom_actions, []).
