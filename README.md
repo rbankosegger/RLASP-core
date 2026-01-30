@@ -1,6 +1,10 @@
 # RLASP
 This program combines reinforcement learning (RL) with answer set programming (ASP) for solving blocksworlds and other problems.
 
+Published related research:
+ * Bankosegger, R. P. (2025). ASP-based abstractions for reinforcement learning [Diploma Thesis, Technische Universität Wien]. reposiTUm. https://doi.org/10.34726/hss.2025.90825
+ * Datler, E.: Balancing learning and planning: A case study on combining reinforcement learning with answer set programming in the blocks world. Bachelor’s Thesis, Technische Universität Wien (2020)
+
 ## Install and use for development
 
 I would recommend setting up a virtual environment to work with.
@@ -78,4 +82,3 @@ Please check out the demo in `demos/htcondor_demo`.
  * [clingo_python_api](https://potassco.org/clingo/#packages)
  * [Gym](http://gym.openai.com/)
  * [Gym Minigrid](https://github.com/maximecb/gym-minigrid)
- * [Elias' Bachelor's thesis (2020)](https://fuxgeist.com/thesis.pdf)
